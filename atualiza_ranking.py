@@ -341,7 +341,11 @@ def montar():
         out.append(base)
     out.sort(key=lambda r: (-r["curKills"], -r["kills"]))
 
-    agora = datetime.datetime.now()
+    try:
+        from zoneinfo import ZoneInfo; tz = ZoneInfo("America/Sao_Paulo")   # horario de Brasilia mesmo rodando no GitHub (UTC)
+    except Exception:
+        tz = datetime.timezone(datetime.timedelta(hours=-3))                 # Windows sem base de fusos
+    agora = datetime.datetime.now(tz)
     sandbox, sandbox_meta = ler_sandbox()
     ini, mods_ids, ws = ler_ini()
     data = {"sandbox": sandbox, "sandboxMeta": sandbox_meta, "ini": ini, "modIds": mods_ids, "mods": ler_mods(ws),
