@@ -346,12 +346,14 @@ def montar():
     except Exception:
         tz = datetime.timezone(datetime.timedelta(hours=-3))                 # Windows sem base de fusos
     agora = datetime.datetime.now(tz)
+    ipath = os.path.join(AQUI, "icones.json")
+    icones = json.load(open(ipath, encoding="utf-8")) if os.path.exists(ipath) else {}
     sandbox, sandbox_meta = ler_sandbox()
     ini, mods_ids, ws = ler_ini()
     data = {"sandbox": sandbox, "sandboxMeta": sandbox_meta, "ini": ini, "modIds": mods_ids, "mods": ler_mods(ws),
             "generated": agora.strftime("%d/%m/%Y %H:%M"), "generatedIso": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "server": INFO_SERVIDOR, "online": sorted(online), "players": out,
-            "dict": {"traits": dic["traits"], "profs": dic["profs"]}}
+            "dict": {"traits": dic["traits"], "profs": dic["profs"], "icons": icones}}
 
     js = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
     open(os.path.join(AQUI, "data.json"), "w", encoding="utf-8").write(js)

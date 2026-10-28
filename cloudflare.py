@@ -26,6 +26,7 @@ def run(cmd, **kw):
 def publicar():
     os.makedirs(PUBLIC, exist_ok=True)
     shutil.copy(os.path.join(AQUI, "ranking.html"), os.path.join(PUBLIC, "index.html"))
+    shutil.copytree(os.path.join(AQUI, "icons"), os.path.join(PUBLIC, "icons"), dirs_exist_ok=True)
     r = run("npx --yes wrangler deploy")
     if r.returncode:
         sys.exit("deploy falhou")

@@ -179,6 +179,10 @@ select,.btn{background:var(--bg2);border:1px solid var(--line2);color:var(--fg);
 .trait.pos{color:var(--green);border-color:color-mix(in srgb,var(--green) 40%,transparent)}
 .trait.neg{color:var(--red);border-color:color-mix(in srgb,var(--red) 40%,transparent)}
 .trait.prof{color:var(--amber);border-color:color-mix(in srgb,var(--amber) 40%,transparent)}
+.ico{width:20px;height:20px;image-rendering:pixelated;vertical-align:-5px;margin-right:6px;object-fit:contain}
+.trait{display:inline-flex;align-items:center;gap:5px} .trait .ico{width:16px;height:16px;margin:0;vertical-align:middle}
+.bar .ico{width:22px;height:22px;vertical-align:-6px}
+.row .ch .ico{width:14px;height:14px;margin:0 3px 0 0;vertical-align:-2px}
 @media (max-width:760px){ .phero{grid-template-columns:1fr} .phero .fav{text-align:left} }
 .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-top:26px;overflow-x:auto}
 .tabs button{background:none;border:0;border-bottom:3px solid transparent;color:var(--mute);padding:10px 16px;cursor:pointer;font-family:var(--display);font-size:20px;letter-spacing:.06em;white-space:nowrap}
@@ -343,6 +347,7 @@ footer{margin-top:40px;font-size:12px;color:var(--dim);display:flex;justify-cont
 <script>
 /* ---------- config ---------- */
 const DATA_URL = 'data.json';      // onde a pagina busca atualizacoes (mesma pasta por padrao)
+const ICON_BASE = 'icons/';        // pasta com os icones extraidos do jogo
 const REFRESH_SEC = 60;
 
 /* ---------- dictionaries ---------- */
@@ -451,6 +456,9 @@ const link = p => `<a href="#${p.tok}">${esc(p.user)}</a>`;
 const status = p => (p.online?'<span class="pill on">online</span>':'')+(p.alive===null?'<span class="pill dead">sem dados</span>':p.alive?'<span class="pill alive">vivo</span>':'<span class="pill dead">morto</span>');
 const profName = p => (data.dict&&data.dict.profs&&data.dict.profs[p.prof])||'';
 const traitInfo = id => (data.dict&&data.dict.traits&&data.dict.traits[id])||{n:id.replace('base:',''),c:0,p:false};
+const ICONS = () => (data.dict&&data.dict.icons)||{};
+const ico = (grp,id) => { const g=ICONS()[grp]; const f=g&&g[id]; return f?`<img class="ico" src="${ICON_BASE}${f}" alt="" loading="lazy">`:''; };
+const favType = f => { const n=ICONS().names||{}; for(const k in n) if(n[k]===f) return k; return null; };
 
 /* ---------- home ---------- */
 function renderHome(){
@@ -482,7 +490,7 @@ function renderRows(){
   document.getElementById('rows').innerHTML=`<div class="rhead"><div>#</div><div>Jogador</div>${['curKills','deaths','bestHours','curHours','km','hoursPlayed'].map(k=>`<button data-k="${k}" class="${sortKey===k?'on':''} ${asc?'asc':''}">${LBL[k]}</button>`).join('')}<div></div></div>`+
     rows.map((p,i)=>`<a class="row" href="#${p.tok}">
       <div class="rk">${sortKey==='curKills'&&!asc&&!onlyAlive&&!onlyOnline?p.pos:i+1}</div>
-      <div class="who"><div class="nick">${esc(p.user)} ${status(p)}</div><div class="ch">${esc(p.name||'')}${profName(p)?' · '+esc(profName(p)):''}</div></div>
+      <div class="who"><div class="nick">${esc(p.user)} ${status(p)}</div><div class="ch">${esc(p.name||'')}${profName(p)?' · '+ico('profs',p.prof)+esc(profName(p)):''}</div></div>
       <div class="stats">${v('curKills',fmt(p.curKills))}${v('deaths',p.deaths,'mu')}${v('bestHours',dh(p.bestHours))}${v('curHours',p.alive?dh(p.curHours):'—','mu')}${v('km',fmt(p.km))}${v('hoursPlayed',fmt(p.hoursPlayed))}</div>
       <div class="go">›</div></a>`).join('');
   document.querySelectorAll('.rhead button').forEach(b=>b.onclick=e=>{e.preventDefault(); if(sortKey===b.dataset.k) asc=!asc; else {sortKey=b.dataset.k;asc=false;} document.getElementById('sort').value=sortKey; syncDir(); renderRows();});
@@ -539,7 +547,7 @@ function renderCmp(){
   // skills: show the ones where either has level>0, sorted by max level
   const keys=Object.keys(PERK).filter(k=>(a.skCur[k]||0)+(b.skCur[k]||0)>0).sort((x,y)=>Math.max(b.skCur[y]||0,a.skCur[y]||0)-Math.max(b.skCur[x]||0,a.skCur[x]||0));
   html+='<h3>Skills do personagem atual</h3><div class="cmp">'+keys.map(k=>line(pname(k),a.skCur[k]||0,b.skCur[k]||0,a.skCur[k]||0,b.skCur[k]||0)).join('')+'</div>';
-  const tr=p=>p.traits.length?p.traits.map(t=>{const i=traitInfo(t);return `<span class="trait ${i.p?'prof':i.c<0?'neg':'pos'}">${esc(i.n)}</span>`;}).join(''):'<span class="empty">sem dados</span>';
+  const tr=p=>p.traits.length?p.traits.map(t=>{const i=traitInfo(t);return `<span class="trait ${i.p?'prof':i.c<0?'neg':'pos'}">${ico('traits',t)}${esc(i.n)}</span>`;}).join(''):'<span class="empty">sem dados</span>';
   html+=`<h3>Traits</h3><div class="two"><div class="card"><div class="traits" style="margin:0">${tr(a)}</div></div><div class="card"><div class="traits" style="margin:0">${tr(b)}</div></div></div>`;
   document.getElementById('cmpbody').innerHTML=html;
 }
@@ -562,8 +570,8 @@ function profile(p){
     <div class="rank"><small>Posição</small>#${p.pos}<em> /${P.length}</em></div>
     <div>
       <h1 class="nick">${esc(p.user)}</h1>
-      <div class="sub">${p.name?`<b>${esc(p.name)}</b>`:''}${profName(p)?`<span>${esc(profName(p))}</span>`:''}${status(p)}${p.alive&&p.curHours?`<span>vivo há ${dh(p.curHours)}</span>`:''}${p.firstSeen?`<span>· na base desde ${brD(p.firstSeen)}</span>`:''}</div>
-      <div class="traits">${traits.length?traits.map(t=>`<span class="trait ${t.p?'prof':t.c<0?'neg':'pos'}" title="${t.p?'trait de profissão':t.c<0?'negativo ('+t.c+')':'positivo (+'+t.c+')'}">${esc(t.n)}</span>`).join(''):'<span class="empty">traits indisponíveis</span>'}</div>
+      <div class="sub">${p.name?`<b>${esc(p.name)}</b>`:''}${profName(p)?`<span>${ico('profs',p.prof)}${esc(profName(p))}</span>`:''}${status(p)}${p.alive&&p.curHours?`<span>vivo há ${dh(p.curHours)}</span>`:''}${p.firstSeen?`<span>· na base desde ${brD(p.firstSeen)}</span>`:''}</div>
+      <div class="traits">${traits.length?traits.map(t=>`<span class="trait ${t.p?'prof':t.c<0?'neg':'pos'}" title="${t.p?'trait de profissão':t.c<0?'negativo ('+t.c+')':'positivo (+'+t.c+')'}">${ico('traits',t.id)}${esc(t.n)}</span>`).join(''):'<span class="empty">traits indisponíveis</span>'}</div>
     </div>
     <div class="fav"><div class="l">Especialidade</div><div class="w">${spec?esc(pname(spec[0])):'—'}</div><div class="p">${spec?'nível '+spec[1]+' no personagem atual':'sem skill de combate ainda'}</div></div>
   </div>
@@ -580,8 +588,8 @@ function profile(p){
     <div class="tiles">${stat('Km andados',fmt(p.km))}${stat('Horas jogadas',fmt(p.hoursPlayed))}${stat('Armas quebradas',p.broken)}${stat('Vida atual',p.alive?dh(p.curHours):'—')}${stat('Skills de combate',nComb(p,1),'com nível 1 ou mais')}${stat('Traits',p.traits.length)}</div>
     <div class="two" style="margin-top:14px">
       <div class="card"><h3 style="margin-top:0">Estilo de combate <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">skills do personagem atual</span></h3>${comb.length?`<div class="bars">${comb.map(c=>`<div class="bar"><span>${pname(c[0])}</span><div class="tr"><i class="a" style="width:${c[1]*10}%"></i></div><span class="n">${c[1]}${c[2]>c[1]?' / '+c[2]:''}</span></div>`).join('')}</div><div class="note">Nível de cada skill de combate. A XP só vem dos próprios golpes, então reflete as armas que o jogador realmente usa.</div>`:'<div class="empty">Nenhuma skill de combate ainda.</div>'}
-      <h3>Favoritos na barra</h3>${favs.length?`<div class="traits" style="margin-top:6px">${favs.map(f=>`<span class="trait">${esc(fname(f))}</span>`).join('')}</div><div class="note">Itens marcados como favoritos no inventário do personagem atual.</div>`:'<div class="empty">Nenhum item favoritado.</div>'}</div>
-      <div class="card"><h3 style="margin-top:0">Armas que quebrou</h3>${p.brokenList&&p.brokenList.length?`<div class="bars">${p.brokenList.slice(0,10).map(w=>`<div class="bar"><span>${esc(wname(w[0]))}</span><div class="tr"><i class="g" style="width:${w[1]/p.brokenList[0][1]*100}%"></i></div><span class="n">${w[1]}×</span></div>`).join('')}</div><div class="note">Somando todos os personagens.</div>`:'<div class="empty">Nenhuma.</div>'}</div>
+      <h3>Favoritos na barra</h3>${favs.length?`<div class="traits" style="margin-top:6px">${favs.map(f=>`<span class="trait">${ico('items',favType(f))}${esc(fname(f))}</span>`).join('')}</div><div class="note">Itens marcados como favoritos no inventário do personagem atual.</div>`:'<div class="empty">Nenhum item favoritado.</div>'}</div>
+      <div class="card"><h3 style="margin-top:0">Armas que quebrou</h3>${p.brokenList&&p.brokenList.length?`<div class="bars">${p.brokenList.slice(0,10).map(w=>`<div class="bar"><span>${ico('items',w[0])}${esc(wname(w[0]))}</span><div class="tr"><i class="g" style="width:${w[1]/p.brokenList[0][1]*100}%"></i></div><span class="n">${w[1]}×</span></div>`).join('')}</div><div class="note">Somando todos os personagens.</div>`:'<div class="empty">Nenhuma.</div>'}</div>
     </div>
     <h3>Abates por dia <span class="sub" style="font-family:var(--ui);font-size:12px;letter-spacing:.1em">personagem atual${cur&&cur.name?' · '+esc(cur.name):''}</span></h3>${chart(cur&&cur.series)}
   </div>`;
