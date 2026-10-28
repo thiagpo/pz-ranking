@@ -65,11 +65,16 @@ def baixar():
             p = posixpath.join(d, e.filename)
             if e.longname.startswith("d"):
                 yield from walk(p)
-            elif e.filename.endswith("_PerkLog.txt"):
+            elif e.filename.endswith(("_PerkLog.txt", "_admin.txt")):
                 yield p
     for p in walk(REMOTO_LOGS):
-        nome = "perklog__" + p.replace(REMOTO_LOGS + "/", "").replace("/", "__")
+        kind = "perklog__" if p.endswith("_PerkLog.txt") else "admin__"
+        nome = kind + p.replace(REMOTO_LOGS + "/", "").replace("/", "__")
         sftp.get(p, os.path.join(DADOS, nome)); n += 1
+    try:
+        sftp.get(".cache/db/RazeHost.db", os.path.join(DADOS, "RazeHost.db")); n += 1   # so para ler quem e admin; nao e publicado
+    except IOError as e:
+        print("RazeHost.db nao baixado:", e)
 
     # log de conexoes da sessao atual (fica na raiz de Logs)
     for f in glob.glob(os.path.join(DADOS, "user__*.txt")):
@@ -125,6 +130,60 @@ def ler_traits(dic):
     except Exception as e:
         print("erro lendo players.db:", e)
     return out
+
+
+ROLES_PT = {"admin": "Admin", "moderator": "Moderador", "gm": "Game Master", "observer": "Observador", "priority": "Prioridade", "user": "Jogador", "banned": "Banido"}
+
+def ler_adm():
+    """Admins atuais (RazeHost.db) e acoes feitas no jogo registradas em *_admin.txt.
+    Linhas cujo autor e a conta 'admin' sao comandos do console da RazeHost e ficam de fora."""
+    admins = []
+    p = os.path.join(DADOS, "RazeHost.db")
+    if os.path.exists(p):
+        try:
+            c = sqlite3.connect(p)
+            roles = {rid: nome for rid, nome in c.execute("select id, name from role")}
+            for user, role, last in c.execute("select username, role, lastConnection from whitelist"):
+                rn = roles.get(role, "")
+                if rn in ("admin", "moderator", "gm", "observer") and user != "admin":
+                    admins.append({"user": user, "role": rn, "roleName": ROLES_PT.get(rn, rn), "last": last or ""})
+            c.close()
+        except Exception as e:
+            print("erro lendo RazeHost.db:", e)
+    acoes = []; vistos = set()
+    rx_ts = re.compile(r"^\[(\d\d)-(\d\d)-(\d\d) (\d\d:\d\d:\d\d)[^\]]*\]\s*(?:\[IMPORTANT\]\s*)?(.*)$")
+    regras = [
+        (r"^(.+?) teleported to (-?\d+),(-?\d+),(-?\d+)\.?$", "teleporte", lambda m: f"teleportou para {m.group(2)},{m.group(3)}", lambda m: ""),
+        (r"^(.+?) granted (\w+) access level on (.+?)\.?$", "acesso", lambda m: f"deu nível {ROLES_PT.get(m.group(2), m.group(2))} a {m.group(3)}", lambda m: m.group(3)),
+        (r"^(.+?) created a horde of (\d+) zombies near (-?\d+),(-?\d+)\.?$", "horda", lambda m: f"criou uma horda de {m.group(2)} zumbis em {m.group(3)},{m.group(4)}", lambda m: ""),
+        (r"^(.+?) removed zombies near (-?\d+),(-?\d+)\.?$", "limpeza", lambda m: f"removeu zumbis perto de {m.group(2)},{m.group(3)}", lambda m: ""),
+        (r"^(.+?) added item (\S+) in (.+?)'s inventory\.?$", "item", lambda m: f"criou o item {m.group(2).replace('Base.', '')} para {m.group(3)}", lambda m: m.group(3)),
+        (r"^(.+?) added ([\d.]+) (\w+) xp's to (.+?)\.?$", "xp", lambda m: f"deu {m.group(2)} de XP em {m.group(3)} para {m.group(4)}", lambda m: m.group(4)),
+        (r"^(.+?) (banned|unbanned|kicked) (.+?)\.?$", "ban", lambda m: f"{ {'banned': 'baniu', 'unbanned': 'desbaniu', 'kicked': 'expulsou'}[m.group(2)] } {m.group(3)}", lambda m: m.group(3)),
+        (r"^(.+?) (opened|closed) server\.?$", "servidor", lambda m: "abriu o servidor" if m.group(2) == "opened" else "fechou o servidor", lambda m: ""),
+        (r"^(.+?) (.*)$", "outro", lambda m: m.group(2), lambda m: ""),
+    ]
+    for f in sorted(glob.glob(os.path.join(DADOS, "admin__*.txt"))):
+        for line in open(f, encoding="utf-8", errors="ignore"):
+            m = rx_ts.match(line.strip())
+            if not m:
+                continue
+            dd, mm, yy, t, resto = m.groups()
+            ts = f"20{yy}-{mm}-{dd} {t}"
+            for pat, tipo, texto, alvo in regras:
+                mm2 = re.match(pat, resto)
+                if mm2:
+                    autor = mm2.group(1).strip()
+                    if autor == "admin":
+                        break   # console da RazeHost: nao entra
+                    chave = (ts, resto)
+                    if chave in vistos:
+                        break
+                    vistos.add(chave)
+                    acoes.append({"ts": ts, "actor": autor, "type": tipo, "text": texto(mm2), "target": alvo(mm2)})
+                    break
+    acoes.sort(key=lambda a: a["ts"], reverse=True)
+    return {"admins": admins, "actions": acoes}
 
 
 def ler_online():
@@ -350,7 +409,7 @@ def montar():
     icones = json.load(open(ipath, encoding="utf-8")) if os.path.exists(ipath) else {}
     sandbox, sandbox_meta = ler_sandbox()
     ini, mods_ids, ws = ler_ini()
-    data = {"sandbox": sandbox, "sandboxMeta": sandbox_meta, "ini": ini, "modIds": mods_ids, "mods": ler_mods(ws),
+    data = {"sandbox": sandbox, "sandboxMeta": sandbox_meta, "ini": ini, "modIds": mods_ids, "mods": ler_mods(ws), "adm": ler_adm(),
             "generated": agora.strftime("%d/%m/%Y %H:%M"), "generatedIso": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "server": INFO_SERVIDOR, "online": sorted(online), "players": out,
             "dict": {"traits": dic["traits"], "profs": dic["profs"], "icons": icones}}

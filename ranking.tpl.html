@@ -277,6 +277,7 @@ footer{margin-top:40px;font-size:12px;color:var(--dim);display:flex;justify-cont
     <a href="#conquistas" data-v="conq">Conquistas</a>
     <a href="#comparar" data-v="cmp">Comparar</a>
     <a href="#servidor" data-v="srv">Servidor</a>
+    <a href="#adm" data-v="adm">ADM Abuser</a>
   </nav>
   <div class="live" id="live" title="A página busca dados novos a cada minuto"><i></i><span id="livetxt">ao vivo</span></div>
 </div></div>
@@ -288,7 +289,7 @@ footer{margin-top:40px;font-size:12px;color:var(--dim);display:flex;justify-cont
 <section id="home">
   <div class="hero">
     <div>
-      <h1>Ranking<em>dos Bagres</em></h1>
+      <h1>Ranking<em>dos Bagres · Baby Mode Server</em></h1>
     </div>
   </div>
   <div class="strip" id="strip"></div>
@@ -337,6 +338,8 @@ footer{margin-top:40px;font-size:12px;color:var(--dim);display:flex;justify-cont
 </section>
 
 <section id="srv" hidden></section>
+
+<section id="admv" hidden></section>
 
 <section id="profile" hidden></section>
 
@@ -645,8 +648,8 @@ function renderSrv(){
   <h2>O servidor</h2>
   <div class="shero">
     <div>
-      <h1 class="nm">${esc(S.nome||ini.PublicName||'Servidor')}</h1>
-      <div class="sub"><span>Project Zomboid <b>${esc(S.versao||'')}</b></span><span>· ${esc(ini.Map||'Muldraugh, KY')}</span><span>· até ${esc(ini.MaxPlayers||'?')} jogadores</span>${ini.PVP===false?'<span class="pill good" style="color:var(--green)">PvE · sem PvP</span>':'<span class="pill red">PvP ligado</span>'}${ini.Open?'<span class="pill alive">aberto</span>':'<span class="pill dead">whitelist</span>'}</div>
+      <h1 class="nm">Server Baby Mode</h1>
+      <div class="sub"><span><b>${esc(S.nome||ini.PublicName||'')}</b></span><span>· Project Zomboid <b>${esc(S.versao||'')}</b></span><span>· ${esc(ini.Map||'Muldraugh, KY')}</span><span>· até ${esc(ini.MaxPlayers||'?')} jogadores</span>${ini.PVP===false?'<span class="pill good" style="color:var(--green)">PvE · sem PvP</span>':'<span class="pill red">PvP ligado</span>'}${ini.Open?'<span class="pill alive">aberto</span>':'<span class="pill dead">whitelist</span>'}</div>
       ${ini.ServerWelcomeMessage?`<div class="welcome">${esc(String(ini.ServerWelcomeMessage).replace(/<RGB:[^>]*>/g,'').replace(/<LINE>/g,'\n').replace(/\s+\n/g,'\n').trim())}</div>`:''}
     </div>
   </div>
@@ -654,7 +657,10 @@ function renderSrv(){
     <div class="tile x"><div class="l">Zumbis</div><div class="v">${sbVal('Zombies')}</div><div class="s">multiplicador ${pop!==undefined?fmt(pop):'—'}× · ${sbVal('ZombieRespawn')==='Nenhum'?'sem respawn':'respawn '+sbVal('ZombieRespawn').toLowerCase()}</div></div>
     <div class="tile x"><div class="l">Loot</div><div class="v">${lootLbl}</div><div class="s">média ${lootAvg.toLocaleString('pt-BR',{maximumFractionDigits:2})}× (normal = 1)</div></div>
     <div class="tile x"><div class="l">Clima</div><div class="v">${sbVal('Temperature')}</div><div class="s">chuva ${sbVal('Rain').toLowerCase()} · neblina ${sbVal('FogCycle').toLowerCase()}</div></div>
-    <div class="tile"><div class="l">Zumbis são</div><div class="v">${sbVal('ZombieLore.Speed')}</div><div class="s">${sbVal('ZombieLore.Toughness').toLowerCase()} · ${sbVal('ZombieLore.Cognition').toLowerCase()}</div></div>
+    <div class="tile x"><div class="l">Corredores</div><div class="v">${sbVal('ZombieLore.SprinterPercentage')}% dos zumbis</div><div class="s">velocidade ${sbVal('ZombieLore.Speed').toLowerCase()} · ${sbVal('ZombieLore.Toughness').toLowerCase()}s</div></div>
+    <div class="tile x"><div class="l">Inteligência</div><div class="v">${sbVal('ZombieLore.Cognition')}</div><div class="s">memória ${sbVal('ZombieLore.Memory').toLowerCase()} · visão ${sbVal('ZombieLore.Sight').toLowerCase()} · audição ${sbVal('ZombieLore.Hearing').toLowerCase()}</div></div>
+    <div class="tile x"><div class="l">Noite</div><div class="v">${sbVal('NightDarkness')}</div><div class="s">duração ${sbVal('NightLength').toLowerCase()} · ${sbVal('ZombieLore.ActiveOnly').toLowerCase()}</div></div>
+    <div class="tile"><div class="l">Infecção</div><div class="v">${sbVal('ZombieLore.Transmission')}</div><div class="s">morre em ${sbVal('ZombieLore.Mortality').toLowerCase()} · reanima em ${sbVal('ZombieLore.Reanimate').toLowerCase()}</div></div>
     <div class="tile"><div class="l">Dia dura</div><div class="v">${sbVal('DayLength')}</div><div class="s">começa em ${start}</div></div>
     <div class="tile"><div class="l">Nível de dificuldade</div><div class="v">${diffScore>=80?'Extremo':diffScore>=60?'Muito difícil':diffScore>=40?'Difícil':'Normal'}</div><div class="meter"><i style="width:${diffScore}%"></i></div></div>
   </div>
@@ -677,14 +683,33 @@ function renderSrv(){
   <div class="mods">${(data.mods||[]).map(m=>`<a class="mod" href="https://steamcommunity.com/sharedfiles/filedetails/?id=${m.id}" target="_blank" rel="noopener"><b>${esc(m.title)}</b><span>${m.updated?'atualizado em '+new Date(m.updated*1000).toLocaleDateString('pt-BR'):'Workshop '+m.id}</span></a>`).join('')}</div>`;
 }
 
+/* ---------- ADM page ---------- */
+const ADM_T={teleporte:['🌀','Teleporte'],acesso:['🔑','Nível de acesso'],horda:['🧟','Horda criada'],limpeza:['🧹','Zumbis removidos'],item:['📦','Item criado'],xp:['📈','XP dado'],ban:['⛔','Ban / expulsão'],servidor:['🖥️','Servidor'],outro:['❓','Outra ação']};
+function renderAdm(){
+  const A=data.adm||{admins:[],actions:[]};
+  const byUser=u=>P.find(p=>p.user===u);
+  const admins=A.admins.slice().sort((a,b)=>(b.role==='admin')-(a.role==='admin'));
+  const cnt={}; for(const a of A.actions){ cnt[a.actor]=cnt[a.actor]||{}; cnt[a.actor][a.type]=(cnt[a.actor][a.type]||0)+1; }
+  const actors=Object.keys(cnt).sort((x,y)=>A.actions.filter(a=>a.actor===y).length-A.actions.filter(a=>a.actor===x).length);
+  document.getElementById('admv').innerHTML=`
+  <h2>ADM Abuser <span class="sub">transparência das ações de admin dentro do jogo</span></h2>
+  <p class="note">Aqui aparecem os admins atuais e tudo que foi feito pelo painel de admin dentro do jogo: teleportes, itens criados, hordas, mudanças de acesso. Comandos digitados no console da RazeHost não entram. Fonte: registro oficial do servidor. Horários de Brasília.</p>
+  <h3>Admins atuais</h3>
+  <div class="tiles">${admins.length?admins.map(a=>{const p=byUser(a.user);return `<div class="tile ${a.role==='admin'?'hi':''}"><div class="l">${esc(a.roleName)}</div><div class="v">${p?link(p):esc(a.user)}</div><div class="s">${a.last?'última conexão '+br(a.last):''}${p&&p.online?' · <span class="pill on">online</span>':''}</div></div>`;}).join(''):'<div class="empty">Nenhum admin cadastrado.</div>'}</div>
+  <h3>Resumo por pessoa</h3>
+  <div class="tiles">${actors.length?actors.map(u=>{const p=byUser(u);const c=cnt[u];return `<div class="tile"><div class="l">${Object.values(c).reduce((x,y)=>x+y,0)} ações</div><div class="v">${p?link(p):esc(u)}</div><div class="s">${Object.entries(c).sort((x,y)=>y[1]-x[1]).map(([t,n])=>ADM_T[t][0]+' '+n+' '+ADM_T[t][1].toLowerCase()).join(' · ')}</div></div>`;}).join(''):'<div class="empty">Nenhuma ação registrada.</div>'}</div>
+  <h3>Todas as ações <span class="sub" style="font-family:var(--ui);font-size:12px;letter-spacing:.1em">${A.actions.length} registros · mais recente primeiro</span></h3>
+  <div class="rows">${A.actions.map(a=>{const p=byUser(a.actor);const t=ADM_T[a.type]||ADM_T.outro;return `<div class="row" style="grid-template-columns:44px minmax(140px,1fr) 3fr auto;cursor:default"><div class="rk" style="font-size:22px">${t[0]}</div><div class="who"><div class="nick" style="font-size:20px">${p?link(p):esc(a.actor)}</div><div class="ch">${t[1]}</div></div><div style="min-width:0">${esc(a.text)}</div><div class="ch" style="white-space:nowrap">${br(a.ts)}</div></div>`;}).join('')||'<div class="empty">Nenhuma ação registrada.</div>'}</div>`;
+}
+
 /* ---------- routing ---------- */
-const V={home:document.getElementById('home'),conq:document.getElementById('conq'),cmp:document.getElementById('cmp'),srv:document.getElementById('srv'),profile:document.getElementById('profile')};
+const V={home:document.getElementById('home'),conq:document.getElementById('conq'),cmp:document.getElementById('cmp'),srv:document.getElementById('srv'),adm:document.getElementById('admv'),profile:document.getElementById('profile')};
 let profTab='geral';
 function route(){
   const h=location.hash.slice(1)||'ranking';
   const p=byTok[h];
   let view='home';
-  if(p) view='profile'; else if(h==='conquistas') view='conq'; else if(h==='comparar') view='cmp'; else if(h==='servidor') view='srv'; else if(h==='titulos') view='titulos';
+  if(p) view='profile'; else if(h==='conquistas') view='conq'; else if(h==='comparar') view='cmp'; else if(h==='servidor') view='srv'; else if(h==='adm') view='adm'; else if(h==='titulos') view='titulos';
   for(const k in V) V[k].hidden=!(k===view||(view==='titulos'&&k==='home'));
   document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.v===view));
   if(view==='profile'){
@@ -693,7 +718,7 @@ function route(){
     const show=t=>{profTab=t; tabs.forEach(x=>x.setAttribute('aria-selected',x.dataset.t===t)); V.profile.querySelectorAll('.panel').forEach(x=>x.hidden=x.dataset.p!==t);};
     tabs.forEach(b=>b.onclick=()=>show(b.dataset.t)); show(profTab);
     document.title=p.user+' · Ranking Base dos Bagres';
-  } else { document.title='Ranking Base dos Bagres'; if(view==='conq') renderConq(); if(view==='cmp') renderCmpPick(); if(view==='srv') renderSrv(); }
+  } else { document.title='Ranking Base dos Bagres'; if(view==='conq') renderConq(); if(view==='cmp') renderCmpPick(); if(view==='srv') renderSrv(); if(view==='adm') renderAdm(); }
   if(view==='titulos'){ document.getElementById('titulos').scrollIntoView({behavior:'smooth'}); } else window.scrollTo(0,0);
 }
 function renderAll(){ renderHome(); route(); document.getElementById('foot').textContent='Atualizado em '+data.generated+' · horários de Brasília'; }
