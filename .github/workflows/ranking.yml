@@ -1,4 +1,4 @@
-name: Atualiza ranking
+name: atualiza
 
 on:
   schedule:
@@ -6,11 +6,11 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: ranking
+  group: atualiza
   cancel-in-progress: false
 
 jobs:
-  atualizar:
+  run:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -18,9 +18,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install paramiko
-      - name: Baixa dados do servidor, gera e envia para pz.simpless.com.br
-        env:
-          PZ_SFTP_PASSWORD: ${{ secrets.PZ_SFTP_PASSWORD }}
-          PZ_UPLOAD_TOKEN: ${{ secrets.PZ_UPLOAD_TOKEN }}
+      - run: pip install -q paramiko
+      - env:
+          PZ_CONFIG: ${{ secrets.PZ_CONFIG }}
         run: python atualiza_ranking.py

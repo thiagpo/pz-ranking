@@ -182,7 +182,17 @@ select,.btn{background:var(--bg2);border:1px solid var(--line2);color:var(--fg);
 .ico{width:20px;height:20px;image-rendering:pixelated;vertical-align:-5px;margin-right:6px;object-fit:contain}
 .trait{display:inline-flex;align-items:center;gap:5px} .trait .ico{width:16px;height:16px;margin:0;vertical-align:middle}
 .bar .ico{width:22px;height:22px;vertical-align:-6px}
-.row .ch .ico{width:14px;height:14px;margin:0 3px 0 0;vertical-align:-2px}
+.row .ch .ico{width:22px;height:22px;margin:0 4px 0 2px;vertical-align:-6px}
+.row .ch{white-space:normal;overflow:visible;font-size:13.5px}
+.ico.big{width:34px;height:34px;margin:0}
+.title .ic .ico.big,.a .ic .ico.big{width:30px;height:30px}
+.profbox{display:flex;align-items:center;gap:10px;justify-content:flex-end;background:var(--bg3);border:1px solid var(--line2);border-radius:10px;padding:8px 12px}
+.profbox .ico{width:40px;height:40px;margin:0}
+.profbox .w{font-size:24px}
+.tie{font-size:11px;color:var(--dim);font-weight:700}
+.sk .ico{width:18px;height:18px;margin-right:5px;vertical-align:-4px}
+.pod .ch .ico{width:18px;height:18px;vertical-align:-4px;margin:0 3px 0 2px}
+@media (max-width:760px){ .profbox{justify-content:flex-start} }
 @media (max-width:760px){ .phero{grid-template-columns:1fr} .phero .fav{text-align:left} }
 .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-top:26px;overflow-x:auto}
 .tabs button{background:none;border:0;border-bottom:3px solid transparent;color:var(--mute);padding:10px 16px;cursor:pointer;font-family:var(--display);font-size:20px;letter-spacing:.06em;white-space:nowrap}
@@ -439,6 +449,10 @@ const TITLES = [
   ['👟','Andarilho','@km','km andados'],['💥','Quebra-tudo','@broken','armas quebradas'],['⏳','Sobrevivente','@bestHours','melhor vida'],['🌙','Massacre num dia','@daily','abates num dia']
 ];
 
+const TITLE_ICON = {'@km':'Item_BootsHiking','@broken':'Item_Cudgel_Broken','@bestHours':'Item_Pocketwatch','@daily':'Item_DeadPerson_MaleZombie'};
+const ACH_ICON = {k100:'Mood_Zombified',k500:'Mood_Zombified',k1000:'Item_DeadPerson_FemaleZombie',k2500:'Item_DeadPerson_MaleZombie',k5000:'Item_Medal_Silver',k10000:'Item_Medal_Gold',r50:'Item_DeadPerson_MaleZombie',r100:'Item_DeadPerson_MaleZombie',r200:'Item_Medal_Gold',d7:'Item_AlarmClock',d14:'Item_DigitalWatch',d30:'Item_Pocketwatch',d60:'Item_Medal_Military3',imm:'Item_Medal_Military2',dead1:'Mood_Dead',dead7:'Mood_Dead',ch3:'Mood_Happy',km50:'Item_BootsHiking',km150:'Item_BootsHiking',km500:'Item_Map',h10:'Item_DigitalWatch',h50:'Item_DigitalWatch',h100:'Item_PlushSpiffo',b25:'Item_Cudgel_Broken',b100:'Item_Cudgel_Broken',b250:'Item_Cudgel_Broken',c2:'Item_Medal_Bronze',c4:'Item_Medal_Silver',any10:'Item_Medal_Gold',three7:'Item_Medal_Military1',five5:'Item_Book'};
+const aicon = a => { const sk=a.id.startsWith('sk_')?a.id.slice(3).replace(/\d+$/,''):null; return (sk?si(sk,'big'):gi(ACH_ICON[a.id],'','big'))||a.ic; };
+
 /* ---------- state ---------- */
 let data, P = [], byTok = {};
 let sortKey='curKills', asc=false, onlyAlive=false, onlyOnline=false;
@@ -462,6 +476,10 @@ const traitInfo = id => (data.dict&&data.dict.traits&&data.dict.traits[id])||{n:
 const ICONS = () => (data.dict&&data.dict.icons)||{};
 const ico = (grp,id) => { const g=ICONS()[grp]; const f=g&&g[id]; return f?`<img class="ico" src="${ICON_BASE}${f}" alt="" loading="lazy">`:''; };
 const favType = f => { const n=ICONS().names||{}; for(const k in n) if(n[k]===f) return k; return null; };
+// icones avulsos do jogo (sprite por nome); fallback para emoji quando o arquivo nao foi extraido
+const gi = (name,fallback,cls) => (ICONS().extra||[]).includes(name)?`<img class="ico ${cls||''}" src="${ICON_BASE}${name}.png" alt="" loading="lazy">`:(fallback||'');
+const SKILL_ICON = {Farming:'Item_TZ_GardenTrowel',Husbandry:'Item_Milk',Butchering:'Item_Steak',Doctor:'Item_FirstAid',Cooking:'Item_Pan',Woodwork:'Item_Hacksaw',Masonry:'Item_ClayBrick_Fired',Blacksmith:'Item_Anvil_Forged',MetalWelding:'Item_BlowTorch',Tailoring:'Item_Needle',Fishing:'Item_FishingRod',Trapping:'Item_BearTrap',Mechanics:'Item_LugWrench',Electricity:'Item_Screwdriver',PlantScavenging:'Item_BerryBlue',Carving:'Item_Magazine_Carving',FlintKnapping:'Item_Flint',Pottery:'Item_ClayJar_Fired',Glassmaking:'Item_GlassBottle',Tracking:'Item_CompassDirectional',Aiming:'Item_HandGun3',Reloading:'Item_HandgunAmmoBox',Archery:'Item_Bow_Carved',Fletching:'Item_Arrow_Carved',Axe:'Item_Axe',Blunt:'Item_BaseballBat',SmallBlunt:'Item_HammerStone',LongBlade:'Item_Machete',SmallBlade:'Item_HuntingKnife',Spear:'Item_SpearStick',Maintenance:'Item_Hammer',Sprinting:'Item_ShoesRunningRed',Lightfoot:'Item_ShoesSlippers',Nimble:'Item_Baseball',Sneak:'Item_Balaclava',Strength:'Item_Barbell',Fitness:'Item_Dumbbell'};
+const si = (k,cls) => { const n=SKILL_ICON[k]; if(!n) return ''; const ex=(ICONS().extra||[]).includes(n), it=Object.values(ICONS().items||{}).includes(n+'.png'); return (ex||it)?`<img class="ico ${cls||''}" src="${ICON_BASE}${n}.png" alt="" loading="lazy">`:''; };
 
 /* ---------- home ---------- */
 function renderHome(){
@@ -477,7 +495,7 @@ function renderHome(){
     <div><b>${days}</b><span>dias de servidor</span></div>`;
   const top=P.slice(0,3), cls=['g','s','b'];
   document.getElementById('podium').innerHTML=top.map((p,i)=>`<a class="pod ${cls[i]}" href="#${p.tok}">
-    <div class="n">${i+1}º</div><div class="who">${esc(p.user)}</div><div class="ch">${esc(p.name||'')}${profName(p)?' · '+esc(profName(p)):''}</div>
+    <div class="n">${i+1}º</div><div class="who">${esc(p.user)}</div><div class="ch">${esc(p.name||'')}${profName(p)?' · '+ico('profs',p.prof)+esc(profName(p)):''}</div>
     <div class="k">${fmt(p.curKills)}<small>abates</small></div>
     <div class="meta"><span>${p.deaths} mortes</span><span>${dh(p.bestHours)} melhor vida</span><span>${p.ach.length} conquistas</span></div></a>`).join('');
   renderRows(); renderTitles();
@@ -509,9 +527,13 @@ function renderTitles(){
   document.getElementById('titles').innerHTML=TITLES.map(([ic,name,key,unit])=>{
     let best=[],bv=0;
     for(const p of P){ const val=key.startsWith('@')?(p[key.slice(1)]||0):(p.skCur[key]||0); if(val>bv){bv=val;best=[p];} else if(val===bv&&val>0) best.push(p); }
-    if(!bv) return `<div class="title empty"><div class="ic">${ic}</div><div><div class="t">${name}</div><div class="w">vago</div><div class="lv">ninguém ainda</div></div></div>`;
+    const icon=key.startsWith('@')?gi(TITLE_ICON[key],ic,'big'):si(key,'big')||ic;
+    if(!bv) return `<div class="title empty"><div class="ic">${icon}</div><div><div class="t">${name}</div><div class="w">vago</div><div class="lv">ninguém ainda</div></div></div>`;
+    // empate: fica com quem chegou primeiro nesse nivel (data do registro do servidor)
+    if(best.length>1&&!key.startsWith('@')) best.sort((a,b)=>((a.skillsCurTs||{})[key]||'9').localeCompare((b.skillsCurTs||{})[key]||'9'));
     const lv=key.startsWith('@')?(key==='@bestHours'?dh(bv):fmt(bv)+' '+unit):pname(key)+' nível '+bv;
-    return `<div class="title"><div class="ic">${ic}</div><div><div class="t">${name}</div><div class="w">${best.map(link).join(' / ')}</div><div class="lv">${lv}</div></div></div>`;
+    const extra=best.length>1?` <span class="tie">+${best.length-1} no mesmo nível</span>`:'';
+    return `<div class="title"><div class="ic">${icon}</div><div><div class="t">${name}</div><div class="w">${link(best[0])}</div><div class="lv">${lv}${extra}</div></div></div>`;
   }).join('');
 }
 
@@ -525,7 +547,7 @@ function renderConq(){
     const list=sorted.filter(a=>a.tier===t);
     return `<h3>${tn[t]} <span class="sub" style="font-family:var(--ui);font-size:12px;letter-spacing:.1em">${list.length}</span></h3><div class="ach">`+list.map(a=>{
       const who=P.filter(p=>p.ach.includes(a.id));
-      return `<div class="a ${a.tier} ${who.length?'ok':'lock'}"><div class="ic">${a.ic}</div><div><div class="nm">${a.name}</div><div class="d">${a.desc}</div><div class="who">${who.length?who.length+'/'+P.length+' · '+who.map(link).join(', '):'ninguém desbloqueou'}</div></div><span class="tier">${a.tier}</span></div>`;
+      return `<div class="a ${a.tier} ${who.length?'ok':'lock'}"><div class="ic">${aicon(a)}</div><div><div class="nm">${a.name}</div><div class="d">${a.desc}</div><div class="who">${who.length?who.length+'/'+P.length+' · '+who.map(link).join(', '):'ninguém desbloqueou'}</div></div><span class="tier">${a.tier}</span></div>`;
     }).join('')+'</div>';
   }).join('');
 }
@@ -549,7 +571,7 @@ function renderCmp(){
   html+='<div class="cmp">'+rows.map(([l,k,f,low])=>{const va=g(a,k),vb=g(b,k);return line(l,va,vb,f(va),f(vb),low);}).join('')+'</div>';
   // skills: show the ones where either has level>0, sorted by max level
   const keys=Object.keys(PERK).filter(k=>(a.skCur[k]||0)+(b.skCur[k]||0)>0).sort((x,y)=>Math.max(b.skCur[y]||0,a.skCur[y]||0)-Math.max(b.skCur[x]||0,a.skCur[x]||0));
-  html+='<h3>Skills do personagem atual</h3><div class="cmp">'+keys.map(k=>line(pname(k),a.skCur[k]||0,b.skCur[k]||0,a.skCur[k]||0,b.skCur[k]||0)).join('')+'</div>';
+  html+='<h3>Skills do personagem atual</h3><div class="cmp">'+keys.map(k=>line(si(k)+pname(k),a.skCur[k]||0,b.skCur[k]||0,a.skCur[k]||0,b.skCur[k]||0)).join('')+'</div>';
   const tr=p=>p.traits.length?p.traits.map(t=>{const i=traitInfo(t);return `<span class="trait ${i.p?'prof':i.c<0?'neg':'pos'}">${ico('traits',t)}${esc(i.n)}</span>`;}).join(''):'<span class="empty">sem dados</span>';
   html+=`<h3>Traits</h3><div class="two"><div class="card"><div class="traits" style="margin:0">${tr(a)}</div></div><div class="card"><div class="traits" style="margin:0">${tr(b)}</div></div></div>`;
   document.getElementById('cmpbody').innerHTML=html;
@@ -573,10 +595,12 @@ function profile(p){
     <div class="rank"><small>Posição</small>#${p.pos}<em> /${P.length}</em></div>
     <div>
       <h1 class="nick">${esc(p.user)}</h1>
-      <div class="sub">${p.name?`<b>${esc(p.name)}</b>`:''}${profName(p)?`<span>${ico('profs',p.prof)}${esc(profName(p))}</span>`:''}${status(p)}${p.alive&&p.curHours?`<span>vivo há ${dh(p.curHours)}</span>`:''}${p.firstSeen?`<span>· na base desde ${brD(p.firstSeen)}</span>`:''}</div>
+      <div class="sub">${p.name?`<b>${esc(p.name)}</b>`:''}${status(p)}${p.alive&&p.curHours?`<span>vivo há ${dh(p.curHours)}</span>`:''}${p.firstSeen?`<span>· na base desde ${brD(p.firstSeen)}</span>`:''}</div>
       <div class="traits">${traits.length?traits.map(t=>`<span class="trait ${t.p?'prof':t.c<0?'neg':'pos'}" title="${t.p?'trait de profissão':t.c<0?'negativo ('+t.c+')':'positivo (+'+t.c+')'}">${ico('traits',t.id)}${esc(t.n)}</span>`).join(''):'<span class="empty">traits indisponíveis</span>'}</div>
     </div>
-    <div class="fav"><div class="l">Especialidade</div><div class="w">${spec?esc(pname(spec[0])):'—'}</div><div class="p">${spec?'nível '+spec[1]+' no personagem atual':'sem skill de combate ainda'}</div></div>
+    <div class="fav">
+      ${profName(p)?`<div class="profbox">${ico('profs',p.prof)}<div><div class="l">Profissão</div><div class="w">${esc(profName(p))}</div></div></div>`:''}
+      <div class="l" style="margin-top:12px">Especialidade</div><div class="w">${spec?si(spec[0])+esc(pname(spec[0])):'—'}</div><div class="p">${spec?'nível '+spec[1]+' no personagem atual':'sem skill de combate ainda'}</div></div>
   </div>
   <div class="tiles" style="margin-top:12px">
     ${stat('Abates',fmt(p.curKills),'personagem atual',true)}${stat('Abates somados',fmt(p.kills),p.chars.length+' personage'+(p.chars.length===1?'m':'ns'))}
@@ -590,7 +614,7 @@ function profile(p){
     <h3>Destaques</h3>
     <div class="tiles">${stat('Km andados',fmt(p.km))}${stat('Horas jogadas',fmt(p.hoursPlayed))}${stat('Armas quebradas',p.broken)}${stat('Vida atual',p.alive?dh(p.curHours):'—')}${stat('Skills de combate',nComb(p,1),'com nível 1 ou mais')}${stat('Traits',p.traits.length)}</div>
     <div class="two" style="margin-top:14px">
-      <div class="card"><h3 style="margin-top:0">Estilo de combate <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">skills do personagem atual</span></h3>${comb.length?`<div class="bars">${comb.map(c=>`<div class="bar"><span>${pname(c[0])}</span><div class="tr"><i class="a" style="width:${c[1]*10}%"></i></div><span class="n">${c[1]}${c[2]>c[1]?' / '+c[2]:''}</span></div>`).join('')}</div><div class="note">Nível de cada skill de combate. A XP só vem dos próprios golpes, então reflete as armas que o jogador realmente usa.</div>`:'<div class="empty">Nenhuma skill de combate ainda.</div>'}
+      <div class="card"><h3 style="margin-top:0">Estilo de combate <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">skills do personagem atual</span></h3>${comb.length?`<div class="bars">${comb.map(c=>`<div class="bar"><span>${si(c[0])}${pname(c[0])}</span><div class="tr"><i class="a" style="width:${c[1]*10}%"></i></div><span class="n">${c[1]}${c[2]>c[1]?' / '+c[2]:''}</span></div>`).join('')}</div><div class="note">Nível de cada skill de combate. A XP só vem dos próprios golpes, então reflete as armas que o jogador realmente usa.</div>`:'<div class="empty">Nenhuma skill de combate ainda.</div>'}
       <h3>Favoritos na barra</h3>${favs.length?`<div class="traits" style="margin-top:6px">${favs.map(f=>`<span class="trait">${ico('items',favType(f))}${esc(fname(f))}</span>`).join('')}</div><div class="note">Itens marcados como favoritos no inventário do personagem atual.</div>`:'<div class="empty">Nenhum item favoritado.</div>'}</div>
       <div class="card"><h3 style="margin-top:0">Armas que quebrou</h3>${p.brokenList&&p.brokenList.length?`<div class="bars">${p.brokenList.slice(0,10).map(w=>`<div class="bar"><span>${ico('items',w[0])}${esc(wname(w[0]))}</span><div class="tr"><i class="g" style="width:${w[1]/p.brokenList[0][1]*100}%"></i></div><span class="n">${w[1]}×</span></div>`).join('')}</div><div class="note">Somando todos os personagens.</div>`:'<div class="empty">Nenhuma.</div>'}</div>
     </div>
@@ -599,13 +623,13 @@ function profile(p){
 
   const skills=`<div class="panel" data-p="skills" hidden>
     <p class="note" style="margin-top:14px">Barra vermelha: personagem atual. Marcação clara: maior nível já alcançado em outro personagem. Dourado: nível 10.</p>
-    <div class="skgroups">${GROUPS.map(([g,ks])=>`<div class="skg"><h4>${g}</h4>${ks.map(k=>{const c=p.skCur[k]||0,b=p.skBest[k]||0;return `<div class="sk"><span>${pname(k)}</span><span class="lv"><b>${c}</b>${b>c?' / '+b:''}</span><span class="seg">${Array.from({length:10},(_,i)=>`<i class="${i<c?(c>=10?'max':'on'):i<b?'ghost':''}"></i>`).join('')}</span></div>`;}).join('')}</div>`).join('')}</div>
+    <div class="skgroups">${GROUPS.map(([g,ks])=>`<div class="skg"><h4>${g}</h4>${ks.map(k=>{const c=p.skCur[k]||0,b=p.skBest[k]||0;return `<div class="sk"><span>${si(k)}${pname(k)}</span><span class="lv"><b>${c}</b>${b>c?' / '+b:''}</span><span class="seg">${Array.from({length:10},(_,i)=>`<i class="${i<c?(c>=10?'max':'on'):i<b?'ghost':''}"></i>`).join('')}</span></div>`;}).join('')}</div>`).join('')}</div>
   </div>`;
 
   const sortedA=A.slice().sort((x,y)=>{const ux=p.ach.includes(x.id),uy=p.ach.includes(y.id); if(ux!==uy) return ux?-1:1; return TIER_ORDER[y.tier]-TIER_ORDER[x.tier]||x.name.localeCompare(y.name);});
   const conq=`<div class="panel" data-p="conq" hidden>
     <h3>${p.ach.length} de ${A.length} conquistas</h3>
-    <div class="ach">${sortedA.map(a=>{const ok=p.ach.includes(a.id); const pr=Math.min(1,Math.max(0,a.prog?a.prog(p):0));return `<div class="a ${a.tier} ${ok?'ok':'lock'}"><div class="ic">${a.ic}</div><div><div class="nm">${a.name}</div><div class="d">${a.desc}</div>${ok?'':`<div class="pr"><i style="width:${pr*100}%"></i></div>`}</div><span class="tier">${a.tier}</span></div>`;}).join('')}</div>
+    <div class="ach">${sortedA.map(a=>{const ok=p.ach.includes(a.id); const pr=Math.min(1,Math.max(0,a.prog?a.prog(p):0));return `<div class="a ${a.tier} ${ok?'ok':'lock'}"><div class="ic">${aicon(a)}</div><div><div class="nm">${a.name}</div><div class="d">${a.desc}</div>${ok?'':`<div class="pr"><i style="width:${pr*100}%"></i></div>`}</div><span class="tier">${a.tier}</span></div>`;}).join('')}</div>
   </div>`;
 
   const chars=`<div class="panel" data-p="chars" hidden>
@@ -693,7 +717,7 @@ function renderAdm(){
   const actors=Object.keys(cnt).sort((x,y)=>A.actions.filter(a=>a.actor===y).length-A.actions.filter(a=>a.actor===x).length);
   document.getElementById('admv').innerHTML=`
   <h2>ADM Abuser <span class="sub">transparência das ações de admin dentro do jogo</span></h2>
-  <p class="note">Aqui aparecem os admins atuais e tudo que foi feito pelo painel de admin dentro do jogo: teleportes, itens criados, hordas, mudanças de acesso. Comandos digitados no console da RazeHost não entram. Fonte: registro oficial do servidor. Horários de Brasília.</p>
+  <p class="note">Aqui aparecem os admins atuais e tudo que foi feito pelo painel de admin dentro do jogo: teleportes, itens criados, hordas, mudanças de acesso. Comandos digitados no console da hospedagem não entram. Fonte: registro oficial do servidor. Horários de Brasília.</p>
   <h3>Admins atuais</h3>
   <div class="tiles">${admins.length?admins.map(a=>{const p=byUser(a.user);return `<div class="tile ${a.role==='admin'?'hi':''}"><div class="l">${esc(a.roleName)}</div><div class="v">${p?link(p):esc(a.user)}</div><div class="s">${a.last?'última conexão '+br(a.last):''}${p&&p.online?' · <span class="pill on">online</span>':''}</div></div>`;}).join(''):'<div class="empty">Nenhum admin cadastrado.</div>'}</div>
   <h3>Resumo por pessoa</h3>
