@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ranking Base dos Bagres</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@500;600;700&display=swap">
+<style>
+/* Base dos Bagres: dark survivor HUD. One file, four views (ranking, comparar, conquistas, perfil por jogador).
+   Dark-first; light theme is a worn-paper variant. Data loads from the embedded JSON and refreshes from data.json. */
+:root{
+  --bg:#0a0c0e; --bg2:#13171b; --bg3:#1b2127; --line:#262d34; --line2:#333c45;
+  --fg:#eef1f3; --mute:#8d98a3; --dim:#5d6873;
+  --red:#e3303d; --red2:#a31f2a; --green:#5fd474; --amber:#f0b541;
+  --gold:#f2c14e; --silver:#b9c3cc; --bronze:#c98551; --plat:#9fe8ff;
+  --display:"Bebas Neue","Oswald","Arial Narrow",Impact,sans-serif;
+  --ui:"Rajdhani","Segoe UI",system-ui,sans-serif;
+  --shadow:0 10px 30px rgba(0,0,0,.45);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){
+  --bg:#efe9df; --bg2:#f8f4ec; --bg3:#e6dfd2; --line:#d5cbbb; --line2:#c2b6a2; --fg:#1b1d20; --mute:#5f6670; --dim:#8a8f96;
+  --red:#b7202c; --red2:#8b1821; --green:#2f8f44; --amber:#b57a0c; --gold:#b98a12; --silver:#6f7a84; --bronze:#9b5e2c; --plat:#2b86a6;
+  --shadow:0 10px 30px rgba(60,40,20,.12); color-scheme:light } }
+:root[data-theme="light"]{
+  --bg:#efe9df; --bg2:#f8f4ec; --bg3:#e6dfd2; --line:#d5cbbb; --line2:#c2b6a2; --fg:#1b1d20; --mute:#5f6670; --dim:#8a8f96;
+  --red:#b7202c; --red2:#8b1821; --green:#2f8f44; --amber:#b57a0c; --gold:#b98a12; --silver:#6f7a84; --bronze:#9b5e2c; --plat:#2b86a6;
+  --shadow:0 10px 30px rgba(60,40,20,.12); color-scheme:light }
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:16px;line-height:1.45;font-weight:500;
+  background-image:radial-gradient(900px 420px at 15% -10%,color-mix(in srgb,var(--red) 18%,transparent),transparent 70%),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-attachment:fixed}
+a{color:inherit}
+button{font:inherit;color:inherit}
+[hidden]{display:none!important}
+.wrap{max-width:1180px;margin:0 auto;padding-block:0 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* nav */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+.nav .in{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:18px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-size:26px;letter-spacing:.04em;line-height:1}
+.logo svg{width:28px;height:28px;color:var(--red)}
+.logo small{display:block;font-family:var(--ui);font-size:10px;letter-spacing:.22em;color:var(--mute);font-weight:700;margin-top:2px}
+.nav nav{display:flex;gap:4px;margin-left:auto;overflow-x:auto}
+.nav nav a{text-decoration:none;font-weight:700;font-size:14px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);padding:8px 12px;border-radius:6px;white-space:nowrap}
+.nav nav a:hover{color:var(--fg);background:var(--bg3)}
+.nav nav a.on{color:var(--fg);box-shadow:inset 0 -2px 0 var(--red)}
+.live{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);white-space:nowrap}
+.live i{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 color-mix(in srgb,var(--green) 60%,transparent);animation:pulse 2s infinite}
+.live.stale i{background:var(--amber);animation:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--green) 55%,transparent)}70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+@media (prefers-reduced-motion:reduce){ .live i{animation:none} }
+@media (max-width:700px){
+  .nav .in{flex-wrap:wrap;gap:8px 12px}
+  .logo{font-size:22px} .logo span>span{display:none}
+  .live{margin-left:auto}
+  .nav nav{order:3;flex-basis:100%;margin-left:0;min-width:0;padding-bottom:2px}
+  .nav nav a{padding:6px 10px;font-size:13px}
+}
+
+/* hero */
+.hero{padding:34px 0 10px;display:grid;grid-template-columns:1fr auto;gap:18px 30px;align-items:end}
+.hero h1{font-family:var(--display);font-size:clamp(52px,9vw,112px);line-height:.86;margin:0;letter-spacing:.01em;text-wrap:balance}
+.hero h1 em{font-style:normal;color:var(--red);display:block;font-size:.42em;letter-spacing:.12em}
+.hero p{margin:10px 0 0;color:var(--mute);max-width:52ch;font-size:16px}
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:22px;box-shadow:var(--shadow)}
+.strip div{background:var(--bg2);padding:12px 14px;min-width:0}
+.strip b{display:block;font-family:var(--display);font-size:34px;line-height:1;letter-spacing:.02em}
+.strip span{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-weight:700}
+.strip .on b{color:var(--green)}
+.strip .names{font-size:12px;color:var(--mute);margin-top:4px;overflow-wrap:anywhere}
+
+h2{font-family:var(--display);font-size:30px;letter-spacing:.05em;margin:38px 0 14px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+h2 .sub{font-family:var(--ui);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);font-weight:700}
+h2::before{content:"";width:6px;height:22px;background:var(--red);transform:skewX(-12deg);display:inline-block;align-self:center}
+h3{font-family:var(--display);font-size:22px;letter-spacing:.05em;margin:24px 0 10px;color:var(--mute)}
+
+/* podium */
+.podium{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.pod{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:18px;position:relative;overflow:hidden;min-width:0;text-decoration:none;display:block;box-shadow:var(--shadow);transition:transform .15s,border-color .15s}
+.pod:hover{transform:translateY(-2px);border-color:var(--line2)}
+.pod::after{content:"";position:absolute;inset:auto -30% -60% auto;width:70%;aspect-ratio:1;border-radius:50%;background:radial-gradient(closest-side,var(--c),transparent);opacity:.18}
+.pod .n{font-family:var(--display);font-size:64px;line-height:.9;color:var(--c)}
+.pod .who{font-family:var(--display);font-size:30px;letter-spacing:.03em;line-height:1;margin-top:8px;overflow-wrap:anywhere}
+.pod .ch{color:var(--mute);font-size:14px}
+.pod .k{margin-top:12px;font-family:var(--display);font-size:40px;line-height:1}
+.pod .k small{font-family:var(--ui);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);display:block;font-weight:700}
+.pod .meta{display:flex;gap:14px;margin-top:8px;font-size:13px;color:var(--mute);flex-wrap:wrap}
+.pod.g{--c:var(--gold)} .pod.s{--c:var(--silver)} .pod.b{--c:var(--bronze)}
+@media (max-width:760px){ .podium{grid-template-columns:1fr} }
+
+/* ranking rows */
+.tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.tools label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);font-weight:700}
+select,.btn{background:var(--bg2);border:1px solid var(--line2);color:var(--fg);border-radius:8px;padding:8px 12px;font-weight:600;font-size:14px}
+.btn{cursor:pointer} .btn:hover{border-color:var(--red)}
+.btn.on{background:var(--red);border-color:var(--red);color:#fff}
+.rows{display:flex;flex-direction:column;gap:6px}
+.rhead,.row{display:grid;grid-template-columns:56px minmax(190px,1.7fr) repeat(6,minmax(84px,1fr)) 28px;gap:10px;align-items:center}
+.rhead{padding:0 14px 4px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);font-weight:700}
+.rhead button{background:none;border:0;padding:0;text-align:right;cursor:pointer;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit}
+.rhead button.on{color:var(--fg)} .rhead button.on::after{content:" ▾";color:var(--red)} .rhead button.on.asc::after{content:" ▴"}
+.rhead button:hover{color:var(--fg)}
+.row{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px 14px;text-decoration:none;position:relative;transition:border-color .15s,transform .15s}
+.row:hover{border-color:var(--red);transform:translateX(2px)}
+.row .rk{font-family:var(--display);font-size:30px;color:var(--mute);line-height:1}
+.row:nth-child(1) .rk{color:var(--gold)} .row:nth-child(2) .rk{color:var(--silver)} .row:nth-child(3) .rk{color:var(--bronze)}
+.row .who{min-width:0}
+.row .nick{font-family:var(--display);font-size:24px;letter-spacing:.03em;line-height:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.row .ch{font-size:13px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .v{text-align:right;font-weight:700;font-size:19px;font-variant-numeric:tabular-nums;min-width:0}
+.row .v small{display:none}
+.row .v.hi{color:var(--red);font-size:22px}
+.row .v.mu{color:var(--mute)}
+.row .go{color:var(--dim);text-align:right}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:4px;border:1px solid currentColor;line-height:1.4;vertical-align:middle;font-family:var(--ui)}
+.pill.on{color:var(--green)} .pill.alive{color:var(--amber)} .pill.dead{color:var(--mute)} .pill.red{color:var(--red)}
+.pill.on::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+@media (max-width:900px){
+  .rhead{display:none}
+  .row{grid-template-columns:44px 1fr 24px;grid-template-areas:"rk who go" "st st st";row-gap:8px}
+  .row .rk{grid-area:rk} .row .who{grid-area:who} .row .go{grid-area:go}
+  .row .stats{grid-area:st;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;border-top:1px solid var(--line);padding-top:8px}
+  .row .v{text-align:left;font-size:17px} .row .v.hi{font-size:19px}
+  .row .v small{display:block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);font-weight:700}
+}
+@media (min-width:901px){ .row .stats{display:contents} }
+
+/* titles */
+.titles{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.title{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:40px 1fr;gap:10px;align-items:center;min-width:0}
+.title .ic{font-size:26px;line-height:1;text-align:center}
+.title .t{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);font-weight:700}
+.title .w{font-family:var(--display);font-size:22px;line-height:1.05;letter-spacing:.03em;overflow-wrap:anywhere}
+.title .w a{text-decoration:none} .title .w a:hover{color:var(--red)}
+.title .lv{font-size:12px;color:var(--mute)}
+.title.empty{opacity:.55}
+
+/* generic cards/tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.tile{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
+.tile .l{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);font-weight:700}
+.tile .v{font-family:var(--display);font-size:34px;line-height:1;margin-top:4px;overflow-wrap:anywhere}
+.tile .s{font-size:12px;color:var(--mute);margin-top:2px}
+.tile.hi{border-color:var(--red);box-shadow:inset 0 3px 0 var(--red)}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:16px 18px;min-width:0}
+.empty{color:var(--mute);font-size:14px}
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:minmax(120px,1fr) 2fr auto;gap:10px;align-items:center;font-size:14px}
+.bar .tr{height:10px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.bar .tr i{display:block;height:100%;background:var(--red);border-radius:4px}
+.bar .tr i.g{background:var(--green)} .bar .tr i.a{background:var(--amber)}
+.bar .n{font-weight:700;font-variant-numeric:tabular-nums;color:var(--mute);white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){ .two{grid-template-columns:1fr} }
+.note{font-size:12px;color:var(--mute);margin-top:8px}
+
+/* profile */
+.back{display:inline-flex;gap:8px;align-items:center;text-decoration:none;color:var(--mute);font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:12px;margin:22px 0 10px}
+.back:hover{color:var(--fg)}
+.phero{display:grid;grid-template-columns:auto 1fr auto;gap:18px 28px;align-items:center;background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.phero::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent 0 18px,color-mix(in srgb,var(--red) 7%,transparent) 18px 20px);mask:linear-gradient(90deg,transparent 55%,#000);pointer-events:none}
+.phero .rank{font-family:var(--display);font-size:clamp(64px,10vw,110px);line-height:.85;color:var(--red)}
+.phero .rank small{display:block;font-family:var(--ui);font-size:11px;letter-spacing:.16em;color:var(--mute);font-weight:700;margin-bottom:6px}
+.phero .rank em{font-style:normal;font-size:.32em;color:var(--mute)}
+.phero .nick{font-family:var(--display);font-size:clamp(40px,7vw,72px);line-height:.9;margin:0;overflow-wrap:anywhere}
+.phero .sub{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:8px;color:var(--mute);font-size:15px}
+.phero .sub b{color:var(--fg)}
+.phero .fav{text-align:right;min-width:0}
+.phero .fav .l{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-weight:700}
+.phero .fav .w{font-family:var(--display);font-size:26px;line-height:1;margin-top:4px}
+.phero .fav .p{font-size:12px;color:var(--mute)}
+.traits{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.trait{font-size:12px;font-weight:700;padding:3px 9px;border-radius:999px;border:1px solid var(--line2);background:var(--bg3)}
+.trait.pos{color:var(--green);border-color:color-mix(in srgb,var(--green) 40%,transparent)}
+.trait.neg{color:var(--red);border-color:color-mix(in srgb,var(--red) 40%,transparent)}
+.trait.prof{color:var(--amber);border-color:color-mix(in srgb,var(--amber) 40%,transparent)}
+@media (max-width:760px){ .phero{grid-template-columns:1fr} .phero .fav{text-align:left} }
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-top:26px;overflow-x:auto}
+.tabs button{background:none;border:0;border-bottom:3px solid transparent;color:var(--mute);padding:10px 16px;cursor:pointer;font-family:var(--display);font-size:20px;letter-spacing:.06em;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--fg);border-color:var(--red)}
+.tabs button:hover{color:var(--fg)}
+.chart{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;overflow-x:auto}
+.chart svg{display:block;width:100%;height:auto;min-width:320px;max-width:100%}
+.skgroups{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.skg{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.skg h4{margin:0 0 8px;font-family:var(--display);font-size:18px;letter-spacing:.06em;color:var(--mute)}
+.sk{display:grid;grid-template-columns:1fr auto 120px;gap:8px;align-items:center;font-size:14px;padding:4px 0}
+.sk .lv{font-weight:700;color:var(--mute);font-variant-numeric:tabular-nums}
+.sk .lv b{color:var(--fg)}
+.seg{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;height:9px}
+.seg i{background:var(--bg3);border-radius:1px;display:block} .seg i.on{background:var(--red)} .seg i.max{background:var(--gold)} .seg i.ghost{background:color-mix(in srgb,var(--red) 30%,var(--bg3))}
+.ach{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.a{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;grid-template-columns:44px 1fr;gap:10px;align-items:center;min-width:0;position:relative}
+.a .ic{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;font-size:22px;background:var(--bg3);border:1px solid var(--line2)}
+.a .nm{font-family:var(--display);font-size:20px;letter-spacing:.04em;line-height:1}
+.a .d{font-size:12px;color:var(--mute);margin-top:2px}
+.a .pr{height:4px;background:var(--bg3);border-radius:2px;margin-top:6px;overflow:hidden} .a .pr i{display:block;height:100%;background:var(--mute)}
+.a.ok{border-color:color-mix(in srgb,var(--c) 55%,var(--line))} .a.ok .ic{background:color-mix(in srgb,var(--c) 22%,var(--bg3));border-color:var(--c)} .a.ok .pr i{background:var(--c)}
+.a.lock{opacity:.6} .a.lock .ic{filter:grayscale(1)}
+.a.bronze{--c:var(--bronze)} .a.prata{--c:var(--silver)} .a.ouro{--c:var(--gold)} .a.platina{--c:var(--plat)}
+.a .tier{position:absolute;top:8px;right:10px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--c)}
+.a .who{font-size:12px;color:var(--mute);margin-top:4px;overflow-wrap:anywhere}
+.chars{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.chr{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.chr.cur{border-color:var(--red);box-shadow:inset 0 3px 0 var(--red)}
+.chr .nm{font-family:var(--display);font-size:22px;line-height:1;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chr dl{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:8px 0 0;font-size:13px}
+.chr dt{color:var(--mute)} .chr dd{margin:0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.chr .t{font-size:12px;color:var(--mute);margin-top:6px}
+.log{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.ev{background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:14px;display:flex;justify-content:space-between;gap:8px}
+.ev .t{color:var(--mute);font-size:12px;white-space:nowrap}
+.ev b a{text-decoration:none} .ev b a:hover{color:var(--red)}
+
+/* compare */
+.cmp-pick{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center}
+.cmp-pick select{width:100%;font-family:var(--display);font-size:22px;letter-spacing:.04em}
+.vs{font-family:var(--display);font-size:34px;color:var(--red)}
+.cmp{display:flex;flex-direction:column;gap:6px;margin-top:16px}
+.cr{display:grid;grid-template-columns:1fr 150px 1fr;gap:10px;align-items:center;background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.cr .m{text-align:center;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);font-weight:700}
+.cr .s{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
+.cr .s.r{grid-template-columns:1fr auto}
+.cr .s b{font-family:var(--display);font-size:24px;line-height:1;min-width:48px}
+.cr .s.r b{text-align:right}
+.cr .tr{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden;display:flex}
+.cr .s.l .tr{justify-content:flex-end}
+.cr .tr i{display:block;height:100%;background:var(--dim);border-radius:4px}
+.cr .win b{color:var(--green)} .cr .win .tr i{background:var(--green)}
+@media (max-width:640px){ .cr{grid-template-columns:1fr} .cr .m{order:-1;text-align:left} .cmp-pick{grid-template-columns:1fr} .vs{text-align:center} }
+/* server page */
+.shero{display:grid;grid-template-columns:1fr;gap:18px 28px;align-items:center;background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.shero::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,transparent 0 18px,color-mix(in srgb,var(--red) 7%,transparent) 18px 20px);mask:linear-gradient(90deg,transparent 55%,#000);pointer-events:none}
+.shero .nm{font-family:var(--display);font-size:clamp(40px,7vw,72px);line-height:.9;margin:0}
+.shero .sub{color:var(--mute);margin-top:6px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.addr{background:var(--bg3);border:1px solid var(--line2);border-radius:10px;padding:12px 16px;text-align:right;min-width:0}
+.addr .l{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-weight:700}
+.addr .ip{font-family:var(--display);font-size:30px;letter-spacing:.04em;line-height:1;margin-top:4px;user-select:all}
+.addr button{margin-top:6px;font-size:12px;padding:4px 10px}
+.diff{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px}
+.diff .tile .v{font-size:26px;text-transform:uppercase}
+.diff .tile.x .v{color:var(--red)}
+.meter{height:6px;background:var(--bg3);border-radius:3px;margin-top:8px;overflow:hidden}
+.meter i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--amber),var(--red))}
+.cfg{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.cfg .card h3{margin-top:0}
+.kv{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:14px}
+.kv div{padding:5px 0;border-bottom:1px solid var(--line)}
+.kv .k{color:var(--mute)} .kv .v{font-weight:700;text-align:right} .kv .v.bad{color:var(--red)} .kv .v.good{color:var(--green)}
+.lootgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px}
+.lootgrid div{background:var(--bg3);border-radius:6px;padding:6px 8px;font-size:12px;color:var(--mute)}
+.lootgrid b{display:block;font-size:16px;color:var(--fg)}
+.mods{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+.mod{background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;text-decoration:none;display:block;min-width:0}
+.mod:hover{border-color:var(--red)}
+.mod b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mod span{font-size:12px;color:var(--mute)}
+.welcome{white-space:pre-wrap;font-size:14px;color:var(--mute);border-left:3px solid var(--red);padding:6px 12px;margin-top:10px}
+@media (max-width:700px){ .shero{grid-template-columns:1fr} .addr{text-align:left} }
+footer{margin-top:40px;font-size:12px;color:var(--dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+</style>
+
+<div class="nav"><div class="in">
+  <a class="logo" href="#ranking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.2"/><path d="M12 2.5a9.5 9.5 0 0 1 8.2 4.7l-4.1 2.4A4.8 4.8 0 0 0 12 7.2V2.5Z"/><path d="M3.8 7.2A9.5 9.5 0 0 1 12 2.5v4.7a4.8 4.8 0 0 0-4.1 2.4L3.8 7.2Z"/><path d="M12 21.5a9.5 9.5 0 0 1-8.2-4.7l4.1-2.4A4.8 4.8 0 0 0 12 16.8v4.7Z"/><path d="M20.2 16.8A9.5 9.5 0 0 1 12 21.5v-4.7a4.8 4.8 0 0 0 4.1-2.4l4.1 2.4Z"/></svg><span>Base dos Bagres<small>Project Zomboid · <span id="ver"></span></small></span></a>
+  <nav id="nav">
+    <a href="#ranking" data-v="home">Ranking</a>
+    <a href="#titulos" data-v="titulos">Títulos</a>
+    <a href="#conquistas" data-v="conq">Conquistas</a>
+    <a href="#comparar" data-v="cmp">Comparar</a>
+    <a href="#servidor" data-v="srv">Servidor</a>
+  </nav>
+  <div class="live" id="live" title="A página busca dados novos a cada minuto"><i></i><span id="livetxt">ao vivo</span></div>
+</div></div>
+</head>
+<body>
+
+<div class="wrap">
+
+<section id="home">
+  <div class="hero">
+    <div>
+      <h1>Ranking<em>dos Bagres</em></h1>
+    </div>
+  </div>
+  <div class="strip" id="strip"></div>
+
+  <h2>Pódio <span class="sub">abates do personagem atual</span></h2>
+  <div class="podium" id="podium"></div>
+
+  <h2>Classificação <span class="sub" id="rcount"></span></h2>
+  <div class="tools">
+    <label for="sort">Ordenar</label>
+    <select id="sort">
+      <option value="curKills">Abates (personagem atual)</option>
+      <option value="kills">Abates (todos personagens)</option>
+      <option value="deaths">Mortes</option>
+      <option value="bestHours">Melhor sobrevivência</option>
+      <option value="curHours">Vida atual</option>
+      <option value="daily">Recorde num dia</option>
+      <option value="km">Km andados</option>
+      <option value="hoursPlayed">Horas jogadas</option>
+      <option value="broken">Armas quebradas</option>
+      <option value="user">Nome</option>
+    </select>
+    <button class="btn" id="dir" title="Inverter ordem">↓ maior primeiro</button>
+    <button class="btn" id="fAlive">Só vivos</button>
+    <button class="btn" id="fOnline">Só online</button>
+  </div>
+  <div class="rows" id="rows"></div>
+
+  <h2 id="titulos">Títulos da base <span class="sub">quem lidera cada habilidade · personagem atual</span></h2>
+  <div class="titles" id="titles"></div>
+
+  <h2>Últimas mortes</h2>
+  <div class="log" id="deaths"></div>
+</section>
+
+<section id="conq" hidden>
+  <h2>Conquistas <span class="sub" id="conqsub"></span></h2>
+  <p class="note">Conquistas são calculadas a partir das estatísticas do servidor. Abates somam todos os personagens; sobrevivência usa a melhor vida; skills usam o maior nível já alcançado.</p>
+  <div id="conqlist"></div>
+</section>
+
+<section id="cmp" hidden>
+  <h2>Comparar jogadores</h2>
+  <div class="cmp-pick"><select id="cA"></select><div class="vs">VS</div><select id="cB"></select></div>
+  <div id="cmpbody"></div>
+</section>
+
+<section id="srv" hidden></section>
+
+<section id="profile" hidden></section>
+
+<footer><span>Base dos Bagres · dados do servidor</span><span id="foot"></span></footer>
+</div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+/* ---------- config ---------- */
+const DATA_URL = 'data.json';      // onde a pagina busca atualizacoes (mesma pasta por padrao)
+const REFRESH_SEC = 60;
+
+/* ---------- dictionaries ---------- */
+const PERK = {Fitness:'Aptidão Física',Strength:'Força',Sprinting:'Corrida',Lightfoot:'Discrição',Nimble:'Agilidade',Sneak:'Furtividade',Axe:'Machados',Blunt:'Contund. Longos',SmallBlunt:'Contund. Curtos',LongBlade:'Lâminas Longas',SmallBlade:'Lâminas Curtas',Spear:'Lanças',Maintenance:'Manutenção',Woodwork:'Carpintaria',Cooking:'Culinária',Farming:'Agricultura',Doctor:'Primeiros Socorros',Electricity:'Elétrica',MetalWelding:'Soldagem',Mechanics:'Mecânica',Tailoring:'Costura',Blacksmith:'Ferraria',Masonry:'Alvenaria',Pottery:'Cerâmica',Carving:'Entalhamento',Glassmaking:'Vidraria',FlintKnapping:'Lascamento',Fletching:'Flecharia',Fishing:'Pesca',Trapping:'Armadilhas',PlantScavenging:'Coleta',Husbandry:'Cuidados c/ Animais',Butchering:'Abate de Animais',Tracking:'Rastreamento',Aiming:'Pontaria',Reloading:'Recarga',Archery:'Arco e Flecha'};
+const GROUPS = [['Passivo',['Fitness','Strength']],['Mobilidade',['Sprinting','Lightfoot','Nimble','Sneak']],['Combate',['Axe','Blunt','SmallBlunt','LongBlade','SmallBlade','Spear','Maintenance']],['Armas à distância',['Aiming','Reloading','Archery']],['Sobrevivência',['Fishing','Trapping','PlantScavenging','Husbandry','Butchering','Tracking']],['Fabricação',['Woodwork','Cooking','Farming','Doctor','Electricity','MetalWelding','Mechanics','Tailoring','Blacksmith','Masonry','Pottery','Carving','Glassmaking','FlintKnapping','Fletching']]];
+const CAT = {Axe:'Machado',Blunt:'Contundente longa',SmallBlunt:'Contundente curta',LongBlade:'Lâmina longa',SmallBlade:'Lâmina curta',Spear:'Lança',Firearm:'Arma de fogo',Unarmed:'Mãos',Vehicle:'Veículo',Swinging:'Golpe de balanço',Other:'Outros'};
+const WEAP = {SpearCraftedFireHardened:'Lança endurecida no fogo',SpearCrafted:'Lança improvisada',HammerStone:'Martelo de pedra',Branch_Broken:'Galho',TreeBranch2:'Galho de árvore',LongStick_Broken:'Vara longa',WoodenStick_Broken:'Graveto',Handle:'Cabo',__UNARMED__:'Mãos nuas',HuntingKnife:'Faca de caça',FlintKnife:'Faca de sílex',AxeStone:'Machado de pedra',HandAxeForged:'Machadinha forjada',MetalPipe:'Cano de metal',MetalBar:'Barra de metal',ShortBat:'Taco curto',ShortBat_RailSpike:'Taco curto com prego',BaseballBat:'Taco de beisebol',Crowbar:'Pé de cabra',Machete:'Facão',Axe:'Machado',Nightstick:'Cassetete',HandFork:'Forcado de mão',IceHockeyStick:'Taco de hóquei',Hatchet_Bone:'Machadinha de osso',KitchenKnife:'Faca de cozinha',FineCarvedBow:'Arco entalhado',CrudeCarvedBow:'Arco rústico',SpearStick:'Lança de graveto',Stone:'Pedra',Ratchet:'Catraca',Wrench:'Chave inglesa',Stone2:'Pedra grande',Hatchet:'Machadinha',Shovel:'Pá',Hammer:'Martelo',PipeWrench:'Chave de cano',Sledgehammer:'Marreta',Katana:'Katana',Plank:'Tábua',LeadPipe:'Cano de chumbo',Pan:'Frigideira',RollingPin:'Rolo de massa',Screwdriver:'Chave de fenda',Spear:'Lança',Pickaxe:'Picareta'};
+const wname = w => WEAP[w.replace('Base.','')] || w.replace('Base.','').replace(/_/g,' ');
+const FAVN = {'Short Bat':'Taco curto','Short Bat with Railspike':'Taco curto com prego','Wooden Spear (Fire Hardened)':'Lança endurecida no fogo','Wooden Spear':'Lança de madeira','Stone Hammer':'Martelo de pedra','Crude Stone Axe':'Machado de pedra','Broken Branch':'Galho','Tree Branch':'Galho de árvore','Broken Stick':'Graveto','Broken Long Stick':'Vara longa','Fine Carved Bow':'Arco entalhado fino','Carved Bow':'Arco entalhado','Crude Carved Bow':'Arco rústico','Compound Bow Black':'Arco composto preto','Bone War Hatchet':'Machadinha de guerra de osso','M9 Pistol':'Pistola M9','Baseball Bat':'Taco de beisebol','Crowbar':'Pé de cabra','Machete':'Facão','Hunting Knife':'Faca de caça','Axe':'Machado','Sledgehammer':'Marreta','Katana':'Katana','Nightstick':'Cassetete','Metal Pipe':'Cano de metal','Metal Bar':'Barra de metal','Lead Pipe':'Cano de chumbo','Hammer':'Martelo','Shovel':'Pá','Pickaxe':'Picareta','Flint Knife':'Faca de sílex','Kitchen Knife':'Faca de cozinha'};
+const fname = f => FAVN[f] || f;
+const pname = p => PERK[p] || p;
+const dh = h => h>=24 ? Math.floor(h/24)+'d '+(h%24)+'h' : h+'h';
+const fmt = n => (n||0).toLocaleString('pt-BR');
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const BR = {timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'};
+const br = ts => ts ? new Date(ts.replace(' ','T')+'Z').toLocaleString('pt-BR',BR) : '';
+const brE = s => new Date(s*1000).toLocaleString('pt-BR',BR);
+const brD = ts => ts ? new Date(ts.replace(' ','T')+'Z').toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',year:'numeric'}) : '';
+
+/* ---------- achievements catalogue ---------- */
+const A = [];
+const add = (id,tier,ic,name,desc,fn,prog) => A.push({id,tier,ic,name,desc,fn,prog});
+const sk = (p,k) => (p.skBest[k]||0);
+const skT = (k,lvl,tier,ic,name) => add('sk_'+k+lvl,tier,ic,name,pname(k)+' nível '+lvl,p=>sk(p,k)>=lvl,p=>sk(p,k)/lvl);
+// Abates
+add('k100','bronze','🩸','Primeiro Sangue','100 zumbis abatidos',p=>p.kills>=100,p=>p.kills/100);
+add('k500','bronze','🔪','Batismo de Sangue','500 zumbis abatidos',p=>p.kills>=500,p=>p.kills/500);
+add('k1000','prata','💀','Exterminador','1.000 zumbis abatidos',p=>p.kills>=1000,p=>p.kills/1000);
+add('k2500','ouro','☠️','Máquina de Matar','2.500 zumbis abatidos',p=>p.kills>=2500,p=>p.kills/2500);
+add('k5000','ouro','⚔️','Caçador de Elite','5.000 zumbis abatidos',p=>p.kills>=5000,p=>p.kills/5000);
+add('k10000','platina','👑','Deus da Morte','10.000 zumbis abatidos',p=>p.kills>=10000,p=>p.kills/10000);
+add('r50','bronze','🌙','Dia Produtivo','50 abates num só dia',p=>p.daily>=50,p=>p.daily/50);
+add('r100','prata','🔥','Massacre','100 abates num só dia',p=>p.daily>=100,p=>p.daily/100);
+add('r200','ouro','🌋','Noite dos Mortos-Vivos','200 abates num só dia',p=>p.daily>=200,p=>p.daily/200);
+// Sobrevivencia
+add('d7','bronze','🕯️','Uma Semana no Inferno','Sobreviva 7 dias com um personagem',p=>p.bestHours>=168,p=>p.bestHours/168);
+add('d14','prata','🏕️','Duas Semanas','Sobreviva 14 dias com um personagem',p=>p.bestHours>=336,p=>p.bestHours/336);
+add('d30','ouro','🛡️','Um Mês Vivo','Sobreviva 30 dias com um personagem',p=>p.bestHours>=720,p=>p.bestHours/720);
+add('d60','platina','🏰','Veterano de Knox','Sobreviva 60 dias com um personagem',p=>p.bestHours>=1440,p=>p.bestHours/1440);
+add('imm','ouro','✨','Imortal','14 dias sem nunca ter morrido',p=>p.deaths===0&&p.bestHours>=336,p=>p.deaths===0?p.bestHours/336:0);
+add('dead1','bronze','⚰️','Primeira Morte','Morreu pela primeira vez',p=>p.deaths>=1,p=>p.deaths);
+add('dead7','bronze','🐈','Sete Vidas','Morreu 7 vezes e continua voltando',p=>p.deaths>=7,p=>p.deaths/7);
+add('ch3','bronze','🔁','Terceira Chance','3 personagens criados',p=>p.chars.length>=3,p=>p.chars.length/3);
+// Exploracao e rotina
+add('km50','bronze','👟','Andarilho','50 km andados',p=>p.km>=50,p=>p.km/50);
+add('km150','prata','🥾','Maratonista','150 km andados',p=>p.km>=150,p=>p.km/150);
+add('km500','ouro','🧭','Nômade de Kentucky','500 km andados',p=>p.km>=500,p=>p.km/500);
+add('h10','bronze','⏱️','Recruta','10 horas jogadas',p=>p.hoursPlayed>=10,p=>p.hoursPlayed/10);
+add('h50','prata','🎮','Sem Vida Social','50 horas jogadas',p=>p.hoursPlayed>=50,p=>p.hoursPlayed/50);
+add('h100','ouro','🏠','Morador do Servidor','100 horas jogadas',p=>p.hoursPlayed>=100,p=>p.hoursPlayed/100);
+add('b25','bronze','🪓','Quebra-Galho','25 armas quebradas',p=>p.broken>=25,p=>p.broken/25);
+add('b100','prata','💥','Destruidor de Armas','100 armas quebradas',p=>p.broken>=100,p=>p.broken/100);
+const COMBAT=['Axe','Blunt','SmallBlunt','LongBlade','SmallBlade','Spear','Aiming','Archery'];
+const nComb=(p,l)=>COMBAT.filter(k=>sk(p,k)>=l).length;
+add('c2','bronze','🎯','Versátil','2 tipos de arma no nível 3 ou mais',p=>nComb(p,3)>=2,p=>nComb(p,3)/2);
+add('c4','prata','🗡️','Arsenal Completo','4 tipos de arma no nível 3 ou mais',p=>nComb(p,3)>=4,p=>nComb(p,3)/4);
+add('b250','ouro','🧨','Terror das Ferramentas','250 armas quebradas',p=>p.broken>=250,p=>p.broken/250);
+// Skills gerais
+add('any10','platina','🧬','Mestre','Alguma skill no nível 10',p=>p.skBestArr.some(s=>s[1]>=10),p=>Math.max(0,...p.skBestArr.map(s=>s[1]))/10);
+add('three7','ouro','🎓','Multitalento','3 skills no nível 7 ou mais',p=>p.skBestArr.filter(s=>s[1]>=7).length>=3,p=>p.skBestArr.filter(s=>s[1]>=7).length/3);
+add('five5','prata','🔧','Pau pra Toda Obra','5 skills no nível 5 ou mais',p=>p.skBestArr.filter(s=>s[1]>=5).length>=5,p=>p.skBestArr.filter(s=>s[1]>=5).length/5);
+// Skills especificas (incentivo a quem upa outras coisas)
+skT('Farming',5,'prata','🌽','Fazendeiro'); skT('Farming',8,'ouro','🚜','Mestre da Lavoura');
+skT('Husbandry',5,'prata','🐄','Criador de Animais'); skT('Butchering',5,'prata','🥩','Açougueiro');
+skT('Doctor',5,'prata','🩺','Médico da Galera'); skT('Doctor',8,'ouro','🏥','Cirurgião de Campo');
+skT('Cooking',5,'prata','🍳','Chef da Base'); skT('Woodwork',5,'prata','🪚','Carpinteiro'); skT('Masonry',5,'prata','🧱','Pedreiro');
+skT('Tailoring',5,'prata','🧵','Costureiro'); skT('Fishing',5,'prata','🎣','Pescador'); skT('Trapping',5,'prata','🪤','Armadilheiro');
+skT('Mechanics',5,'prata','🔩','Mecânico'); skT('Electricity',5,'prata','⚡','Eletricista'); skT('Blacksmith',5,'prata','⚒️','Ferreiro');
+skT('MetalWelding',5,'prata','🔥','Soldador'); skT('Pottery',5,'prata','🏺','Oleiro'); skT('Glassmaking',5,'prata','🫙','Vidreiro');
+skT('PlantScavenging',10,'ouro','🌿','Mestre da Coleta'); skT('Carving',7,'ouro','🪵','Entalhador'); skT('FlintKnapping',7,'ouro','🪨','Lascador');
+skT('Tracking',5,'prata','🐾','Rastreador'); skT('Aiming',5,'prata','🔫','Atirador'); skT('Archery',5,'prata','🏹','Arqueiro');
+skT('Axe',7,'ouro','🪓','Lenhador'); skT('Spear',7,'ouro','🔱','Lanceiro'); skT('SmallBlunt',7,'ouro','🔨','Martelo de Thor'); skT('Blunt',7,'ouro','🏏','Rebatedor');
+skT('LongBlade',7,'ouro','🗡️','Espadachim'); skT('SmallBlade',7,'ouro','🔪','Lâmina Veloz'); skT('Maintenance',7,'ouro','🛠️','Zelador');
+skT('Sprinting',7,'ouro','🏃','Pernas de Aço'); skT('Sneak',7,'ouro','🥷','Sombra'); skT('Nimble',7,'ouro','🤸','Esquivo'); skT('Lightfoot',7,'ouro','🪶','Passo Leve');
+skT('Strength',10,'platina','💪','Colosso'); skT('Fitness',10,'platina','🫀','Condicionado');
+const TIER_ORDER = {bronze:0,prata:1,ouro:2,platina:3};
+
+/* ---------- titles (per current character) ---------- */
+const TITLES = [
+  ['🌽','Maior cultivador','Farming'],['🐄','Cuidador de animais','Husbandry'],['🥩','Açougueiro-chefe','Butchering'],['🩺','Médico da galera','Doctor'],
+  ['🍳','Chef da base','Cooking'],['🪚','Carpinteiro','Woodwork'],['🧱','Pedreiro','Masonry'],['⚒️','Ferreiro','Blacksmith'],['🔥','Soldador','MetalWelding'],
+  ['🧵','Costureiro','Tailoring'],['🎣','Pescador','Fishing'],['🪤','Armadilheiro','Trapping'],['🔩','Mecânico','Mechanics'],['⚡','Eletricista','Electricity'],
+  ['🌿','Coletor','PlantScavenging'],['🪵','Entalhador','Carving'],['🪨','Lascador','FlintKnapping'],['🏺','Oleiro','Pottery'],['🫙','Vidreiro','Glassmaking'],
+  ['🐾','Rastreador','Tracking'],['🔫','Atirador','Aiming'],['🏹','Arqueiro','Archery'],['🪓','Lenhador','Axe'],['🔱','Lanceiro','Spear'],['🔨','Martelo de Thor','SmallBlunt'],
+  ['🏃','Maratonista','Sprinting'],['🥷','Ninja','Sneak'],['💪','Mais forte','Strength'],['🫀','Mais em forma','Fitness'],['🛠️','Zelador','Maintenance'],
+  ['👟','Andarilho','@km','km andados'],['💥','Quebra-tudo','@broken','armas quebradas'],['⏳','Sobrevivente','@bestHours','melhor vida'],['🌙','Massacre num dia','@daily','abates num dia']
+];
+
+/* ---------- state ---------- */
+let data, P = [], byTok = {};
+let sortKey='curKills', asc=false, onlyAlive=false, onlyOnline=false;
+
+function prep(d){
+  data = d; P = d.players.slice();
+  P.sort((a,b)=>(b.curKills-a.curKills)||(b.kills-a.kills)).forEach((p,i)=>{
+    p.pos=i+1; p.skBest=Object.fromEntries(p.skillsBest||[]); p.skBestArr=p.skillsBest||[]; p.skCur=p.skillsCur||{};
+    p.chars=p.chars||[]; p.traits=p.traits||[]; p.favs=p.favs||[];
+    p.spec=COMBAT.map(k=>[k,p.skCur[k]||0]).sort((a,b)=>b[1]-a[1])[0];
+    p.ach=A.filter(a=>a.fn(p)).map(a=>a.id);
+  });
+  const used=new Set(); byTok={};
+  for(const p of P){ let t=p.user.toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'x'; let b=t,n=2; while(used.has(t)) t=b+'-'+(n++); used.add(t); p.tok='p-'+t; byTok[p.tok]=p; }
+  document.getElementById('ver').textContent=(d.server&&d.server.versao||'')+' · pop '+(d.server&&d.server.pop||'');
+}
+const link = p => `<a href="#${p.tok}">${esc(p.user)}</a>`;
+const status = p => (p.online?'<span class="pill on">online</span>':'')+(p.alive===null?'<span class="pill dead">sem dados</span>':p.alive?'<span class="pill alive">vivo</span>':'<span class="pill dead">morto</span>');
+const profName = p => (data.dict&&data.dict.profs&&data.dict.profs[p.prof])||'';
+const traitInfo = id => (data.dict&&data.dict.traits&&data.dict.traits[id])||{n:id.replace('base:',''),c:0,p:false};
+
+/* ---------- home ---------- */
+function renderHome(){
+  const online=P.filter(p=>p.online), tk=P.reduce((a,p)=>a+p.kills,0), td=P.reduce((a,p)=>a+p.deaths,0);
+  const first=P.map(p=>p.firstSeen).filter(Boolean).sort()[0];
+  const days=first?Math.max(1,Math.round((Date.now()-new Date(first.replace(' ','T')+'Z'))/864e5)):0;
+  document.getElementById('strip').innerHTML=`
+    <div><b>${P.length}</b><span>sobreviventes</span></div>
+    <div class="on"><b>${online.length}</b><span>online agora</span><div class="names">${online.map(link).join(', ')||'ninguém'}</div></div>
+    <div><b>${fmt(tk)}</b><span>abates totais</span></div>
+    <div><b>${td}</b><span>mortes</span></div>
+    <div><b>${P.filter(p=>p.alive).length}</b><span>vivos</span></div>
+    <div><b>${days}</b><span>dias de servidor</span></div>`;
+  const top=P.slice(0,3), cls=['g','s','b'];
+  document.getElementById('podium').innerHTML=top.map((p,i)=>`<a class="pod ${cls[i]}" href="#${p.tok}">
+    <div class="n">${i+1}º</div><div class="who">${esc(p.user)}</div><div class="ch">${esc(p.name||'')}${profName(p)?' · '+esc(profName(p)):''}</div>
+    <div class="k">${fmt(p.curKills)}<small>abates</small></div>
+    <div class="meta"><span>${p.deaths} mortes</span><span>${dh(p.bestHours)} melhor vida</span><span>${p.ach.length} conquistas</span></div></a>`).join('');
+  renderRows(); renderTitles();
+  const dl=[]; for(const p of P) for(const x of (p.deathsList||[])) dl.push({p,...x});
+  dl.sort((a,b)=>b.ts.localeCompare(a.ts));
+  document.getElementById('deaths').innerHTML=dl.slice(0,12).map(x=>`<div class="ev"><div><b>${link(x.p)}</b><br><span style="color:var(--mute);font-size:13px">sobreviveu ${dh(x.hours)}</span></div><div class="t">${br(x.ts)}</div></div>`).join('')||'<div class="empty">Nenhuma morte registrada.</div>';
+}
+function renderRows(){
+  let rows=P.filter(p=>(!onlyAlive||p.alive)&&(!onlyOnline||p.online));
+  rows.sort((a,b)=>{ const x=a[sortKey],y=b[sortKey]; if(typeof x==='string') return asc?x.localeCompare(y):y.localeCompare(x); return asc?x-y:y-x; });
+  document.getElementById('rcount').textContent=rows.length+' jogadores';
+  const v=(k,val,cls='')=>`<div class="v ${cls} ${sortKey===k?'hi':''}"><small>${LBL[k]}</small>${val}</div>`;
+  document.getElementById('rows').innerHTML=`<div class="rhead"><div>#</div><div>Jogador</div>${['curKills','deaths','bestHours','curHours','km','hoursPlayed'].map(k=>`<button data-k="${k}" class="${sortKey===k?'on':''} ${asc?'asc':''}">${LBL[k]}</button>`).join('')}<div></div></div>`+
+    rows.map((p,i)=>`<a class="row" href="#${p.tok}">
+      <div class="rk">${sortKey==='curKills'&&!asc&&!onlyAlive&&!onlyOnline?p.pos:i+1}</div>
+      <div class="who"><div class="nick">${esc(p.user)} ${status(p)}</div><div class="ch">${esc(p.name||'')}${profName(p)?' · '+esc(profName(p)):''}</div></div>
+      <div class="stats">${v('curKills',fmt(p.curKills))}${v('deaths',p.deaths,'mu')}${v('bestHours',dh(p.bestHours))}${v('curHours',p.alive?dh(p.curHours):'—','mu')}${v('km',fmt(p.km))}${v('hoursPlayed',fmt(p.hoursPlayed))}</div>
+      <div class="go">›</div></a>`).join('');
+  document.querySelectorAll('.rhead button').forEach(b=>b.onclick=e=>{e.preventDefault(); if(sortKey===b.dataset.k) asc=!asc; else {sortKey=b.dataset.k;asc=false;} document.getElementById('sort').value=sortKey; syncDir(); renderRows();});
+}
+const LBL={curKills:'Abates',kills:'Abates total',deaths:'Mortes',bestHours:'Melhor vida',curHours:'Vida atual',daily:'Recorde/dia',km:'Km',hoursPlayed:'Horas',broken:'Quebradas',user:'Nome'};
+function syncDir(){ document.getElementById('dir').textContent=asc?'↑ menor primeiro':'↓ maior primeiro'; }
+document.getElementById('sort').onchange=e=>{sortKey=e.target.value; asc=(sortKey==='user'); syncDir(); renderRows();};
+document.getElementById('dir').onclick=()=>{asc=!asc; syncDir(); renderRows();};
+document.getElementById('fAlive').onclick=e=>{onlyAlive=!onlyAlive; e.target.classList.toggle('on',onlyAlive); renderRows();};
+document.getElementById('fOnline').onclick=e=>{onlyOnline=!onlyOnline; e.target.classList.toggle('on',onlyOnline); renderRows();};
+
+function renderTitles(){
+  document.getElementById('titles').innerHTML=TITLES.map(([ic,name,key,unit])=>{
+    let best=[],bv=0;
+    for(const p of P){ const val=key.startsWith('@')?(p[key.slice(1)]||0):(p.skCur[key]||0); if(val>bv){bv=val;best=[p];} else if(val===bv&&val>0) best.push(p); }
+    if(!bv) return `<div class="title empty"><div class="ic">${ic}</div><div><div class="t">${name}</div><div class="w">vago</div><div class="lv">ninguém ainda</div></div></div>`;
+    const lv=key.startsWith('@')?(key==='@bestHours'?dh(bv):fmt(bv)+' '+unit):pname(key)+' nível '+bv;
+    return `<div class="title"><div class="ic">${ic}</div><div><div class="t">${name}</div><div class="w">${best.map(link).join(' / ')}</div><div class="lv">${lv}</div></div></div>`;
+  }).join('');
+}
+
+/* ---------- achievements page ---------- */
+function renderConq(){
+  const sorted=A.slice().sort((a,b)=>TIER_ORDER[a.tier]-TIER_ORDER[b.tier]||a.name.localeCompare(b.name));
+  const total=P.reduce((a,p)=>a+p.ach.length,0);
+  document.getElementById('conqsub').textContent=A.length+' conquistas · '+total+' desbloqueadas na base';
+  const tiers=['bronze','prata','ouro','platina'], tn={bronze:'Bronze',prata:'Prata',ouro:'Ouro',platina:'Platina'};
+  document.getElementById('conqlist').innerHTML=tiers.map(t=>{
+    const list=sorted.filter(a=>a.tier===t);
+    return `<h3>${tn[t]} <span class="sub" style="font-family:var(--ui);font-size:12px;letter-spacing:.1em">${list.length}</span></h3><div class="ach">`+list.map(a=>{
+      const who=P.filter(p=>p.ach.includes(a.id));
+      return `<div class="a ${a.tier} ${who.length?'ok':'lock'}"><div class="ic">${a.ic}</div><div><div class="nm">${a.name}</div><div class="d">${a.desc}</div><div class="who">${who.length?who.length+'/'+P.length+' · '+who.map(link).join(', '):'ninguém desbloqueou'}</div></div><span class="tier">${a.tier}</span></div>`;
+    }).join('')+'</div>';
+  }).join('');
+}
+
+/* ---------- compare ---------- */
+function renderCmpPick(){
+  const opts=P.map(p=>`<option value="${p.tok}">${esc(p.user)}</option>`).join('');
+  const a=document.getElementById('cA'), b=document.getElementById('cB');
+  const va=a.value||P[0]?.tok, vb=b.value||P[1]?.tok||P[0]?.tok;
+  a.innerHTML=opts; b.innerHTML=opts; a.value=va; b.value=vb;
+  a.onchange=b.onchange=renderCmp; renderCmp();
+}
+function renderCmp(){
+  const a=byTok[document.getElementById('cA').value], b=byTok[document.getElementById('cB').value];
+  if(!a||!b) return;
+  const rows=[['Abates (personagem atual)','curKills',fmt],['Abates (todos personagens)','kills',fmt],['Mortes','deaths',x=>x,true],['Melhor sobrevivência','bestHours',dh],['Vida atual','curHours',dh],['Recorde num dia','daily',fmt],['Km andados','km',fmt],['Horas jogadas','hoursPlayed',fmt],['Armas quebradas','broken',fmt],['Conquistas',p=>p.ach.length,fmt],['Skills nível 5+',p=>p.skBestArr.filter(s=>s[1]>=5).length,fmt],['Traits positivos',p=>p.traits.filter(t=>traitInfo(t).c>0).length,fmt]];
+  const g=(p,k)=>typeof k==='function'?k(p):(p[k]||0);
+  const line=(label,va,vb,fa,fb,lowerWins)=>{ const m=Math.max(va,vb,1); const aw=lowerWins?va<vb:va>vb, bw=lowerWins?vb<va:vb>va;
+    return `<div class="cr"><div class="s l ${aw?'win':''}"><b>${fa}</b><div class="tr"><i style="width:${va/m*100}%"></i></div></div><div class="m">${label}</div><div class="s r ${bw?'win':''}"><div class="tr"><i style="width:${vb/m*100}%"></i></div><b>${fb}</b></div></div>`; };
+  let html=`<div class="cmp-pick" style="margin-top:14px"><div class="card"><div class="tile" style="border:0;padding:0"><div class="l">#${a.pos} · ${esc(profName(a)||'—')}</div><div class="v">${esc(a.user)}</div><div class="s">${esc(a.name||'')} ${status(a)}</div></div></div><div></div><div class="card"><div class="tile" style="border:0;padding:0;text-align:right"><div class="l">#${b.pos} · ${esc(profName(b)||'—')}</div><div class="v">${esc(b.user)}</div><div class="s">${status(b)} ${esc(b.name||'')}</div></div></div></div>`;
+  html+='<div class="cmp">'+rows.map(([l,k,f,low])=>{const va=g(a,k),vb=g(b,k);return line(l,va,vb,f(va),f(vb),low);}).join('')+'</div>';
+  // skills: show the ones where either has level>0, sorted by max level
+  const keys=Object.keys(PERK).filter(k=>(a.skCur[k]||0)+(b.skCur[k]||0)>0).sort((x,y)=>Math.max(b.skCur[y]||0,a.skCur[y]||0)-Math.max(b.skCur[x]||0,a.skCur[x]||0));
+  html+='<h3>Skills do personagem atual</h3><div class="cmp">'+keys.map(k=>line(pname(k),a.skCur[k]||0,b.skCur[k]||0,a.skCur[k]||0,b.skCur[k]||0)).join('')+'</div>';
+  const tr=p=>p.traits.length?p.traits.map(t=>{const i=traitInfo(t);return `<span class="trait ${i.p?'prof':i.c<0?'neg':'pos'}">${esc(i.n)}</span>`;}).join(''):'<span class="empty">sem dados</span>';
+  html+=`<h3>Traits</h3><div class="two"><div class="card"><div class="traits" style="margin:0">${tr(a)}</div></div><div class="card"><div class="traits" style="margin:0">${tr(b)}</div></div></div>`;
+  document.getElementById('cmpbody').innerHTML=html;
+}
+
+/* ---------- profile ---------- */
+function stat(l,v,s,hi){ return `<div class="tile ${hi?'hi':''}"><div class="l">${l}</div><div class="v">${v}</div>${s?`<div class="s">${s}</div>`:''}</div>`; }
+function chart(series){
+  if(!series||series.length<2) return '<div class="empty">Ainda não há dias suficientes para o gráfico.</div>';
+  const W=760,H=200,L=34,B=26,T=14, maxD=Math.max(...series.map(s=>s[0]))+1, maxK=Math.max(1,...series.map(s=>s[1]));
+  const slot=(W-L-10)/maxD, bw=Math.max(4,slot-3), y=v=>T+(H-T-B)*(1-v/maxK); let g='';
+  for(let i=0;i<=4;i++){ const v=Math.round(maxK*i/4); g+=`<line x1="${L}" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${y(v)+4}" font-size="10" text-anchor="end" fill="var(--mute)" font-family="var(--ui)">${v}</text>`; }
+  for(const [d,k] of series){ const x=L+d*slot; g+=`<rect x="${x}" y="${y(k)}" width="${bw}" height="${H-B-y(k)}" rx="2" fill="var(--red)"><title>Dia ${d+1}: ${k} abates</title></rect><text x="${x+bw/2}" y="${H-B+14}" font-size="10" text-anchor="middle" fill="var(--mute)" font-family="var(--ui)">${d+1}</text>`; }
+  return `<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Abates por dia de jogo">${g}</svg><div class="note">Dias de jogo do personagem atual (dia 1 = criação). Dias sem registro não aparecem.</div></div>`;
+}
+function profile(p){
+  const cur=p.chars[0]; const spec=p.spec&&p.spec[1]>0?p.spec:null;
+  const traits=p.traits.map(t=>{const i=traitInfo(t);return {...i,id:t};}).sort((x,y)=>(y.p-x.p)||(y.c-x.c));
+  const head=`<a class="back" href="#ranking">‹ Voltar ao ranking</a>
+  <div class="phero">
+    <div class="rank"><small>Posição</small>#${p.pos}<em> /${P.length}</em></div>
+    <div>
+      <h1 class="nick">${esc(p.user)}</h1>
+      <div class="sub">${p.name?`<b>${esc(p.name)}</b>`:''}${profName(p)?`<span>${esc(profName(p))}</span>`:''}${status(p)}${p.alive&&p.curHours?`<span>vivo há ${dh(p.curHours)}</span>`:''}${p.firstSeen?`<span>· na base desde ${brD(p.firstSeen)}</span>`:''}</div>
+      <div class="traits">${traits.length?traits.map(t=>`<span class="trait ${t.p?'prof':t.c<0?'neg':'pos'}" title="${t.p?'trait de profissão':t.c<0?'negativo ('+t.c+')':'positivo (+'+t.c+')'}">${esc(t.n)}</span>`).join(''):'<span class="empty">traits indisponíveis</span>'}</div>
+    </div>
+    <div class="fav"><div class="l">Especialidade</div><div class="w">${spec?esc(pname(spec[0])):'—'}</div><div class="p">${spec?'nível '+spec[1]+' no personagem atual':'sem skill de combate ainda'}</div></div>
+  </div>
+  <div class="tiles" style="margin-top:12px">
+    ${stat('Abates',fmt(p.curKills),'personagem atual',true)}${stat('Abates somados',fmt(p.kills),p.chars.length+' personage'+(p.chars.length===1?'m':'ns'))}
+    ${stat('Mortes',p.deaths)}${stat('Melhor vida',dh(p.bestHours))}${stat('Recorde num dia',p.daily,'abates')}${stat('Conquistas',p.ach.length+'/'+A.length)}
+  </div>
+  <div class="tabs" role="tablist">${[['geral','Visão geral'],['skills','Skills'],['conq','Conquistas'],['chars','Personagens'],['hist','Histórico']].map(([k,n],i)=>`<button role="tab" aria-selected="${i===0}" data-t="${k}">${n}</button>`).join('')}</div>`;
+
+  const comb=COMBAT.map(k=>[k,p.skCur[k]||0,p.skBest[k]||0]).filter(c=>c[1]>0||c[2]>0).sort((a,b)=>b[1]-a[1]||b[2]-a[2]);
+  const favs=p.favs.filter(f=>f!=='Bare Hands');
+  const geral=`<div class="panel" data-p="geral">
+    <h3>Destaques</h3>
+    <div class="tiles">${stat('Km andados',fmt(p.km))}${stat('Horas jogadas',fmt(p.hoursPlayed))}${stat('Armas quebradas',p.broken)}${stat('Vida atual',p.alive?dh(p.curHours):'—')}${stat('Skills de combate',nComb(p,1),'com nível 1 ou mais')}${stat('Traits',p.traits.length)}</div>
+    <div class="two" style="margin-top:14px">
+      <div class="card"><h3 style="margin-top:0">Estilo de combate <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">skills do personagem atual</span></h3>${comb.length?`<div class="bars">${comb.map(c=>`<div class="bar"><span>${pname(c[0])}</span><div class="tr"><i class="a" style="width:${c[1]*10}%"></i></div><span class="n">${c[1]}${c[2]>c[1]?' / '+c[2]:''}</span></div>`).join('')}</div><div class="note">Nível de cada skill de combate. A XP só vem dos próprios golpes, então reflete as armas que o jogador realmente usa.</div>`:'<div class="empty">Nenhuma skill de combate ainda.</div>'}
+      <h3>Favoritos na barra</h3>${favs.length?`<div class="traits" style="margin-top:6px">${favs.map(f=>`<span class="trait">${esc(fname(f))}</span>`).join('')}</div><div class="note">Itens marcados como favoritos no inventário do personagem atual.</div>`:'<div class="empty">Nenhum item favoritado.</div>'}</div>
+      <div class="card"><h3 style="margin-top:0">Armas que quebrou</h3>${p.brokenList&&p.brokenList.length?`<div class="bars">${p.brokenList.slice(0,10).map(w=>`<div class="bar"><span>${esc(wname(w[0]))}</span><div class="tr"><i class="g" style="width:${w[1]/p.brokenList[0][1]*100}%"></i></div><span class="n">${w[1]}×</span></div>`).join('')}</div><div class="note">Somando todos os personagens.</div>`:'<div class="empty">Nenhuma.</div>'}</div>
+    </div>
+    <h3>Abates por dia <span class="sub" style="font-family:var(--ui);font-size:12px;letter-spacing:.1em">personagem atual${cur&&cur.name?' · '+esc(cur.name):''}</span></h3>${chart(cur&&cur.series)}
+  </div>`;
+
+  const skills=`<div class="panel" data-p="skills" hidden>
+    <p class="note" style="margin-top:14px">Barra vermelha: personagem atual. Marcação clara: maior nível já alcançado em outro personagem. Dourado: nível 10.</p>
+    <div class="skgroups">${GROUPS.map(([g,ks])=>`<div class="skg"><h4>${g}</h4>${ks.map(k=>{const c=p.skCur[k]||0,b=p.skBest[k]||0;return `<div class="sk"><span>${pname(k)}</span><span class="lv"><b>${c}</b>${b>c?' / '+b:''}</span><span class="seg">${Array.from({length:10},(_,i)=>`<i class="${i<c?(c>=10?'max':'on'):i<b?'ghost':''}"></i>`).join('')}</span></div>`;}).join('')}</div>`).join('')}</div>
+  </div>`;
+
+  const sortedA=A.slice().sort((x,y)=>{const ux=p.ach.includes(x.id),uy=p.ach.includes(y.id); if(ux!==uy) return ux?-1:1; return TIER_ORDER[y.tier]-TIER_ORDER[x.tier]||x.name.localeCompare(y.name);});
+  const conq=`<div class="panel" data-p="conq" hidden>
+    <h3>${p.ach.length} de ${A.length} conquistas</h3>
+    <div class="ach">${sortedA.map(a=>{const ok=p.ach.includes(a.id); const pr=Math.min(1,Math.max(0,a.prog?a.prog(p):0));return `<div class="a ${a.tier} ${ok?'ok':'lock'}"><div class="ic">${a.ic}</div><div><div class="nm">${a.name}</div><div class="d">${a.desc}</div>${ok?'':`<div class="pr"><i style="width:${pr*100}%"></i></div>`}</div><span class="tier">${a.tier}</span></div>`;}).join('')}</div>
+  </div>`;
+
+  const chars=`<div class="panel" data-p="chars" hidden>
+    <h3>Personagens <span class="sub" style="font-family:var(--ui);font-size:12px;letter-spacing:.1em">do mais recente ao mais antigo</span></h3>
+    ${p.chars.length?`<div class="chars">${p.chars.map((c,i)=>`<div class="chr ${i===0?'cur':''}"><div class="nm">${esc(c.name||'Sem nome')} ${c.dead?'<span class="pill dead">morto</span>':'<span class="pill alive">vivo</span>'}</div>
+      <dl><dt>Abates</dt><dd>${fmt(c.kills)}</dd><dt>Recorde num dia</dt><dd>${c.daily}</dd><dt>Km andados</dt><dd>${fmt(c.km)}</dd><dt>Horas jogadas</dt><dd>${fmt(c.hours)}</dd><dt>Armas quebradas</dt><dd>${c.broken}</dd></dl>
+      <div class="t">${c.dead&&c.deathTs?'morreu em '+brE(c.deathTs):c.last?'visto em '+brE(c.last):''}</div></div>`).join('')}</div>`:'<div class="empty">Sem dados de personagem.</div>'}
+  </div>`;
+
+  const hist=`<div class="panel" data-p="hist" hidden>
+    <h3>Mortes</h3>${p.deathsList&&p.deathsList.length?`<div class="log">${p.deathsList.map(x=>`<div class="ev"><b>sobreviveu ${dh(x.hours)}</b><span class="t">${br(x.ts)}</span></div>`).join('')}</div>`:'<div class="empty">Nenhuma morte registrada.</div>'}
+    <h3>Presença</h3><div class="tiles">${stat('Na base desde',brD(p.firstSeen)||'—')}${stat('Último registro',br(p.lastSeen)||'—')}${stat('Status',p.online?'online agora':p.alive?'offline, vivo':'morto')}</div>
+  </div>`;
+  return head+geral+skills+conq+chars+hist;
+}
+
+/* ---------- server page ---------- */
+const SB_PT = {Zombies:'População de zumbis','ZombieConfig.PopulationMultiplier':'Multiplicador de população','ZombieConfig.PopulationPeakDay':'Dia do pico de população',ZombieRespawn:'Respawn de zumbis',ZombieMigrate:'Migração para áreas vazias',Distribution:'Distribuição',
+ 'ZombieLore.Speed':'Velocidade','ZombieLore.SprinterPercentage':'% de corredores','ZombieLore.Strength':'Força','ZombieLore.Toughness':'Resistência','ZombieLore.Transmission':'Transmissão do vírus','ZombieLore.Mortality':'Tempo até morrer infectado','ZombieLore.Reanimate':'Tempo para reanimar','ZombieLore.Cognition':'Inteligência','ZombieLore.DoorOpeningPercentage':'% que abre portas','ZombieLore.Memory':'Memória','ZombieLore.Sight':'Visão','ZombieLore.Hearing':'Audição','ZombieLore.CrawlUnderVehicle':'Rastejam sob veículos','ZombieLore.ZombiesDragDown':'Derrubam e devoram','ZombieLore.ZombiesFenceLunge':'Investida após cerca','ZombieLore.ThumpOnConstruction':'Batem em construções','ZombieLore.TriggerHouseAlarm':'Disparam alarmes','ZombieLore.ActiveOnly':'Ativos','ZombieLore.ZombiesArmorFactor':'Fator de armadura','ZombieLore.ChanceOfAttachedWeapon':'Chance de arma presa',MultiHitZombies:'Acertar vários zumbis',RearVulnerability:'Vulnerabilidade pelas costas',
+ DayLength:'Duração do dia',StartTime:'Hora inicial',Temperature:'Temperatura',Rain:'Chuva',NightDarkness:'Escuridão da noite',NightLength:'Duração da noite',ErosionSpeed:'Erosão',WaterShut:'Corte de água',ElecShut:'Corte de energia',Helicopter:'Helicóptero',MetaEvent:'Eventos sonoros (tiros, etc.)',SleepingEvent:'Eventos ao dormir',FogCycle:'Neblina',EnableSnowOnGround:'Neve no chão',FireSpread:'Fogo se espalha',Alarm:'Alarmes de casa',LockedHouses:'Casas trancadas',GeneratorSpawning:'Geradores no mapa',CarSpawnRate:'Carros no mapa',LockedCar:'Carros trancados',InitialGas:'Gasolina nos carros',ChanceHasGas:'Chance de ter gasolina',CarGeneralCondition:'Estado dos carros',FuelStationGasMax:'Gasolina nos postos (máx.)',
+ StatsDecrease:'Fome, sede e cansaço',EndRegen:'Recuperação de fôlego',Nutrition:'Nutrição',FoodRotSpeed:'Comida estraga',FridgeFactor:'Eficácia da geladeira',InjurySeverity:'Gravidade dos ferimentos',BoneFracture:'Fraturas',WoundInfectionFactor:'Infecção de ferida',MuscleStrainFactor:'Fadiga muscular',DecayingCorpseHealthImpact:'Doença por corpos',StarterKit:'Kit inicial',CharacterFreePoints:'Pontos extras de criação',NegativeTraitsPenalty:'Penalidade de traits negativos',NatureAbundance:'Abundância da coleta',
+ Farming:'Crescimento das plantas',PlantAbundance:'Colheita',FarmingSpeedNew:'Velocidade de cultivo',FarmingAmountNew:'Quantidade da colheita',CompostTime:'Composteira',AnimalStatsModifier:'Crescimento dos animais',AnimalPregnancyTime:'Gestação dos animais',AnimalMilkIncModifier:'Produção de leite',MetaKnowledge:'Receitas conhecidas',MinutesPerPage:'Minutos por página',LiteratureCooldown:'Intervalo entre leituras',HoursForLootRespawn:'Respawn de loot','Map.MapAllKnown':'Mapa todo revelado','Map.AllowMiniMap':'Minimapa','Map.AllowWorldMap':'Mapa do mundo'};
+const OPT_PT = {'Insane':'Insano','Very High':'Muito alta','High':'Alta','Normal':'Normal','Low':'Baixa','None':'Nenhum','Never':'Nunca','Once':'Uma vez','Sometimes':'Às vezes','Often':'Frequente','Very Often':'Muito frequente','Extremely Rare':'Extremamente raro','Rare':'Raro','Very Rare':'Muito raro','Insanely Rare':'Raríssimo','Common':'Comum','Abundant':'Abundante','Very Abundant':'Muito abundante','Poor':'Pobre','Very Poor':'Muito pobre','Fast':'Rápido','Very Fast':'Muito rápido','Slow':'Lento','Very Slow':'Muito lento','Very Cold':'Muito frio','Cold':'Frio','Hot':'Quente','Very Hot':'Muito quente','Dry':'Seco','Very Dry':'Muito seco','Rainy':'Chuvoso','Very Rainy':'Muito chuvoso','Dark':'Escura','Pitch Black':'Breu','Bright':'Clara','Long':'Longa','Short':'Curta','Instant':'Imediato','Disabled':'Desligado','Urban Focused':'Concentrada nas cidades','Uniform':'Uniforme','Sprinters':'Corredores','Fast Shamblers':'Cambaleantes rápidos','Shamblers':'Cambaleantes','Random':'Aleatório','Superhuman':'Sobre-humana','Weak':'Fraca','Tough':'Resistente','Fragile':'Frágil','Blood and Saliva':'Sangue e saliva','Saliva Only':'Só saliva',"Everyone's Infected":'Todos infectados','Navigate and Use Doors':'Navega e abre portas','Navigate':'Navega','Basic Navigation':'Navegação básica','Eagle':'De águia','Pinpoint':'Precisa','Both':'Dia e noite','Night':'Só à noite','Day':'Só de dia','Always Night':'Sempre noite','Always Day':'Sempre dia','Endless Day':'Dia sem fim','Endless Night':'Noite sem fim','No Fog':'Sem neblina','Endless Fog':'Neblina sem fim','Very Weak':'Muito fraca','Very Strong':'Muito forte','Strong':'Forte','Very Low':'Muito baixa','No decay':'Não estraga','Very Fast (20 Days)':'Muito rápida (20 dias)','Fast (50 Days)':'Rápida (50 dias)','Normal (100 Days)':'Normal (100 dias)','Slow (200 Days)':'Lenta (200 dias)','Very Slow (500 Days)':'Muito lenta (500 dias)','0 - 30 Days':'0 a 30 dias','14 - 30 Days':'14 a 30 dias','0 - 2 Months':'0 a 2 meses','14 Days - 2 Months':'14 dias a 2 meses','0 - 6 Months':'0 a 6 meses','0 - 1 Year':'0 a 1 ano','2 - 6 Months':'2 a 6 meses','6 - 12 Months':'6 a 12 meses','1 Week':'1 semana','2 Weeks':'2 semanas','Real-time':'Tempo real','7 AM':'7h','9 AM':'9h','12 PM':'12h','2 PM':'14h','5 PM':'17h','9 PM':'21h','12 AM':'0h','2 AM':'2h','5 AM':'5h','Full':'Cheio','Empty':'Vazio','Very Low Condition':'Muito ruim','Low Condition':'Ruim','Normal Condition':'Normal','High Condition':'Bom','Very High Condition':'Muito bom','Completely hidden':'Totalmente ocultas','Hidden':'Ocultas','Known':'Conhecidas','0-12 Hours':'0 a 12 horas','0-30 Seconds':'0 a 30 segundos','0-1 Minute':'0 a 1 minuto','0-12 Minutes':'0 a 12 minutos','2-3 Days':'2 a 3 dias','1-2 Weeks':'1 a 2 semanas','1 Month':'1 mês','1 Hour, 30 Minutes':'1h30','30 Minutes':'30 min','1 Hour':'1 hora','2 Hours':'2 horas','Low (Default)':'Baixa (padrão)','Default':'Padrão','Regular':'Regular','Moderate':'Moderada','Very Fragile':'Muito frágil','Everyone Infected':'Todos infectados','Very Common':'Muito comum'};
+const sbVal = k => { const v=data.sandbox?data.sandbox[k]:undefined; if(v===undefined) return '—'; const m=data.sandboxMeta&&data.sandboxMeta[k]; if(typeof v==='boolean') return v?'Sim':'Não'; if(m&&m.opts&&m.opts[String(v)]){const o=m.opts[String(v)]; return OPT_PT[o]||o;} if(typeof v==='number') return (Math.round(v*100)/100).toLocaleString('pt-BR'); return String(v); };
+const sbRaw = k => data.sandbox?data.sandbox[k]:undefined;
+const MONTHS=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+function kv(keys){ return `<div class="kv">${keys.map(k=>{ const lbl=SB_PT[k]||(data.sandboxMeta&&data.sandboxMeta[k]&&data.sandboxMeta[k].desc.split('.')[0])||k; const v=sbVal(k); return `<div class="k" title="${esc(data.sandboxMeta&&data.sandboxMeta[k]?data.sandboxMeta[k].desc:'')}">${esc(lbl)}</div><div class="v">${esc(v)}</div>`; }).join('')}</div>`; }
+function iniKv(pairs){ const ini=data.ini||{}; return `<div class="kv">${pairs.map(([k,l,f])=>{ let v=ini[k]; if(v===undefined) return ''; if(typeof v==='boolean') v=v?'Sim':'Não'; if(f) v=f(v); return `<div class="k">${l}</div><div class="v">${esc(v)}</div>`; }).join('')}</div>`; }
+function renderSrv(){
+  const sb=data.sandbox||{}, ini=data.ini||{}, S=data.server||{};
+  const lootKeys=Object.keys(sb).filter(k=>/LootNew$|^SkillBookLoot$|^RecipeResourceLoot$/.test(k));
+  const lootAvg=lootKeys.length?lootKeys.reduce((a,k)=>a+sb[k],0)/lootKeys.length:1;
+  const lootLbl=lootAvg<=0.07?'Insano':lootAvg<=0.25?'Extremamente raro':lootAvg<=0.65?'Raro':lootAvg<=1.1?'Normal':lootAvg<=2.2?'Comum':'Abundante';
+  const LOOT_PT={FoodLootNew:'Comida fresca',CannedFoodLootNew:'Enlatados',LiteratureLootNew:'Literatura',SkillBookLoot:'Livros de skill',RecipeResourceLoot:'Receitas',MedicalLootNew:'Medicamentos',SurvivalGearsLootNew:'Equip. de sobrevivência',WeaponLootNew:'Armas brancas',RangedWeaponLootNew:'Armas de fogo',AmmoLootNew:'Munição',MechanicsLootNew:'Peças de carro',OtherLootNew:'Outros',ClothingLootNew:'Roupas',ContainerLootNew:'Mochilas',KeyLootNew:'Chaves',MediaLootNew:'Fitas e CDs',MementoLootNew:'Colecionáveis',CookwareLootNew:'Cozinha',MaterialLootNew:'Materiais',FarmingLootNew:'Agricultura',ToolLootNew:'Ferramentas'};
+  const xp=Object.keys(sb).filter(k=>k.startsWith('MultiplierConfig.')&&!/Global/.test(k)&&sb[k]!==1).map(k=>[k.split('.')[1],sb[k]]);
+  const pop=sbRaw('ZombieConfig.PopulationMultiplier');
+  const start=`${sbRaw('StartDay')||9} de ${MONTHS[(sbRaw('StartMonth')||7)-1]}, ano ${sbRaw('StartYear')||1} · ${sbVal('StartTime')}`;
+  const diffScore=Math.min(100,Math.round((pop||1)/4*40+(1-Math.min(1,lootAvg))*35+(sbRaw('Temperature')===1?15:0)+(sbRaw('ZombieRespawn')===4?0:10)));
+  document.getElementById('srv').innerHTML=`
+  <h2>O servidor</h2>
+  <div class="shero">
+    <div>
+      <h1 class="nm">${esc(S.nome||ini.PublicName||'Servidor')}</h1>
+      <div class="sub"><span>Project Zomboid <b>${esc(S.versao||'')}</b></span><span>· ${esc(ini.Map||'Muldraugh, KY')}</span><span>· até ${esc(ini.MaxPlayers||'?')} jogadores</span>${ini.PVP===false?'<span class="pill good" style="color:var(--green)">PvE · sem PvP</span>':'<span class="pill red">PvP ligado</span>'}${ini.Open?'<span class="pill alive">aberto</span>':'<span class="pill dead">whitelist</span>'}</div>
+      ${ini.ServerWelcomeMessage?`<div class="welcome">${esc(String(ini.ServerWelcomeMessage).replace(/<RGB:[^>]*>/g,'').replace(/<LINE>/g,'\n').replace(/\s+\n/g,'\n').trim())}</div>`:''}
+    </div>
+  </div>
+  <div class="diff">
+    <div class="tile x"><div class="l">Zumbis</div><div class="v">${sbVal('Zombies')}</div><div class="s">multiplicador ${pop!==undefined?fmt(pop):'—'}× · ${sbVal('ZombieRespawn')==='Nenhum'?'sem respawn':'respawn '+sbVal('ZombieRespawn').toLowerCase()}</div></div>
+    <div class="tile x"><div class="l">Loot</div><div class="v">${lootLbl}</div><div class="s">média ${lootAvg.toLocaleString('pt-BR',{maximumFractionDigits:2})}× (normal = 1)</div></div>
+    <div class="tile x"><div class="l">Clima</div><div class="v">${sbVal('Temperature')}</div><div class="s">chuva ${sbVal('Rain').toLowerCase()} · neblina ${sbVal('FogCycle').toLowerCase()}</div></div>
+    <div class="tile"><div class="l">Zumbis são</div><div class="v">${sbVal('ZombieLore.Speed')}</div><div class="s">${sbVal('ZombieLore.Toughness').toLowerCase()} · ${sbVal('ZombieLore.Cognition').toLowerCase()}</div></div>
+    <div class="tile"><div class="l">Dia dura</div><div class="v">${sbVal('DayLength')}</div><div class="s">começa em ${start}</div></div>
+    <div class="tile"><div class="l">Nível de dificuldade</div><div class="v">${diffScore>=80?'Extremo':diffScore>=60?'Muito difícil':diffScore>=40?'Difícil':'Normal'}</div><div class="meter"><i style="width:${diffScore}%"></i></div></div>
+  </div>
+
+  <h2>Configurações <span class="sub">sandbox do servidor</span></h2>
+  <div class="cfg">
+    <div class="card"><h3>Zumbis</h3>${kv(['Zombies','ZombieConfig.PopulationMultiplier','ZombieConfig.PopulationPeakDay','ZombieRespawn','ZombieMigrate','Distribution','ZombieLore.Speed','ZombieLore.SprinterPercentage','ZombieLore.Strength','ZombieLore.Toughness','ZombieLore.Cognition','ZombieLore.DoorOpeningPercentage','ZombieLore.Memory','ZombieLore.Sight','ZombieLore.Hearing','ZombieLore.ActiveOnly'])}</div>
+    <div class="card"><h3>Infecção e combate</h3>${kv(['ZombieLore.Transmission','ZombieLore.Mortality','ZombieLore.Reanimate','ZombieLore.ZombiesDragDown','ZombieLore.ZombiesFenceLunge','ZombieLore.CrawlUnderVehicle','ZombieLore.ThumpOnConstruction','ZombieLore.TriggerHouseAlarm','ZombieLore.ZombiesArmorFactor','ZombieLore.ChanceOfAttachedWeapon','MultiHitZombies','RearVulnerability','InjurySeverity','BoneFracture','WoundInfectionFactor','MuscleStrainFactor'])}</div>
+    <div class="card"><h3>Mundo e clima</h3>${kv(['DayLength','StartTime','Temperature','Rain','FogCycle','EnableSnowOnGround','NightDarkness','NightLength','ErosionSpeed','WaterShut','ElecShut','Helicopter','MetaEvent','SleepingEvent','FireSpread','Alarm','LockedHouses','GeneratorSpawning'])}</div>
+    <div class="card"><h3>Sobrevivência e progressão</h3>${kv(['StatsDecrease','EndRegen','Nutrition','FoodRotSpeed','FridgeFactor','DecayingCorpseHealthImpact','NatureAbundance','Farming','PlantAbundance','FarmingSpeedNew','FarmingAmountNew','CompostTime','AnimalStatsModifier','MetaKnowledge','MinutesPerPage','LiteratureCooldown','StarterKit','CharacterFreePoints','NegativeTraitsPenalty','Map.MapAllKnown'])}
+      ${xp.length?`<h3>Multiplicadores de XP</h3><div class="kv">${xp.map(([k,v])=>`<div class="k">${pname(k)}</div><div class="v good">${fmt(v)}×</div>`).join('')}<div class="k" style="border:0;font-size:12px">Demais skills em 1×</div><div></div></div>`:''}</div>
+    <div class="card"><h3>Veículos</h3>${kv(['CarSpawnRate','LockedCar','ChanceHasGas','InitialGas','CarGeneralCondition','FuelStationGasMax'])}</div>
+    <div class="card"><h3>Regras do multiplayer</h3>${iniKv([['PVP','PvP'],['SafetySystem','Sistema de segurança'],['Faction','Facções'],['PlayerSafehouse','Safehouse de jogador'],['SafehouseDaySurvivedToClaim','Dias para reivindicar safehouse'],['SleepAllowed','Dormir permitido'],['SleepNeeded','Dormir obrigatório'],['PauseEmpty','Pausa quando vazio'],['FastForwardMultiplier','Avanço rápido ao dormir',v=>v+'×'],['PlayerRespawnWithSelf','Renascer no próprio corpo'],['PlayerRespawnWithOther','Renascer com outro jogador'],['DropOffWhiteListAfterDeath','Sai da whitelist ao morrer'],['AnnounceDeath','Anuncia mortes'],['AllowDestructionBySledgehammer','Destruição com marreta'],['SpeedLimit','Limite de velocidade',v=>v+' km/h'],['VoiceEnable','Voz no jogo'],['SaveWorldEveryMinutes','Salva o mundo a cada',v=>v+' min'],['SteamVAC','VAC']])}</div>
+  </div>
+
+  <h2>Raridade do loot <span class="sub">multiplicador por categoria · normal = 1</span></h2>
+  <div class="lootgrid">${lootKeys.map(k=>`<div>${LOOT_PT[k]||k}<b>${fmt(sb[k])}×</b></div>`).join('')}</div>
+
+  <h2>Mods <span class="sub">${(data.mods||[]).length} na Workshop</span></h2>
+  <div class="mods">${(data.mods||[]).map(m=>`<a class="mod" href="https://steamcommunity.com/sharedfiles/filedetails/?id=${m.id}" target="_blank" rel="noopener"><b>${esc(m.title)}</b><span>${m.updated?'atualizado em '+new Date(m.updated*1000).toLocaleDateString('pt-BR'):'Workshop '+m.id}</span></a>`).join('')}</div>`;
+}
+
+/* ---------- routing ---------- */
+const V={home:document.getElementById('home'),conq:document.getElementById('conq'),cmp:document.getElementById('cmp'),srv:document.getElementById('srv'),profile:document.getElementById('profile')};
+let profTab='geral';
+function route(){
+  const h=location.hash.slice(1)||'ranking';
+  const p=byTok[h];
+  let view='home';
+  if(p) view='profile'; else if(h==='conquistas') view='conq'; else if(h==='comparar') view='cmp'; else if(h==='servidor') view='srv'; else if(h==='titulos') view='titulos';
+  for(const k in V) V[k].hidden=!(k===view||(view==='titulos'&&k==='home'));
+  document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.v===view));
+  if(view==='profile'){
+    V.profile.innerHTML=profile(p);
+    const tabs=V.profile.querySelectorAll('.tabs button');
+    const show=t=>{profTab=t; tabs.forEach(x=>x.setAttribute('aria-selected',x.dataset.t===t)); V.profile.querySelectorAll('.panel').forEach(x=>x.hidden=x.dataset.p!==t);};
+    tabs.forEach(b=>b.onclick=()=>show(b.dataset.t)); show(profTab);
+    document.title=p.user+' · Ranking Base dos Bagres';
+  } else { document.title='Ranking Base dos Bagres'; if(view==='conq') renderConq(); if(view==='cmp') renderCmpPick(); if(view==='srv') renderSrv(); }
+  if(view==='titulos'){ document.getElementById('titulos').scrollIntoView({behavior:'smooth'}); } else window.scrollTo(0,0);
+}
+function renderAll(){ renderHome(); route(); document.getElementById('foot').textContent='Atualizado em '+data.generated+' · horários de Brasília'; }
+
+/* ---------- live refresh ---------- */
+let lastGen=null;
+function setLive(ok){ const el=document.getElementById('live'); el.classList.toggle('stale',!ok); document.getElementById('livetxt').textContent=ok?'ao vivo · '+data.generated.slice(11):'dados de '+data.generated; }
+async function refresh(){
+  try{
+    const r=await fetch(DATA_URL+(DATA_URL.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});
+    if(!r.ok) throw 0;
+    const d=await r.json();
+    if(d.generatedIso!==lastGen){ lastGen=d.generatedIso; prep(d); renderAll(); }
+    const age=(Date.now()-new Date(d.generatedIso))/6e4; setLive(age<30);
+  }catch(e){ if(location.protocol.startsWith('http')) setLive(false); }
+}
+prep(JSON.parse(document.getElementById('data').textContent)); lastGen=data.generatedIso; renderAll(); setLive((Date.now()-new Date(data.generatedIso))/6e4<30);
+addEventListener('hashchange',route);
+if(location.protocol.startsWith('http')){ refresh(); setInterval(refresh,REFRESH_SEC*1000); }
+</script>
+
+</body>
+</html>

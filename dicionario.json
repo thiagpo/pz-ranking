@@ -1,0 +1,507 @@
+{
+"traits": {
+"base:adrenalinejunkie": {
+"n": "Viciado em Adrenalina",
+"c": 4,
+"p": false
+},
+"base:agoraphobic": {
+"n": "Agorafóbico",
+"c": -4,
+"p": false
+},
+"base:allthumbs": {
+"n": "Desajeitado",
+"c": -2,
+"p": false
+},
+"base:artisan": {
+"n": "Artesanato",
+"c": 2,
+"p": false
+},
+"base:asthmatic": {
+"n": "Ofegante",
+"c": -5,
+"p": false
+},
+"base:athletic": {
+"n": "Atlético",
+"c": 10,
+"p": false
+},
+"base:axeman": {
+"n": "Especialista em Machados",
+"c": 0,
+"p": true
+},
+"base:baseballplayer": {
+"n": "Jogador de Beisebol",
+"c": 4,
+"p": false
+},
+"base:blacksmith": {
+"n": "Conhecimento em Ferraria",
+"c": 6,
+"p": false
+},
+"base:blacksmith2": {
+"n": "Conhecimento em Ferraria",
+"c": 0,
+"p": true
+},
+"base:brave": {
+"n": "Corajoso",
+"c": 4,
+"p": false
+},
+"base:brawler": {
+"n": "Brigão",
+"c": 6,
+"p": false
+},
+"base:burglar": {
+"n": "Ladrão",
+"c": 0,
+"p": true
+},
+"base:claustrophobic": {
+"n": "Claustrofóbico",
+"c": -4,
+"p": false
+},
+"base:clumsy": {
+"n": "Desastrado",
+"c": -2,
+"p": false
+},
+"base:conspicuous": {
+"n": "Chamativo",
+"c": -4,
+"p": false
+},
+"base:cook": {
+"n": "Cozinheiro",
+"c": 3,
+"p": false
+},
+"base:cook2": {
+"n": "Cozinheiro",
+"c": 0,
+"p": true
+},
+"base:cowardly": {
+"n": "Covarde",
+"c": -2,
+"p": false
+},
+"base:crafty": {
+"n": "Engenhoso",
+"c": 3,
+"p": false
+},
+"base:deaf": {
+"n": "Surdo",
+"c": -12,
+"p": false
+},
+"base:desensitized": {
+"n": "Dessensibilização",
+"c": 0,
+"p": true
+},
+"base:dextrous": {
+"n": "Mãos Ágeis",
+"c": 2,
+"p": false
+},
+"base:disorganized": {
+"n": "Desorganizado",
+"c": -6,
+"p": false
+},
+"base:eagleeyed": {
+"n": "Olhos de Águia",
+"c": 4,
+"p": false
+},
+"base:emaciated": {
+"n": "Emaciação",
+"c": -10,
+"p": true
+},
+"base:fasthealer": {
+"n": "Cicatrização Rápida",
+"c": 6,
+"p": false
+},
+"base:fastlearner": {
+"n": "Aprendiz Rápido",
+"c": 6,
+"p": false
+},
+"base:fastreader": {
+"n": "Leitura Dinâmica",
+"c": 2,
+"p": false
+},
+"base:feeble": {
+"n": "Fraco",
+"c": -6,
+"p": false
+},
+"base:firstaid": {
+"n": "Primeiros Socorros",
+"c": 2,
+"p": false
+},
+"base:fishing": {
+"n": "Pescador",
+"c": 4,
+"p": false
+},
+"base:fit": {
+"n": "Em Forma",
+"c": 6,
+"p": false
+},
+"base:gardener": {
+"n": "Jardineiro",
+"c": 2,
+"p": false
+},
+"base:graceful": {
+"n": "Gracioso",
+"c": 4,
+"p": false
+},
+"base:gymnast": {
+"n": "Ginasta",
+"c": 5,
+"p": false
+},
+"base:handy": {
+"n": "Habilidoso",
+"c": 8,
+"p": false
+},
+"base:hardofhearing": {
+"n": "Ruim de Audição",
+"c": -4,
+"p": false
+},
+"base:heartyappetite": {
+"n": "Comilão",
+"c": -4,
+"p": false
+},
+"base:hemophobic": {
+"n": "Hemofóbico",
+"c": -5,
+"p": false
+},
+"base:herbalist": {
+"n": "Herbalista",
+"c": 4,
+"p": false
+},
+"base:herbalist_prof": {
+"n": "Herbalista",
+"c": 0,
+"p": true
+},
+"base:hiker": {
+"n": "Trilheiro",
+"c": 5,
+"p": false
+},
+"base:highthirst": {
+"n": "Sedento",
+"c": -2,
+"p": false
+},
+"base:hunter": {
+"n": "Caçador",
+"c": 8,
+"p": false
+},
+"base:tinkerer": {
+"n": "Faz-tudo",
+"c": 4,
+"p": false
+},
+"base:target_shooter": {
+"n": "Atirador de Tiro ao Alvo",
+"c": 5,
+"p": false
+},
+"base:illiterate": {
+"n": "Analfabeto",
+"c": -10,
+"p": false
+},
+"base:inconspicuous": {
+"n": "Discreto",
+"c": 4,
+"p": false
+},
+"base:inventive": {
+"n": "Inventor",
+"c": 2,
+"p": false
+},
+"base:inventive_prof": {
+"n": "Inventor",
+"c": 0,
+"p": true
+},
+"base:irongut": {
+"n": "Estômago de Ferro",
+"c": 2,
+"p": false
+},
+"base:insomniac": {
+"n": "Sono Leve",
+"c": -6,
+"p": false
+},
+"base:jogger": {
+"n": "Corredor",
+"c": 4,
+"p": false
+},
+"base:keenhearing": {
+"n": "Audição Aguçada",
+"c": 6,
+"p": false
+},
+"base:lighteater": {
+"n": "Estômago Pequeno",
+"c": 2,
+"p": false
+},
+"base:lowthirst": {
+"n": "Hidratado",
+"c": 2,
+"p": false
+},
+"base:marksman": {
+"n": "Boa Pontaria",
+"c": 0,
+"p": true
+},
+"base:mason": {
+"n": "Alvenaria",
+"c": 2,
+"p": false
+},
+"base:mechanics": {
+"n": "Mecânico Amador",
+"c": 3,
+"p": false
+},
+"base:mechanics2": {
+"n": "Mecânico Amador",
+"c": 0,
+"p": true
+},
+"base:needslesssleep": {
+"n": "Madrugador",
+"c": 3,
+"p": false
+},
+"base:needsmoresleep": {
+"n": "Dorminhoco",
+"c": -4,
+"p": false
+},
+"base:nightowl": {
+"n": "Coruja da Noite",
+"c": 0,
+"p": true
+},
+"base:nightvision": {
+"n": "Olhos de Gato",
+"c": 3,
+"p": false
+},
+"base:nutritionist": {
+"n": "Nutricionista",
+"c": 2,
+"p": false
+},
+"base:nutritionist2": {
+"n": "Nutricionista",
+"c": 0,
+"p": true
+},
+"base:obese": {
+"n": "Muito Acima do Peso",
+"c": 0,
+"p": true
+},
+"base:organized": {
+"n": "Organizado",
+"c": 4,
+"p": false
+},
+"base:outdoorsman": {
+"n": "Andarilho",
+"c": 2,
+"p": false
+},
+"base:overweight": {
+"n": "Acima do Peso",
+"c": 0,
+"p": true
+},
+"base:pacifist": {
+"n": "Combatente Relutante",
+"c": -5,
+"p": false
+},
+"base:pronetoillness": {
+"n": "Baixa Imunidade",
+"c": -4,
+"p": false
+},
+"base:resilient": {
+"n": "Resiliente",
+"c": 4,
+"p": false
+},
+"base:formerscout": {
+"n": "Ex-Escoteiro",
+"c": 6,
+"p": false
+},
+"base:shortsighted": {
+"n": "Miopia",
+"c": -2,
+"p": false
+},
+"base:slowhealer": {
+"n": "Cicatrização Lenta",
+"c": -3,
+"p": false
+},
+"base:slowreader": {
+"n": "Leitura Lenta",
+"c": -2,
+"p": false
+},
+"base:slowlearner": {
+"n": "Aprendiz Lento",
+"c": -6,
+"p": false
+},
+"base:smoker": {
+"n": "Fumante",
+"c": -3,
+"p": false
+},
+"base:speeddemon": {
+"n": "Bom de Volante",
+"c": 1,
+"p": false
+},
+"base:stout": {
+"n": "Forte",
+"c": 6,
+"p": false
+},
+"base:strong": {
+"n": "Musculoso",
+"c": 10,
+"p": false
+},
+"base:sundaydriver": {
+"n": "Ruim de Volante",
+"c": -1,
+"p": false
+},
+"base:tailor": {
+"n": "Costureiro",
+"c": 4,
+"p": false
+},
+"base:thickskinned": {
+"n": "Casca Grossa",
+"c": 8,
+"p": false
+},
+"base:thinskinned": {
+"n": "Pele Frágil",
+"c": -8,
+"p": false
+},
+"base:underweight": {
+"n": "Abaixo do Peso",
+"c": 0,
+"p": true
+},
+"base:unfit": {
+"n": "Sedentário",
+"c": -10,
+"p": false
+},
+"base:weak": {
+"n": "Franzino",
+"c": -10,
+"p": false
+},
+"base:weakstomach": {
+"n": "Estômago Fraco",
+"c": -2,
+"p": false
+},
+"base:weightgain": {
+"n": "Metabolismo Lento",
+"c": -2,
+"p": false
+},
+"base:weightloss": {
+"n": "Metabolismo Acelerado",
+"c": -2,
+"p": false
+},
+"base:whittler": {
+"n": "Entalhamento",
+"c": 2,
+"p": false
+},
+"base:wildernessknowledge": {
+"n": "Sobrevivencialista",
+"c": 8,
+"p": false
+}
+},
+"profs": {
+"base:burglar": "Ladrão",
+"base:burgerflipper": "Chapista",
+"base:carpenter": "Carpinteiro",
+"base:chef": "Chef",
+"base:constructionworker": "Pedreiro",
+"base:doctor": "Médico",
+"base:electrician": "Eletricista",
+"base:engineer": "Engenheiro",
+"base:farmer": "Fazendeiro",
+"base:fireofficer": "Bombeiro",
+"base:fisherman": "Guia de Pesca",
+"base:fitnessinstructor": "Personal Trainer",
+"base:lumberjack": "Lenhador",
+"base:mechanics": "Mecânico",
+"base:metalworker": "Soldador",
+"base:nurse": "Enfermeiro",
+"base:parkranger": "Guarda Florestal",
+"base:policeofficer": "Policial",
+"base:rancher": "Pecuarista",
+"base:repairman": "Técnico",
+"base:securityguard": "Segurança",
+"base:smither": "Ferreiro",
+"base:tailor": "Alfaiate",
+"base:unemployed": "Profissão Personalizada",
+"base:veteran": "Veterano"
+},
+"perks": {}
+}

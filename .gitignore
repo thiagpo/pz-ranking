@@ -1,0 +1,9 @@
+dados/
+data.json
+ranking.html
+segredos.json
+cloudflare/.dev.vars
+cloudflare/public/
+cloudflare/node_modules/
+cloudflare/.wrangler/
+__pycache__/
