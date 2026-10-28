@@ -368,7 +368,8 @@ def enviar(arquivos):
         import urllib.request
         dj = [a for a in arquivos if a.endswith("data.json")][0]
         req = urllib.request.Request(h["url"].rstrip("/") + "/data.json", data=open(dj, "rb").read(), method="PUT",
-                                     headers={"Authorization": "Bearer " + h["token"], "Content-Type": "application/json"})
+                                     headers={"Authorization": "Bearer " + h["token"], "Content-Type": "application/json",
+                                              "User-Agent": "pz-ranking-updater/1.0"})   # a Cloudflare bloqueia o UA padrao do Python
         with urllib.request.urlopen(req, timeout=60) as r:
             print("enviado data.json ->", h["url"], r.status)
         return
