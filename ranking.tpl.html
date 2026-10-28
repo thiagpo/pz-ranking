@@ -608,13 +608,13 @@ function profile(p){
   </div>
   <div class="tabs" role="tablist">${[['geral','Visão geral'],['skills','Skills'],['conq','Conquistas'],['chars','Personagens'],['hist','Histórico']].map(([k,n],i)=>`<button role="tab" aria-selected="${i===0}" data-t="${k}">${n}</button>`).join('')}</div>`;
 
-  const comb=COMBAT.map(k=>[k,p.skCur[k]||0,p.skBest[k]||0]).filter(c=>c[1]>0||c[2]>0).sort((a,b)=>b[1]-a[1]||b[2]-a[2]);
+  const comb=COMBAT.map(k=>[k,p.skCur[k]||0]).filter(c=>c[1]>0).sort((a,b)=>b[1]-a[1]);
   const favs=p.favs.filter(f=>f!=='Bare Hands');
   const geral=`<div class="panel" data-p="geral">
     <h3>Destaques</h3>
     <div class="tiles">${stat('Km andados',fmt(p.km))}${stat('Horas jogadas',fmt(p.hoursPlayed))}${stat('Armas quebradas',p.broken)}${stat('Vida atual',p.alive?dh(p.curHours):'—')}${stat('Skills de combate',nComb(p,1),'com nível 1 ou mais')}${stat('Traits',p.traits.length)}</div>
     <div class="two" style="margin-top:14px">
-      <div class="card"><h3 style="margin-top:0">Estilo de combate <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">skills do personagem atual</span></h3>${comb.length?`<div class="bars">${comb.map(c=>`<div class="bar"><span>${si(c[0])}${pname(c[0])}</span><div class="tr"><i class="a" style="width:${c[1]*10}%"></i></div><span class="n">${c[1]}${c[2]>c[1]?' / '+c[2]:''}</span></div>`).join('')}</div><div class="note">Nível de cada skill de combate. A XP só vem dos próprios golpes, então reflete as armas que o jogador realmente usa.</div>`:'<div class="empty">Nenhuma skill de combate ainda.</div>'}
+      <div class="card"><h3 style="margin-top:0">Estilo de combate <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">skills do personagem atual</span></h3>${comb.length?`<div class="bars">${comb.map(c=>`<div class="bar"><span>${si(c[0])}${pname(c[0])}</span><div class="tr"><i class="a" style="width:${c[1]*10}%"></i></div><span class="n">nível ${c[1]}</span></div>`).join('')}</div><div class="note">Nível de cada skill de combate. A XP só vem dos próprios golpes, então reflete as armas que o jogador realmente usa.</div>`:'<div class="empty">Nenhuma skill de combate ainda.</div>'}
       <h3>Favoritos na barra</h3>${favs.length?`<div class="traits" style="margin-top:6px">${favs.map(f=>`<span class="trait">${ico('items',favType(f))}${esc(fname(f))}</span>`).join('')}</div><div class="note">Itens marcados como favoritos no inventário do personagem atual.</div>`:'<div class="empty">Nenhum item favoritado.</div>'}</div>
       <div class="card"><h3 style="margin-top:0">Armas que quebrou</h3>${p.brokenList&&p.brokenList.length?`<div class="bars">${p.brokenList.slice(0,10).map(w=>`<div class="bar"><span>${ico('items',w[0])}${esc(wname(w[0]))}</span><div class="tr"><i class="g" style="width:${w[1]/p.brokenList[0][1]*100}%"></i></div><span class="n">${w[1]}×</span></div>`).join('')}</div><div class="note">Somando todos os personagens.</div>`:'<div class="empty">Nenhuma.</div>'}</div>
     </div>
