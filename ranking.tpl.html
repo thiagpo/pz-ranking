@@ -337,7 +337,7 @@ footer{margin-top:40px;font-size:12px;color:var(--dim);display:flex;justify-cont
 
 <section id="conq" hidden>
   <h2>Conquistas <span class="sub" id="conqsub"></span></h2>
-  <p class="note">Conquistas são calculadas a partir das estatísticas do servidor. Abates somam todos os personagens; sobrevivência usa a melhor vida; skills usam o maior nível já alcançado.</p>
+  <p class="note">Conquistas são calculadas a partir das estatísticas do servidor. Abates somam todos os personagens; sobrevivência usa a melhor vida; skills valem só para o personagem atual: morreu, tem que upar de novo.</p>
   <div id="conqlist"></div>
 </section>
 
@@ -383,7 +383,7 @@ const brD = ts => ts ? new Date(ts.replace(' ','T')+'Z').toLocaleDateString('pt-
 /* ---------- achievements catalogue ---------- */
 const A = [];
 const add = (id,tier,ic,name,desc,fn,prog) => A.push({id,tier,ic,name,desc,fn,prog});
-const sk = (p,k) => (p.skBest[k]||0);
+const sk = (p,k) => (p.skCur[k]||0);
 const skT = (k,lvl,tier,ic,name) => add('sk_'+k+lvl,tier,ic,name,pname(k)+' nível '+lvl,p=>sk(p,k)>=lvl,p=>sk(p,k)/lvl);
 // Abates
 add('k100','bronze','🩸','Primeiro Sangue','100 zumbis abatidos',p=>p.kills>=100,p=>p.kills/100);
@@ -419,9 +419,10 @@ add('c2','bronze','🎯','Versátil','2 tipos de arma no nível 3 ou mais',p=>nC
 add('c4','prata','🗡️','Arsenal Completo','4 tipos de arma no nível 3 ou mais',p=>nComb(p,3)>=4,p=>nComb(p,3)/4);
 add('b250','ouro','🧨','Terror das Ferramentas','250 armas quebradas',p=>p.broken>=250,p=>p.broken/250);
 // Skills gerais
-add('any10','platina','🧬','Mestre','Alguma skill no nível 10',p=>p.skBestArr.some(s=>s[1]>=10),p=>Math.max(0,...p.skBestArr.map(s=>s[1]))/10);
-add('three7','ouro','🎓','Multitalento','3 skills no nível 7 ou mais',p=>p.skBestArr.filter(s=>s[1]>=7).length>=3,p=>p.skBestArr.filter(s=>s[1]>=7).length/3);
-add('five5','prata','🔧','Pau pra Toda Obra','5 skills no nível 5 ou mais',p=>p.skBestArr.filter(s=>s[1]>=5).length>=5,p=>p.skBestArr.filter(s=>s[1]>=5).length/5);
+const skArr=p=>Object.entries(p.skCur||{});
+add('any10','platina','🧬','Mestre','Alguma skill no nível 10',p=>skArr(p).some(s=>s[1]>=10),p=>Math.max(0,...skArr(p).map(s=>s[1]))/10);
+add('three7','ouro','🎓','Multitalento','3 skills no nível 7 ou mais',p=>skArr(p).filter(s=>s[1]>=7).length>=3,p=>skArr(p).filter(s=>s[1]>=7).length/3);
+add('five5','prata','🔧','Pau pra Toda Obra','5 skills no nível 5 ou mais',p=>skArr(p).filter(s=>s[1]>=5).length>=5,p=>skArr(p).filter(s=>s[1]>=5).length/5);
 // Skills especificas (incentivo a quem upa outras coisas)
 skT('Farming',5,'prata','🌽','Fazendeiro'); skT('Farming',8,'ouro','🚜','Mestre da Lavoura');
 skT('Husbandry',5,'prata','🐄','Criador de Animais'); skT('Butchering',5,'prata','🥩','Açougueiro');
@@ -495,8 +496,8 @@ add('h300','platina','⏱️','Trezentas Horas','300 horas jogadas',p=>p.hoursPl
 add('r300','platina','🌋','Trezentos num Dia','300 abates num só dia',p=>p.daily>=300,p=>p.daily/300);
 add('b500','platina','🧨','Quebra-Tudo Supremo','500 armas quebradas',p=>p.broken>=500,p=>p.broken/500);
 add('all3','platina','🧰','Faz-Tudo','Todas as skills no nível 3 ou mais',p=>Object.keys(PERK).every(k=>sk(p,k)>=3),p=>Object.keys(PERK).filter(k=>sk(p,k)>=3).length/Object.keys(PERK).length);
-add('ten5','ouro','🎓','Polivalente','10 skills no nível 5 ou mais',p=>p.skBestArr.filter(s=>s[1]>=5).length>=10,p=>p.skBestArr.filter(s=>s[1]>=5).length/10);
-add('five10','platina','👑','Cinco Mestres','5 skills no nível 10',p=>p.skBestArr.filter(s=>s[1]>=10).length>=5,p=>p.skBestArr.filter(s=>s[1]>=10).length/5);
+add('ten5','ouro','🎓','Polivalente','10 skills no nível 5 ou mais',p=>skArr(p).filter(s=>s[1]>=5).length>=10,p=>skArr(p).filter(s=>s[1]>=5).length/10);
+add('five10','platina','👑','Cinco Mestres','5 skills no nível 10',p=>skArr(p).filter(s=>s[1]>=10).length>=5,p=>skArr(p).filter(s=>s[1]>=10).length/5);
 add('comb7','platina','⚔️','Mestre de Armas','Todas as skills de combate no nível 7',p=>COMBAT.every(k=>sk(p,k)>=7),p=>COMBAT.filter(k=>sk(p,k)>=7).length/COMBAT.length);
 add('iron','platina','🛡️','Imortal de Ferro','30 dias vivo, 2.000 abates e nenhuma morte',p=>p.deaths===0&&p.bestHours>=720&&p.kills>=2000,p=>p.deaths===0?Math.min(p.bestHours/720,p.kills/2000):0);
 // Especiais da Base (zoeira oficial)
@@ -644,7 +645,7 @@ function renderCmpPick(){
 function renderCmp(){
   const a=byTok[document.getElementById('cA').value], b=byTok[document.getElementById('cB').value];
   if(!a||!b) return;
-  const rows=[['Abates (personagem atual)','curKills',fmt],['Abates (todos personagens)','kills',fmt],['Mortes','deaths',x=>x,true],['Melhor sobrevivência','bestHours',dh],['Vida atual','curHours',dh],['Recorde num dia','daily',fmt],['Km andados','km',fmt],['Horas jogadas','hoursPlayed',fmt],['Armas quebradas','broken',fmt],['Conquistas',p=>p.ach.length,fmt],['Skills nível 5+',p=>p.skBestArr.filter(s=>s[1]>=5).length,fmt],['Traits positivos',p=>p.traits.filter(t=>traitInfo(t).c>0).length,fmt]];
+  const rows=[['Abates (personagem atual)','curKills',fmt],['Abates (todos personagens)','kills',fmt],['Mortes','deaths',x=>x,true],['Melhor sobrevivência','bestHours',dh],['Vida atual','curHours',dh],['Recorde num dia','daily',fmt],['Km andados','km',fmt],['Horas jogadas','hoursPlayed',fmt],['Armas quebradas','broken',fmt],['Conquistas',p=>p.ach.length,fmt],['Skills nível 5+',p=>Object.values(p.skCur||{}).filter(v=>v>=5).length,fmt],['Traits positivos',p=>p.traits.filter(t=>traitInfo(t).c>0).length,fmt]];
   const g=(p,k)=>typeof k==='function'?k(p):(p[k]||0);
   const line=(label,va,vb,fa,fb,lowerWins)=>{ const m=Math.max(va,vb,1); const aw=lowerWins?va<vb:va>vb, bw=lowerWins?vb<va:vb>va;
     return `<div class="cr"><div class="s l ${aw?'win':''}"><b>${fa}</b><div class="tr"><i style="width:${va/m*100}%"></i></div></div><div class="m">${label}</div><div class="s r ${bw?'win':''}"><div class="tr"><i style="width:${vb/m*100}%"></i></div><b>${fb}</b></div></div>`; };
