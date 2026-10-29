@@ -1,0 +1,6 @@
+name=Bagres Stats
+id=BagresStats
+author=Base dos Bagres
+description=Contadores por jogador (abates por arma, animais, pesca, colheita, fabricacao, arvores, livros, veiculos) gravados no servidor para o ranking da base.
+versionMin=42.19
+poster=poster.png

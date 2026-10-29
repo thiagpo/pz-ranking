@@ -10,6 +10,7 @@ if not _cfg and os.path.exists(os.path.join(AQUI, "segredos.json")):
 CFG = json.loads(_cfg or "{}")
 SRV = CFG.get("server", "")
 R_STATS = ".cache/Lua/ttf_stats_mp"
+R_BAGRES = ".cache/Lua/bagres_stats"
 R_LOGS = ".cache/Logs"
 R_PLAYERS = f".cache/Saves/Multiplayer/{SRV}/players.db"
 R_USERS = f".cache/db/{SRV}.db"
@@ -38,6 +39,14 @@ def baixar():
     for f in s.listdir(R_STATS):
         if f.endswith(".txt"):
             s.get(posixpath.join(R_STATS, f), os.path.join(DADOS, "stats__" + f))
+    for f in glob.glob(os.path.join(DADOS, "bagres__*.txt")):
+        os.remove(f)
+    try:
+        for f in s.listdir(R_BAGRES):
+            if f.endswith(".txt"):
+                s.get(posixpath.join(R_BAGRES, f), os.path.join(DADOS, "bagres__" + f))
+    except IOError:
+        pass
 
     def walk(d):
         for e in s.listdir_attr(d):
@@ -157,6 +166,27 @@ def ler_adm():
                     break
     acoes.sort(key=lambda a: a["ts"], reverse=True)
     return {"admins": admins, "actions": acoes}
+
+
+def ler_bagres():
+    out = {}
+    for f in glob.glob(os.path.join(DADOS, "bagres__*.txt")):
+        kv = {}; user = None
+        for line in open(f, encoding="utf-8", errors="ignore"):
+            line = line.strip()
+            if "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            if k == "_user":
+                user = v
+            else:
+                try:
+                    kv[k] = float(v) if "." in v else int(v)
+                except ValueError:
+                    pass
+        if user:
+            out[user] = kv
+    return out
 
 
 def ler_online():
@@ -398,6 +428,7 @@ def montar():
     extra = ler_traits(dic)
     online = set(ler_online())
     acts, chat, drives, veics, pres = ler_atividade()
+    bagres = ler_bagres()
     first10 = collections.defaultdict(list)
     melhor = {}
     for u, d in first_lvl.items():
@@ -462,6 +493,7 @@ def montar():
                 "acts": dict(acts.get(u, {})), "chat": chat.get(u, 0), "drives": drives.get(u, 0), "vehicles": len(veics.get(u, ())),
                 "pres": pres.get(u, {"days": 0, "streak": 0, "night": 0}), "plants": ex.get("plants", 0),
                 "lab": ex.get("lab", {"n": 0, "cure": False, "vaccine": False, "has": False}), "labN": ex.get("lab", {}).get("n", 0),
+                "mod": bagres.get(u, {}),
                 "phoenix": fenix.get(u, 0), "first10": first10.get(u, []),
                 "killStreak": (p or {}).get("killStreak", 0), "weekKills": (p or {}).get("weekKills", 0)}
         if p:
