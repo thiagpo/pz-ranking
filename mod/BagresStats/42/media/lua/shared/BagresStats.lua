@@ -1,7 +1,7 @@
 -- Bagres Stats: contadores por jogador, somados no servidor e gravados em Lua/bagres_stats/<usuario>.txt
 BagresStats = BagresStats or {}
 local S = BagresStats
-S.VERSION = "1.0"
+S.VERSION = "1.1"
 S.DIR = "bagres_stats/"
 
 local data = {}
@@ -206,6 +206,9 @@ function S.installHooks()
         S.inc(self.character, "craft." .. nome); S.inc(self.character, "craft")
     end)
     W("ISBuryCorpse", "complete", function(self, r) if r ~= false then S.inc(self.character, "corpses.buried") end end)
+    W("ISLightFromKindle", "complete", function(self, r) if r ~= false then S.inc(self.character, "fire.lit") end end)
+    W("ISLightFromLiterature", "complete", function(self, r) if r ~= false then S.inc(self.character, "fire.lit") end end)
+    W("ISLightFromPetrol", "complete", function(self, r) if r ~= false then S.inc(self.character, "fire.lit") end end)
 
     -- veiculos e reparos
     W("ISInstallVehiclePart", "complete", function(self, r) if r ~= false then S.inc(self.character, "vehicle.install") end end)
