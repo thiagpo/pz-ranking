@@ -500,6 +500,27 @@ add('ten5','ouro','🎓','Polivalente','10 skills no nível 5 ou mais',p=>skArr(
 add('five10','platina','👑','Cinco Mestres','5 skills no nível 10',p=>skArr(p).filter(s=>s[1]>=10).length>=5,p=>skArr(p).filter(s=>s[1]>=10).length/5);
 add('comb7','platina','⚔️','Mestre de Armas','Todas as skills de combate no nível 7',p=>COMBAT.every(k=>sk(p,k)>=7),p=>COMBAT.filter(k=>sk(p,k)>=7).length/COMBAT.length);
 add('iron','platina','🛡️','Imortal de Ferro','30 dias vivo, 2.000 abates e nenhuma morte',p=>p.deaths===0&&p.bestHours>=720&&p.kills>=2000,p=>p.deaths===0?Math.min(p.bestHours/720,p.kills/2000):0);
+// Contadores do mod Bagres Stats (so existem desde a instalacao do mod)
+const mm=(p,k)=>(p.m&&p.m[k])||0;
+const madd=(id,tier,ic,name,desc,k,n)=>add(id,tier,ic,name,desc,p=>mm(p,k)>=n,p=>mm(p,k)/n);
+madd('rb10','bronze','🐇','Caçador de Coelhos','10 coelhos abatidos','rabbits',10); madd('rb50','prata','🐇','Praga dos Coelhos','50 coelhos abatidos','rabbits',50);
+madd('rb200','ouro','🐇','Terror dos Coelhos','200 coelhos abatidos','rabbits',200); madd('rb500','platina','🐇','Pesadelo dos Coelhos','500 coelhos abatidos','rabbits',500);
+madd('an25','bronze','🥩','Carniceiro','25 animais abatidos','animals',25); madd('an100','prata','🥩','Matadouro','100 animais abatidos','animals',100); madd('an500','ouro','🥩','Frigorífico','500 animais abatidos','animals',500);
+madd('fi10','bronze','🐟','Primeiros Peixes','10 peixes pescados','fish',10); madd('fi50','prata','🐟','Pescador de Verdade','50 peixes','fish',50); madd('fi200','ouro','🐟','Mestre da Vara','200 peixes','fish',200); madd('fi1000','platina','🐟','Senhor do Rio','1.000 peixes','fish',1000);
+madd('hv50','bronze','🌽','Primeira Colheita','50 colheitas','harvest',50); madd('hv200','prata','🌽','Agricultor','200 colheitas','harvest',200); madd('hv1000','ouro','🌽','Latifundiário','1.000 colheitas','harvest',1000); madd('hv5000','platina','🌽','Celeiro da Base','5.000 colheitas','harvest',5000);
+madd('cr100','bronze','🔨','Artesão','100 itens fabricados','craft',100); madd('cr500','prata','🔨','Oficina','500 itens fabricados','craft',500); madd('cr2000','ouro','🔨','Indústria','2.000 itens fabricados','craft',2000); madd('cr10000','platina','🔨','Fábrica da Base','10.000 itens fabricados','craft',10000);
+madd('tr100','bronze','🪓','Lenhador','100 árvores derrubadas','trees',100); madd('tr500','prata','🪓','Desmatador','500 árvores','trees',500); madd('tr2000','ouro','🪓','Deserto Verde','2.000 árvores','trees',2000);
+madd('bk10','bronze','📚','Leitor','10 livros lidos','books',10); madd('bk50','prata','📚','Rato de Biblioteca','50 livros lidos','books',50); madd('bk200','ouro','📚','Enciclopédia','200 livros lidos','books',200);
+madd('lt500','bronze','🎒','Saqueador','500 itens saqueados','loot',500); madd('lt2000','prata','🎒','Pilhador','2.000 itens saqueados','loot',2000); madd('lt10000','ouro','🎒','Rapina','10.000 itens saqueados','loot',10000); madd('lt50000','platina','🎒','Esvaziou Kentucky','50.000 itens saqueados','loot',50000);
+madd('ct100','bronze','🗄️','Fuçador','100 containers saqueados','containers',100); madd('ct1000','prata','🗄️','Vasculhador','1.000 containers saqueados','containers',1000);
+madd('bd50','bronze','🏚️','Explorador','50 prédios visitados','buildings',50); madd('bd200','prata','🏚️','Turista','200 prédios visitados','buildings',200); madd('bd1000','ouro','🏚️','Corretor de Imóveis','1.000 prédios visitados','buildings',1000);
+madd('tw3','prata','🗺️','Viajante','3 cidades visitadas','towns',3); madd('tw6','ouro','🗺️','Explorador de Kentucky','6 cidades visitadas','towns',6); madd('tw10','platina','🗺️','Conhece Kentucky','10 cidades visitadas','towns',10);
+madd('md500','bronze','🧭','Longe de Casa','500 quadros da base','maxdist',500); madd('md2000','prata','🧭','Expedição','2.000 quadros da base','maxdist',2000); madd('md5000','ouro','🧭','Outro Mundo','5.000 quadros da base','maxdist',5000);
+madd('rn300','bronze','🌧️','Molhado','5 horas na chuva ou neve','rain',300); madd('rn1500','prata','🌧️','Encharcado','25 horas na chuva ou neve','rain',1500);
+madd('nt600','bronze','🦉','Caminhante Noturno','10 horas fora de casa à noite','night',600); madd('nt3000','ouro','🦉','Dono da Noite','50 horas fora de casa à noite','night',3000);
+madd('fr10','bronze','🔥','Incendiário','10 fogueiras acesas','fire',10); madd('fr50','prata','🔥','Piromaníaco','50 fogueiras acesas','fire',50);
+madd('mk10','bronze','🥛','Leiteiro','10 ordenhas','milk',10); madd('eg50','bronze','🥚','Galinheiro','50 ovos coletados','eggs',50); madd('fg200','prata','🌿','Catador','200 coletas no mato','forage',200);
+madd('bu10','bronze','⚰️','Coveiro','10 corpos enterrados','buried',10); madd('vh25','prata','🔧','Mecânico de Verdade','25 consertos de veículo','vehicle',25);
 // Especiais da Base (zoeira oficial)
 const hasT=(p,t)=>(p.traits||[]).includes('base:'+t);
 const tps=p=>((data.adm&&data.adm.actions)||[]).filter(a=>a.type==='teleporte'&&a.actor===p.user).length;
@@ -532,10 +553,14 @@ const TITLES = [
   ['🌿','Coletor','PlantScavenging'],['🪵','Entalhador','Carving'],['🪨','Lascador','FlintKnapping'],['🏺','Oleiro','Pottery'],['🫙','Vidreiro','Glassmaking'],
   ['🐾','Rastreador','Tracking'],['🔫','Atirador','Aiming'],['🏹','Arqueiro','Archery'],['🪓','Lenhador','Axe'],['🔱','Lanceiro','Spear'],['🔨','Martelo de Thor','SmallBlunt'],
   ['🏃','Maratonista','Sprinting'],['🥷','Ninja','Sneak'],['💪','Mais forte','Strength'],['🫀','Mais em forma','Fitness'],['🛠️','Zelador','Maintenance'],
-  ['👟','Andarilho','@km','km andados'],['💥','Quebra-tudo','@broken','armas quebradas'],['⏳','Sobrevivente','@bestHours','melhor vida'],['🌙','Massacre num dia','@daily','abates num dia'],['🧪','Cientista da base','@labN','receitas do laboratório']
+  ['👟','Andarilho','@km','km andados'],['💥','Quebra-tudo','@broken','armas quebradas'],['⏳','Sobrevivente','@bestHours','melhor vida'],['🌙','Massacre num dia','@daily','abates num dia'],['🧪','Cientista da base','@labN','receitas do laboratório'],
+  ['🐇','Terror dos coelhos','@m.rabbits','coelhos abatidos'],['🥩','Carniceiro','@m.animals','animais abatidos'],['🐟','Pescador de verdade','@m.fish','peixes pescados'],['🌽','Fazendeiro de verdade','@m.harvest','colheitas'],
+  ['🔨','Artesão','@m.craft','itens fabricados'],['🪓','Lenhador de verdade','@m.trees','árvores derrubadas'],['📚','Leitor','@m.books','livros lidos'],['🎒','Saqueador','@m.loot','itens saqueados'],
+  ['🏚️','Explorador','@m.buildings','prédios visitados'],['🗺️','Viajante','@m.towns','cidades visitadas'],['🧭','Mais longe da base','@m.maxdist','quadros da base'],['🌧️','Encharcado','@m.rain','na chuva e neve'],['🦉','Noctívago','@m.night','fora de casa à noite'],['🔥','Incendiário','@m.fire','fogueiras acesas']
 ];
 
-const TITLE_ICON = {'@km':'Item_BootsHiking','@broken':'Item_Cudgel_Broken','@bestHours':'Item_Pocketwatch','@daily':'Item_DeadPerson_MaleZombie','@labN':'Item_FirstAid'};
+const TITLE_ICON = {'@km':'Item_BootsHiking','@broken':'Item_Cudgel_Broken','@bestHours':'Item_Pocketwatch','@daily':'Item_DeadPerson_MaleZombie','@labN':'Item_FirstAid','@m.animals':'Item_Steak','@m.fish':'Item_FishingRod','@m.harvest':'Item_TZ_GardenTrowel','@m.craft':'Item_Hammer','@m.trees':'Item_Axe','@m.books':'Item_Book','@m.buildings':'Item_Map','@m.towns':'Item_Map','@m.maxdist':'Item_CompassDirectional','@m.night':'Mood_Exhausted','@m.rain':'Status_TemperatureLow'};
+const getv=(p,path)=>path.split('.').reduce((o,k)=>(o==null?undefined:o[k]),p);
 const ACH_ICON = {k100:'Mood_Zombified',k500:'Mood_Zombified',k1000:'Item_DeadPerson_FemaleZombie',k2500:'Item_DeadPerson_MaleZombie',k5000:'Item_Medal_Silver',k10000:'Item_Medal_Gold',r50:'Item_DeadPerson_MaleZombie',r100:'Item_DeadPerson_MaleZombie',r200:'Item_Medal_Gold',d7:'Item_AlarmClock',d14:'Item_DigitalWatch',d30:'Item_Pocketwatch',d60:'Item_Medal_Military3',imm:'Item_Medal_Military2',dead1:'Mood_Dead',dead7:'Mood_Dead',ch3:'Mood_Happy',km50:'Item_BootsHiking',km150:'Item_BootsHiking',km500:'Item_Map',h10:'Item_DigitalWatch',h50:'Item_DigitalWatch',h100:'Item_PlushSpiffo',b25:'Item_Cudgel_Broken',b100:'Item_Cudgel_Broken',b250:'Item_Cudgel_Broken',c2:'Item_Medal_Bronze',c4:'Item_Medal_Silver',any10:'Item_Medal_Gold',three7:'Item_Medal_Military1',five5:'Item_Book',
  ar100:'Item_Bow_Carved',ar500:'Item_Bow_Carved',ar2000:'Item_Bow_Carved',ar5000:'Item_Bow_Carved',pa5:'Item_LugWrench',pa25:'Item_LugWrench',pa100:'Item_LugWrench',an5:'Item_Milk',an20:'Item_Milk',an50:'Item_Milk',ma3:'Item_Map',ma10:'Item_Map',jo3:'Item_Book',jo10:'Item_Book',dr10:'Item_CarJack',dr50:'Item_CarJack',ve5:'Item_CarJack',pd7:'Item_AlarmClock',pd30:'Item_AlarmClock',pd90:'Item_Pocketwatch',ps7:'Item_DigitalWatch',ps30:'Item_DigitalWatch',ps90:'Item_Medal_Military2',ni10:'Mood_Exhausted',ni50:'Mood_Exhausted',ni200:'Mood_Exhausted',pl10:'Item_BerryBlue',pl30:'Item_BerryBlue',pl60:'Item_BerryBlue',ks7:'Mood_Zombified',ks14:'Mood_Zombified',ks30:'Mood_Zombified',wk300:'Item_DeadPerson_FemaleZombie',wk700:'Item_DeadPerson_FemaleZombie',wk1500:'Item_DeadPerson_MaleZombie',fx7:'Mood_Happy',fx30:'Mood_Happy',pio1:'Item_Medal_Gold',pio3:'Item_Medal_Gold',k25000:'Item_Medal_Military3',d90:'Item_Pocketwatch',d180:'Item_Pocketwatch',km1000:'Item_Map',h300:'Item_DigitalWatch',r300:'Item_DeadPerson_MaleZombie',b500:'Item_Cudgel_Broken',all3:'Item_Book',ten5:'Item_Book',five10:'Item_Medal_Gold',comb7:'Item_Machete',iron:'Item_Medal_Military3',gold25:'Item_Medal_Gold',plat10:'Item_Medal_Military3',lenda:'Item_PlushSpiffo',
  lab5:'Item_FirstAid',lab20:'Item_FirstAid',vacina:'Item_Medal_Military1',cura:'Item_Medal_Gold',seringa:'Item_FirstAid',
@@ -552,6 +577,15 @@ function prep(d){
     p.pos=i+1; p.skBest=Object.fromEntries(p.skillsBest||[]); p.skBestArr=p.skillsBest||[]; p.skCur=p.skillsCur||{};
     p.chars=p.chars||[]; p.traits=p.traits||[]; p.favs=p.favs||[];
     p.spec=COMBAT.map(k=>[k,p.skCur[k]||0]).sort((a,b)=>b[1]-a[1])[0];
+    // contadores do mod Bagres Stats (chave=valor); derivados usados por titulos e conquistas
+    const M=p.mod||{}; const sumPref=pre=>Object.entries(M).filter(([k])=>k.startsWith(pre)).reduce((a,[,v])=>a+v,0);
+    p.m={kills:M['kills']||0,rabbits:M['animals.killed.rabbit']||0,animals:M['animals.killed']||0,butcher:M['animals.butchered']||0,milk:M['animals.milked']||0,eggs:M['animals.eggs']||0,
+      fish:M['fish']||0,fishmax:M['fish.maxsize']||0,harvest:M['farming.harvest']||0,sow:M['farming.sow']||0,water:M['farming.water']||0,forage:M['forage']||0,craft:M['craft']||0,
+      trees:M['trees.cut']||0,books:M['books']||0,loot:M['loot.items']||0,containers:M['loot.containers']||0,fire:M['fire.lit']||0,buried:M['corpses.buried']||0,
+      vehicle:(M['vehicle.install']||0)+(M['vehicle.engine']||0)+(M['vehicle.fix']||0),repair:(M['repair.items']||0)+(M['repair.generator']||0),
+      buildings:M['explore.buildings']||0,towns:Object.keys(M).filter(k=>k.startsWith('towns.')).length,maxdist:M['explore.maxdist']||0,
+      rain:(M['weather.rain_min']||0)+(M['weather.snow_min']||0),night:M['night.out_min']||0,online:M['online_min']||0,traps:M['traps']||0,nets:M['nets.checked']||0,deathsInf:M['deaths.infected']||0};
+    p.hasMod=Object.keys(M).length>0;
     p.ach=A.filter(a=>a.fn(p)).map(a=>a.id);
   });
   const used=new Set(); byTok={};
@@ -615,12 +649,12 @@ document.getElementById('fOnline').onclick=e=>{onlyOnline=!onlyOnline; e.target.
 function renderTitles(){
   document.getElementById('titles').innerHTML=TITLES.map(([ic,name,key,unit])=>{
     let best=[],bv=0;
-    for(const p of P){ const val=key.startsWith('@')?(p[key.slice(1)]||0):(p.skCur[key]||0); if(val>bv){bv=val;best=[p];} else if(val===bv&&val>0) best.push(p); }
+    for(const p of P){ const val=key.startsWith('@')?(getv(p,key.slice(1))||0):(p.skCur[key]||0); if(val>bv){bv=val;best=[p];} else if(val===bv&&val>0) best.push(p); }
     const icon=key.startsWith('@')?gi(TITLE_ICON[key],ic,'big'):si(key,'big')||ic;
     if(!bv) return `<div class="title empty"><div class="ic">${icon}</div><div><div class="t">${name}</div><div class="w">vago</div><div class="lv">ninguém ainda</div></div></div>`;
     // empate: fica com quem chegou primeiro nesse nivel (data do registro do servidor)
     if(best.length>1&&!key.startsWith('@')) best.sort((a,b)=>((a.skillsCurTs||{})[key]||'9').localeCompare((b.skillsCurTs||{})[key]||'9'));
-    const lv=key.startsWith('@')?(key==='@bestHours'?dh(bv):fmt(bv)+' '+unit):pname(key)+' nível '+bv;
+    const lv=key.startsWith('@')?(key==='@bestHours'?dh(bv):(key==='@m.night'||key==='@m.rain')?Math.round(bv/60)+' h '+unit:fmt(bv)+' '+unit):pname(key)+' nível '+bv;
     const extra=best.length>1?` <span class="tie">+${best.length-1} no mesmo nível</span>`:'';
     return `<div class="title"><div class="ic">${icon}</div><div><div class="t">${name}</div><div class="w">${link(best[0])}</div><div class="lv">${lv}${extra}</div></div></div>`;
   }).join('');
@@ -652,7 +686,7 @@ function renderCmpPick(){
 function renderCmp(){
   const a=byTok[document.getElementById('cA').value], b=byTok[document.getElementById('cB').value];
   if(!a||!b) return;
-  const rows=[['Abates (personagem atual)','curKills',fmt],['Abates (todos personagens)','kills',fmt],['Mortes','deaths',x=>x,true],['Melhor sobrevivência','bestHours',dh],['Vida atual','curHours',dh],['Recorde num dia','daily',fmt],['Km andados','km',fmt],['Horas jogadas','hoursPlayed',fmt],['Armas quebradas','broken',fmt],['Conquistas',p=>p.ach.length,fmt],['Skills nível 5+',p=>Object.values(p.skCur||{}).filter(v=>v>=5).length,fmt],['Traits positivos',p=>p.traits.filter(t=>traitInfo(t).c>0).length,fmt]];
+  const rows=[['Abates (personagem atual)','curKills',fmt],['Abates (todos personagens)','kills',fmt],['Mortes','deaths',x=>x,true],['Melhor sobrevivência','bestHours',dh],['Vida atual','curHours',dh],['Recorde num dia','daily',fmt],['Km andados','km',fmt],['Horas jogadas','hoursPlayed',fmt],['Armas quebradas','broken',fmt],['Coelhos abatidos (mod)',p=>mm(p,'rabbits'),fmt],['Peixes (mod)',p=>mm(p,'fish'),fmt],['Colheitas (mod)',p=>mm(p,'harvest'),fmt],['Itens saqueados (mod)',p=>mm(p,'loot'),fmt],['Conquistas',p=>p.ach.length,fmt],['Skills nível 5+',p=>Object.values(p.skCur||{}).filter(v=>v>=5).length,fmt],['Traits positivos',p=>p.traits.filter(t=>traitInfo(t).c>0).length,fmt]];
   const g=(p,k)=>typeof k==='function'?k(p):(p[k]||0);
   const line=(label,va,vb,fa,fb,lowerWins)=>{ const m=Math.max(va,vb,1); const aw=lowerWins?va<vb:va>vb, bw=lowerWins?vb<va:vb>va;
     return `<div class="cr"><div class="s l ${aw?'win':''}"><b>${fa}</b><div class="tr"><i style="width:${va/m*100}%"></i></div></div><div class="m">${label}</div><div class="s r ${bw?'win':''}"><div class="tr"><i style="width:${vb/m*100}%"></i></div><b>${fb}</b></div></div>`; };
@@ -675,6 +709,29 @@ function chart(series){
   for(let i=0;i<=4;i++){ const v=Math.round(maxK*i/4); g+=`<line x1="${L}" x2="${W}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${y(v)+4}" font-size="10" text-anchor="end" fill="var(--mute)" font-family="var(--ui)">${v}</text>`; }
   for(const [d,k] of series){ const x=L+d*slot; g+=`<rect x="${x}" y="${y(k)}" width="${bw}" height="${H-B-y(k)}" rx="2" fill="var(--red)"><title>Dia ${d+1}: ${k} abates</title></rect><text x="${x+bw/2}" y="${H-B+14}" font-size="10" text-anchor="middle" fill="var(--mute)" font-family="var(--ui)">${d+1}</text>`; }
   return `<div class="chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Abates por dia de jogo">${g}</svg><div class="note">Dias de jogo do personagem atual (dia 1 = criação). Dias sem registro não aparecem.</div></div>`;
+}
+const CATN={spear:'Lança',smallblunt:'Contundente curta',blunt:'Contundente longa',axe:'Machado',smallblade:'Lâmina curta',longblade:'Lâmina longa',firearm:'Arma de fogo',archery:'Arco',improvised:'Improvisada',unarmed:'Mãos',vehicle:'Veículo'};
+function modPanel(p){
+  if(!p.hasMod) return `<h3>Contadores da base <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">mod Bagres Stats</span></h3><div class="empty">Ainda sem registro. O mod começou a contar em 29/10/2026; os números aparecem conforme o jogador age no servidor.</div>`;
+  const M=p.mod, m=p.m, wc=(data.dict&&data.dict.wcat)||{};
+  const pref=pre=>Object.entries(M).filter(([k])=>k.startsWith(pre)&&k!==pre.slice(0,-1)).map(([k,v])=>[k.slice(pre.length),v]).sort((a,b)=>b[1]-a[1]);
+  const weapons=pref('kills.weapon.'); const cats={};
+  for(const [w,n] of weapons){ const c=w==='Vehicle'?'vehicle':w==='Base.BareHands'?'unarmed':(wc[w]||'improvised'); cats[c]=(cats[c]||0)+n; }
+  const catArr=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+  const bars=(arr,icon,unit)=>arr.length?`<div class="bars">${arr.slice(0,8).map(([k,v])=>`<div class="bar"><span>${icon?icon(k):''}${esc(k)}</span><div class="tr"><i style="width:${v/arr[0][1]*100}%"></i></div><span class="n">${fmt(v)}${unit||''}</span></div>`).join('')}</div>`:'<div class="empty">nada ainda</div>';
+  const h=x=>Math.round(x/60);
+  const animals=pref('animals.killed.').map(([k,v])=>[k,v]);
+  return `<h3>Contadores da base <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">mod Bagres Stats · contagem real desde 29/10/2026 · ${h(m.online)} h online</span></h3>
+  <div class="tiles">${stat('Abates (mod)',fmt(m.kills))}${stat('Coelhos',fmt(m.rabbits))}${stat('Animais',fmt(m.animals))}${stat('Peixes',fmt(m.fish),m.fishmax?'maior: '+m.fishmax:'' )}${stat('Colheitas',fmt(m.harvest))}${stat('Fabricados',fmt(m.craft))}${stat('Árvores',fmt(m.trees))}${stat('Livros',fmt(m.books))}${stat('Saqueados',fmt(m.loot),m.containers+' containers')}${stat('Prédios',fmt(m.buildings),m.towns+' cidades')}${stat('Longe da base',fmt(m.maxdist),'quadros')}${stat('Chuva · noite',h(m.rain)+' h · '+h(m.night)+' h')}</div>
+  <div class="two" style="margin-top:14px">
+    <div class="card"><h3 style="margin-top:0">Abates por arma <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">golpe final, só do jogador</span></h3>${bars(weapons.map(([w,n])=>[w==='Vehicle'?'Veículo':wname(w),n,w]),k=>'',' ')}
+      <h3>Por tipo de arma</h3>${bars(catArr.map(([c,n])=>[CATN[c]||c,n]))}</div>
+    <div class="card"><h3 style="margin-top:0">Animais abatidos</h3>${bars(animals)}
+      <h3>Peixes</h3>${bars(pref('fish.').filter(([k])=>k!=='maxsize'&&k!=='trash').map(([k,v])=>[wname(k),v]))}
+      <h3>Colheitas</h3>${bars(pref('farming.harvest.'))}
+      <h3>Mais fabricados</h3>${bars(pref('craft.'))}
+      <h3>Cidades visitadas</h3><div class="traits" style="margin-top:6px">${pref('towns.').map(([k])=>`<span class="trait">${esc(k)}</span>`).join('')||'<span class="empty">nenhuma ainda</span>'}</div></div>
+  </div>`;
 }
 function profile(p){
   const cur=p.chars[0]; const spec=p.spec&&p.spec[1]>0?p.spec:null;
@@ -707,6 +764,7 @@ function profile(p){
       <h3>Favoritos na barra</h3>${favs.length?`<div class="traits" style="margin-top:6px">${favs.map(f=>`<span class="trait">${ico('items',favType(f))}${esc(fname(f))}</span>`).join('')}</div><div class="note">Itens marcados como favoritos no inventário do personagem atual.</div>`:'<div class="empty">Nenhum item favoritado.</div>'}</div>
       <div class="card"><h3 style="margin-top:0">Armas que quebrou</h3>${p.brokenList&&p.brokenList.length?`<div class="bars">${p.brokenList.slice(0,10).map(w=>`<div class="bar"><span>${ico('items',w[0])}${esc(wname(w[0]))}</span><div class="tr"><i class="g" style="width:${w[1]/p.brokenList[0][1]*100}%"></i></div><span class="n">${w[1]}×</span></div>`).join('')}</div><div class="note">Somando todos os personagens.</div>`:'<div class="empty">Nenhuma.</div>'}</div>
     </div>
+    ${modPanel(p)}
     <h3>Abates por dia <span class="sub" style="font-family:var(--ui);font-size:12px;letter-spacing:.1em">personagem atual${cur&&cur.name?' · '+esc(cur.name):''}</span></h3>${chart(cur&&cur.series)}
   </div>`;
 

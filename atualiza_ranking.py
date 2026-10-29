@@ -362,6 +362,7 @@ def montar():
         return json.load(open(p, encoding="utf-8")) if os.path.exists(p) else padrao
     dic = carrega("dicionario.json", {"traits": {}, "profs": {}})
     icones = carrega("icones.json", {})
+    wcat = carrega("armas_categoria.json", {})
 
     chars = {}
     for f in glob.glob(os.path.join(DADOS, "stats__*.txt")):
@@ -518,7 +519,7 @@ def montar():
             "generatedIso": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "server": {"nome": CFG.get("nome", ""), "versao": CFG.get("versao", ""), "pop": CFG.get("pop", "")},
             "online": sorted(online), "players": out,
-            "dict": {"traits": dic["traits"], "profs": dic["profs"], "icons": icones}}
+            "dict": {"traits": dic["traits"], "profs": dic["profs"], "icons": icones, "wcat": wcat}}
     js = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
     open(os.path.join(AQUI, "data.json"), "w", encoding="utf-8").write(js)
     tpl = os.path.join(AQUI, "ranking.tpl.html")
