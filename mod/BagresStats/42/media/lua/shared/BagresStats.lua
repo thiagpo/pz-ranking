@@ -51,8 +51,7 @@ local function save(user)
     table.sort(keys)
     local ok, err = pcall(function()
         local writer = getFileWriter(path(user), true, false)
-        writer:write("_user=" .. tostring(user) .. "
-")
+        writer:write("_user=" .. tostring(user) .. "\n")
         for _, k in ipairs(keys) do
             writer:write(k .. "=" .. tostring(t[k]) .. "\n")
         end
