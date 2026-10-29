@@ -769,8 +769,8 @@ function profile(p){
   </div>`;
 
   const skills=`<div class="panel" data-p="skills" hidden>
-    <p class="note" style="margin-top:14px">Barra vermelha: personagem atual. Marcação clara: maior nível já alcançado em outro personagem. Dourado: nível 10.</p>
-    <div class="skgroups">${GROUPS.map(([g,ks])=>`<div class="skg"><h4>${g}</h4>${ks.map(k=>{const c=p.skCur[k]||0,b=p.skBest[k]||0;return `<div class="sk"><span>${si(k)}${pname(k)}</span><span class="lv"><b>${c}</b>${b>c?' / '+b:''}</span><span class="seg">${Array.from({length:10},(_,i)=>`<i class="${i<c?(c>=10?'max':'on'):i<b?'ghost':''}"></i>`).join('')}</span></div>`;}).join('')}</div>`).join('')}</div>
+    <p class="note" style="margin-top:14px">Níveis do personagem atual. Dourado: nível 10.</p>
+    <div class="skgroups">${GROUPS.map(([g,ks])=>`<div class="skg"><h4>${g}</h4>${ks.map(k=>{const c=p.skCur[k]||0;return `<div class="sk"><span>${si(k)}${pname(k)}</span><span class="lv"><b>${c}</b></span><span class="seg">${Array.from({length:10},(_,i)=>`<i class="${i<c?(c>=10?'max':'on'):''}"></i>`).join('')}</span></div>`;}).join('')}</div>`).join('')}</div>
   </div>`;
 
   const sortedA=A.slice().sort((x,y)=>{const ux=p.ach.includes(x.id),uy=p.ach.includes(y.id); if(ux!==uy) return ux?-1:1; return TIER_ORDER[y.tier]-TIER_ORDER[x.tier]||x.name.localeCompare(y.name);});
