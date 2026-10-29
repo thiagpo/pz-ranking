@@ -216,7 +216,7 @@ select,.btn{background:var(--bg2);border:1px solid var(--line2);color:var(--fg);
 .a .pr{height:4px;background:var(--bg3);border-radius:2px;margin-top:6px;overflow:hidden} .a .pr i{display:block;height:100%;background:var(--mute)}
 .a.ok{border-color:color-mix(in srgb,var(--c) 55%,var(--line))} .a.ok .ic{background:color-mix(in srgb,var(--c) 22%,var(--bg3));border-color:var(--c)} .a.ok .pr i{background:var(--c)}
 .a.lock{opacity:.6} .a.lock .ic{filter:grayscale(1)}
-.a.bronze{--c:var(--bronze)} .a.prata{--c:var(--silver)} .a.ouro{--c:var(--gold)} .a.platina{--c:var(--plat)}
+.a.bronze{--c:var(--bronze)} .a.prata{--c:var(--silver)} .a.ouro{--c:var(--gold)} .a.platina{--c:var(--plat)} .a.bagre{--c:#c47bff}
 .a .tier{position:absolute;top:8px;right:10px;font-size:9px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--c)}
 .a .who{font-size:12px;color:var(--mute);margin-top:4px;overflow-wrap:anywhere}
 .chars{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
@@ -499,13 +499,23 @@ add('ten5','ouro','🎓','Polivalente','10 skills no nível 5 ou mais',p=>p.skBe
 add('five10','platina','👑','Cinco Mestres','5 skills no nível 10',p=>p.skBestArr.filter(s=>s[1]>=10).length>=5,p=>p.skBestArr.filter(s=>s[1]>=10).length/5);
 add('comb7','platina','⚔️','Mestre de Armas','Todas as skills de combate no nível 7',p=>COMBAT.every(k=>sk(p,k)>=7),p=>COMBAT.filter(k=>sk(p,k)>=7).length/COMBAT.length);
 add('iron','platina','🛡️','Imortal de Ferro','30 dias vivo, 2.000 abates e nenhuma morte',p=>p.deaths===0&&p.bestHours>=720&&p.kills>=2000,p=>p.deaths===0?Math.min(p.bestHours/720,p.kills/2000):0);
+// Especiais da Base (zoeira oficial)
+const hasT=(p,t)=>(p.traits||[]).includes('base:'+t);
+const tps=p=>((data.adm&&data.adm.actions)||[]).filter(a=>a.type==='teleporte'&&a.actor===p.user).length;
+add('zorm','bagre','💀','Build Errada by Zorminha','Morreu com menos de 2 dias de vida',p=>(p.deathsList||[]).some(d=>d.hours<48),p=>(p.deathsList||[]).some(d=>d.hours<48)?1:0);
+add('reset','bagre','🔁','Resetou?','Morreu mais de 8 vezes',p=>p.deaths>8,p=>p.deaths/9);
+add('leite','bagre','🥛','Me Dá Leitinho Bob','Cuidados com Animais nível 5',p=>sk(p,'Husbandry')>=5,p=>sk(p,'Husbandry')/5);
+add('aband','bagre','🚪','Abandonou o Server','Chegou surdo e analfabeto',p=>hasT(p,'deaf')&&hasT(p,'illiterate'),p=>(hasT(p,'deaf')+hasT(p,'illiterate'))/2);
+add('ler','bagre','📖','10k Eu Aprendo a Ler','Chegou analfabeto',p=>hasT(p,'illiterate'),p=>hasT(p,'illiterate')?1:0);
+add('baby','bagre','🍼','Baby Mode','Usou teleporte de admin',p=>tps(p)>=1,p=>tps(p));
+add('duro','bagre','🦴','Duro Duro Duro','Abaixo do peso (menos de 65 kg)',p=>hasT(p,'underweight')||hasT(p,'veryunderweight'),p=>(hasT(p,'underweight')||hasT(p,'veryunderweight'))?1:0);
 // Meta: contam as conquistas acima (calculadas antes destas)
 const META=new Set(['gold25','plat10','lenda']);
 const cntTier=(p,t)=>A.filter(a=>!META.has(a.id)&&a.tier===t&&a.fn(p)).length;
 add('gold25','platina','🏅','Colecionador de Ouro','25 conquistas de ouro',p=>cntTier(p,'ouro')>=25,p=>cntTier(p,'ouro')/25);
 add('plat10','platina','💎','Lenda da Base','10 conquistas de platina',p=>cntTier(p,'platina')>=10,p=>cntTier(p,'platina')/10);
 add('lenda','platina','🌟','Bagre Supremo','Todas as conquistas de ouro',p=>cntTier(p,'ouro')>=A.filter(a=>a.tier==='ouro').length,p=>cntTier(p,'ouro')/A.filter(a=>a.tier==='ouro').length);
-const TIER_ORDER = {bronze:0,prata:1,ouro:2,platina:3};
+const TIER_ORDER = {bronze:0,prata:1,ouro:2,platina:3,bagre:4};
 
 /* ---------- titles (per current character) ---------- */
 const TITLES = [
@@ -520,7 +530,8 @@ const TITLES = [
 
 const TITLE_ICON = {'@km':'Item_BootsHiking','@broken':'Item_Cudgel_Broken','@bestHours':'Item_Pocketwatch','@daily':'Item_DeadPerson_MaleZombie'};
 const ACH_ICON = {k100:'Mood_Zombified',k500:'Mood_Zombified',k1000:'Item_DeadPerson_FemaleZombie',k2500:'Item_DeadPerson_MaleZombie',k5000:'Item_Medal_Silver',k10000:'Item_Medal_Gold',r50:'Item_DeadPerson_MaleZombie',r100:'Item_DeadPerson_MaleZombie',r200:'Item_Medal_Gold',d7:'Item_AlarmClock',d14:'Item_DigitalWatch',d30:'Item_Pocketwatch',d60:'Item_Medal_Military3',imm:'Item_Medal_Military2',dead1:'Mood_Dead',dead7:'Mood_Dead',ch3:'Mood_Happy',km50:'Item_BootsHiking',km150:'Item_BootsHiking',km500:'Item_Map',h10:'Item_DigitalWatch',h50:'Item_DigitalWatch',h100:'Item_PlushSpiffo',b25:'Item_Cudgel_Broken',b100:'Item_Cudgel_Broken',b250:'Item_Cudgel_Broken',c2:'Item_Medal_Bronze',c4:'Item_Medal_Silver',any10:'Item_Medal_Gold',three7:'Item_Medal_Military1',five5:'Item_Book',
- ar100:'Item_Bow_Carved',ar500:'Item_Bow_Carved',ar2000:'Item_Bow_Carved',ar5000:'Item_Bow_Carved',pa5:'Item_LugWrench',pa25:'Item_LugWrench',pa100:'Item_LugWrench',an5:'Item_Milk',an20:'Item_Milk',an50:'Item_Milk',ma3:'Item_Map',ma10:'Item_Map',jo3:'Item_Book',jo10:'Item_Book',dr10:'Item_CarJack',dr50:'Item_CarJack',ve5:'Item_CarJack',pd7:'Item_AlarmClock',pd30:'Item_AlarmClock',pd90:'Item_Pocketwatch',ps7:'Item_DigitalWatch',ps30:'Item_DigitalWatch',ps90:'Item_Medal_Military2',ni10:'Mood_Exhausted',ni50:'Mood_Exhausted',ni200:'Mood_Exhausted',pl10:'Item_BerryBlue',pl30:'Item_BerryBlue',pl60:'Item_BerryBlue',ks7:'Mood_Zombified',ks14:'Mood_Zombified',ks30:'Mood_Zombified',wk300:'Item_DeadPerson_FemaleZombie',wk700:'Item_DeadPerson_FemaleZombie',wk1500:'Item_DeadPerson_MaleZombie',fx7:'Mood_Happy',fx30:'Mood_Happy',pio1:'Item_Medal_Gold',pio3:'Item_Medal_Gold',k25000:'Item_Medal_Military3',d90:'Item_Pocketwatch',d180:'Item_Pocketwatch',km1000:'Item_Map',h300:'Item_DigitalWatch',r300:'Item_DeadPerson_MaleZombie',b500:'Item_Cudgel_Broken',all3:'Item_Book',ten5:'Item_Book',five10:'Item_Medal_Gold',comb7:'Item_Machete',iron:'Item_Medal_Military3',gold25:'Item_Medal_Gold',plat10:'Item_Medal_Military3',lenda:'Item_PlushSpiffo'};
+ ar100:'Item_Bow_Carved',ar500:'Item_Bow_Carved',ar2000:'Item_Bow_Carved',ar5000:'Item_Bow_Carved',pa5:'Item_LugWrench',pa25:'Item_LugWrench',pa100:'Item_LugWrench',an5:'Item_Milk',an20:'Item_Milk',an50:'Item_Milk',ma3:'Item_Map',ma10:'Item_Map',jo3:'Item_Book',jo10:'Item_Book',dr10:'Item_CarJack',dr50:'Item_CarJack',ve5:'Item_CarJack',pd7:'Item_AlarmClock',pd30:'Item_AlarmClock',pd90:'Item_Pocketwatch',ps7:'Item_DigitalWatch',ps30:'Item_DigitalWatch',ps90:'Item_Medal_Military2',ni10:'Mood_Exhausted',ni50:'Mood_Exhausted',ni200:'Mood_Exhausted',pl10:'Item_BerryBlue',pl30:'Item_BerryBlue',pl60:'Item_BerryBlue',ks7:'Mood_Zombified',ks14:'Mood_Zombified',ks30:'Mood_Zombified',wk300:'Item_DeadPerson_FemaleZombie',wk700:'Item_DeadPerson_FemaleZombie',wk1500:'Item_DeadPerson_MaleZombie',fx7:'Mood_Happy',fx30:'Mood_Happy',pio1:'Item_Medal_Gold',pio3:'Item_Medal_Gold',k25000:'Item_Medal_Military3',d90:'Item_Pocketwatch',d180:'Item_Pocketwatch',km1000:'Item_Map',h300:'Item_DigitalWatch',r300:'Item_DeadPerson_MaleZombie',b500:'Item_Cudgel_Broken',all3:'Item_Book',ten5:'Item_Book',five10:'Item_Medal_Gold',comb7:'Item_Machete',iron:'Item_Medal_Military3',gold25:'Item_Medal_Gold',plat10:'Item_Medal_Military3',lenda:'Item_PlushSpiffo',
+ zorm:'Mood_Dead',reset:'Mood_Dead',leite:'Item_Milk',aband:'trait_deaf',ler:'trait_illiterate',baby:'Item_PlushSpiffo',duro:'trait_underweight'};
 const aicon = a => { const sk=a.id.startsWith('sk_')?a.id.slice(3).replace(/\d+$/,''):null; return (sk?si(sk,'big'):gi(ACH_ICON[a.id],'','big'))||a.ic; };
 
 /* ---------- state ---------- */
@@ -547,7 +558,7 @@ const ICONS = () => (data.dict&&data.dict.icons)||{};
 const ico = (grp,id) => { const g=ICONS()[grp]; const f=g&&g[id]; return f?`<img class="ico" src="${ICON_BASE}${f}" alt="" loading="lazy">`:''; };
 const favType = f => { const n=ICONS().names||{}; for(const k in n) if(n[k]===f) return k; return null; };
 // icones avulsos do jogo (sprite por nome); fallback para emoji quando o arquivo nao foi extraido
-const gi = (name,fallback,cls) => (ICONS().extra||[]).includes(name)?`<img class="ico ${cls||''}" src="${ICON_BASE}${name}.png" alt="" loading="lazy">`:(fallback||'');
+const gi = (name,fallback,cls) => (name&&((ICONS().extra||[]).includes(name)||Object.values(ICONS().traits||{}).includes(name+'.png')))?`<img class="ico ${cls||''}" src="${ICON_BASE}${name}.png" alt="" loading="lazy">`:(fallback||'');
 const SKILL_ICON = {Farming:'Item_TZ_GardenTrowel',Husbandry:'Item_Milk',Butchering:'Item_Steak',Doctor:'Item_FirstAid',Cooking:'Item_Pan',Woodwork:'Item_Hacksaw',Masonry:'Item_ClayBrick_Fired',Blacksmith:'Item_Anvil_Forged',MetalWelding:'Item_BlowTorch',Tailoring:'Item_Needle',Fishing:'Item_FishingRod',Trapping:'Item_BearTrap',Mechanics:'Item_LugWrench',Electricity:'Item_Screwdriver',PlantScavenging:'Item_BerryBlue',Carving:'Item_Magazine_Carving',FlintKnapping:'Item_Flint',Pottery:'Item_ClayJar_Fired',Glassmaking:'Item_GlassBottle',Tracking:'Item_CompassDirectional',Aiming:'Item_HandGun3',Reloading:'Item_HandgunAmmoBox',Archery:'Item_Bow_Carved',Fletching:'Item_Arrow_Carved',Axe:'Item_Axe',Blunt:'Item_BaseballBat',SmallBlunt:'Item_HammerStone',LongBlade:'Item_Machete',SmallBlade:'Item_HuntingKnife',Spear:'Item_SpearStick',Maintenance:'Item_Hammer',Sprinting:'Item_ShoesRunningRed',Lightfoot:'Item_ShoesSlippers',Nimble:'Item_Baseball',Sneak:'Item_Balaclava',Strength:'Item_Barbell',Fitness:'Item_Dumbbell'};
 const si = (k,cls) => { const n=SKILL_ICON[k]; if(!n) return ''; const ex=(ICONS().extra||[]).includes(n), it=Object.values(ICONS().items||{}).includes(n+'.png'); return (ex||it)?`<img class="ico ${cls||''}" src="${ICON_BASE}${n}.png" alt="" loading="lazy">`:''; };
 
@@ -612,7 +623,7 @@ function renderConq(){
   const sorted=A.slice().sort((a,b)=>TIER_ORDER[a.tier]-TIER_ORDER[b.tier]||a.name.localeCompare(b.name));
   const total=P.reduce((a,p)=>a+p.ach.length,0);
   document.getElementById('conqsub').textContent=A.length+' conquistas · '+total+' desbloqueadas na base';
-  const tiers=['bronze','prata','ouro','platina'], tn={bronze:'Bronze',prata:'Prata',ouro:'Ouro',platina:'Platina'};
+  const tiers=['bagre','bronze','prata','ouro','platina'], tn={bagre:'Especiais da Base',bronze:'Bronze',prata:'Prata',ouro:'Ouro',platina:'Platina'};
   document.getElementById('conqlist').innerHTML=tiers.map(t=>{
     const list=sorted.filter(a=>a.tier===t);
     return `<h3>${tn[t]} <span class="sub" style="font-family:var(--ui);font-size:12px;letter-spacing:.1em">${list.length}</span></h3><div class="ach">`+list.map(a=>{
