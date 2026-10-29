@@ -509,6 +509,12 @@ add('leite','bagre','🥛','Me Dá Leitinho Bob','Cuidados com Animais nível 5'
 add('aband','bagre','🚪','Abandonou o Server','Chegou surdo e analfabeto',p=>hasT(p,'deaf')&&hasT(p,'illiterate'),p=>(hasT(p,'deaf')+hasT(p,'illiterate'))/2);
 add('ler','bagre','📖','10k Eu Aprendo a Ler','Chegou analfabeto',p=>hasT(p,'illiterate'),p=>hasT(p,'illiterate')?1:0);
 add('baby','bagre','🍼','Baby Mode','Usou teleporte de admin',p=>tps(p)>=1,p=>tps(p));
+const lab=(p,k)=>(p.lab&&p.lab[k])||0;
+add('lab5','prata','🧪','Pesquisador','Aprendeu 5 receitas do laboratório da vacina',p=>lab(p,'n')>=5,p=>lab(p,'n')/5);
+add('lab20','ouro','🧪','Cientista','Aprendeu 20 receitas do laboratório da vacina',p=>lab(p,'n')>=20,p=>lab(p,'n')/20);
+add('vacina','platina','💉','Vacinador','Chegou à receita da vacina',p=>!!lab(p,'vaccine'),p=>lab(p,'vaccine')?1:lab(p,'n')/40);
+add('cura','platina','💉','Criou a Cura','Chegou à receita de sintetizar a cura',p=>!!lab(p,'cure'),p=>lab(p,'cure')?1:lab(p,'n')/40);
+add('seringa','bagre','💉','Com a Cura na Mão','Está carregando uma seringa com a cura',p=>!!lab(p,'has'),p=>lab(p,'has')?1:0);
 add('duro','bagre','🦴','Duro Duro Duro','Abaixo do peso (menos de 65 kg)',p=>hasT(p,'underweight')||hasT(p,'veryunderweight'),p=>(hasT(p,'underweight')||hasT(p,'veryunderweight'))?1:0);
 // Meta: contam as conquistas acima (calculadas antes destas)
 const META=new Set(['gold25','plat10','lenda']);
@@ -526,12 +532,13 @@ const TITLES = [
   ['🌿','Coletor','PlantScavenging'],['🪵','Entalhador','Carving'],['🪨','Lascador','FlintKnapping'],['🏺','Oleiro','Pottery'],['🫙','Vidreiro','Glassmaking'],
   ['🐾','Rastreador','Tracking'],['🔫','Atirador','Aiming'],['🏹','Arqueiro','Archery'],['🪓','Lenhador','Axe'],['🔱','Lanceiro','Spear'],['🔨','Martelo de Thor','SmallBlunt'],
   ['🏃','Maratonista','Sprinting'],['🥷','Ninja','Sneak'],['💪','Mais forte','Strength'],['🫀','Mais em forma','Fitness'],['🛠️','Zelador','Maintenance'],
-  ['👟','Andarilho','@km','km andados'],['💥','Quebra-tudo','@broken','armas quebradas'],['⏳','Sobrevivente','@bestHours','melhor vida'],['🌙','Massacre num dia','@daily','abates num dia']
+  ['👟','Andarilho','@km','km andados'],['💥','Quebra-tudo','@broken','armas quebradas'],['⏳','Sobrevivente','@bestHours','melhor vida'],['🌙','Massacre num dia','@daily','abates num dia'],['🧪','Cientista da base','@labN','receitas do laboratório']
 ];
 
-const TITLE_ICON = {'@km':'Item_BootsHiking','@broken':'Item_Cudgel_Broken','@bestHours':'Item_Pocketwatch','@daily':'Item_DeadPerson_MaleZombie'};
+const TITLE_ICON = {'@km':'Item_BootsHiking','@broken':'Item_Cudgel_Broken','@bestHours':'Item_Pocketwatch','@daily':'Item_DeadPerson_MaleZombie','@labN':'Item_FirstAid'};
 const ACH_ICON = {k100:'Mood_Zombified',k500:'Mood_Zombified',k1000:'Item_DeadPerson_FemaleZombie',k2500:'Item_DeadPerson_MaleZombie',k5000:'Item_Medal_Silver',k10000:'Item_Medal_Gold',r50:'Item_DeadPerson_MaleZombie',r100:'Item_DeadPerson_MaleZombie',r200:'Item_Medal_Gold',d7:'Item_AlarmClock',d14:'Item_DigitalWatch',d30:'Item_Pocketwatch',d60:'Item_Medal_Military3',imm:'Item_Medal_Military2',dead1:'Mood_Dead',dead7:'Mood_Dead',ch3:'Mood_Happy',km50:'Item_BootsHiking',km150:'Item_BootsHiking',km500:'Item_Map',h10:'Item_DigitalWatch',h50:'Item_DigitalWatch',h100:'Item_PlushSpiffo',b25:'Item_Cudgel_Broken',b100:'Item_Cudgel_Broken',b250:'Item_Cudgel_Broken',c2:'Item_Medal_Bronze',c4:'Item_Medal_Silver',any10:'Item_Medal_Gold',three7:'Item_Medal_Military1',five5:'Item_Book',
  ar100:'Item_Bow_Carved',ar500:'Item_Bow_Carved',ar2000:'Item_Bow_Carved',ar5000:'Item_Bow_Carved',pa5:'Item_LugWrench',pa25:'Item_LugWrench',pa100:'Item_LugWrench',an5:'Item_Milk',an20:'Item_Milk',an50:'Item_Milk',ma3:'Item_Map',ma10:'Item_Map',jo3:'Item_Book',jo10:'Item_Book',dr10:'Item_CarJack',dr50:'Item_CarJack',ve5:'Item_CarJack',pd7:'Item_AlarmClock',pd30:'Item_AlarmClock',pd90:'Item_Pocketwatch',ps7:'Item_DigitalWatch',ps30:'Item_DigitalWatch',ps90:'Item_Medal_Military2',ni10:'Mood_Exhausted',ni50:'Mood_Exhausted',ni200:'Mood_Exhausted',pl10:'Item_BerryBlue',pl30:'Item_BerryBlue',pl60:'Item_BerryBlue',ks7:'Mood_Zombified',ks14:'Mood_Zombified',ks30:'Mood_Zombified',wk300:'Item_DeadPerson_FemaleZombie',wk700:'Item_DeadPerson_FemaleZombie',wk1500:'Item_DeadPerson_MaleZombie',fx7:'Mood_Happy',fx30:'Mood_Happy',pio1:'Item_Medal_Gold',pio3:'Item_Medal_Gold',k25000:'Item_Medal_Military3',d90:'Item_Pocketwatch',d180:'Item_Pocketwatch',km1000:'Item_Map',h300:'Item_DigitalWatch',r300:'Item_DeadPerson_MaleZombie',b500:'Item_Cudgel_Broken',all3:'Item_Book',ten5:'Item_Book',five10:'Item_Medal_Gold',comb7:'Item_Machete',iron:'Item_Medal_Military3',gold25:'Item_Medal_Gold',plat10:'Item_Medal_Military3',lenda:'Item_PlushSpiffo',
+ lab5:'Item_FirstAid',lab20:'Item_FirstAid',vacina:'Item_Medal_Military1',cura:'Item_Medal_Gold',seringa:'Item_FirstAid',
  zorm:'Mood_Dead',reset:'Mood_Dead',leite:'Item_Milk',aband:'trait_deaf',ler:'trait_illiterate',baby:'Item_PlushSpiffo',duro:'trait_underweight'};
 const aicon = a => { const sk=a.id.startsWith('sk_')?a.id.slice(3).replace(/\d+$/,''):null; return (sk?si(sk,'big'):gi(ACH_ICON[a.id],'','big'))||a.ic; };
 

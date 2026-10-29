@@ -81,6 +81,18 @@ def series(v):
     return out
 
 
+LAB = set(open(os.path.join(AQUI, "receitas_lab.txt"), encoding="utf-8").read().split()) if os.path.exists(os.path.join(AQUI, "receitas_lab.txt")) else set()
+LAB_CURA = {"ChmSynthesizeCure", "ChmDuplicateCure"}
+LAB_VAC = {"ChmSynthesizePlainVaccine", "ChmSynthesizeQualityVaccine", "ChmSynthesizeAdvancedVaccine", "ChmDuplicateAdvancedVaccine"}
+
+
+def lab_info(blob):
+    toks = set(m.decode("latin-1") for m in re.findall(rb"[A-Za-z0-9_.]{4,60}", blob))
+    sabe = toks & LAB
+    return {"n": len(sabe), "cure": bool(sabe & LAB_CURA), "vaccine": bool(sabe & LAB_VAC),
+            "has": any(t.endswith(("CmpSyringeWithCure", "CmpSyringeReusableWithCure")) for t in toks)}
+
+
 def ler_traits(dic):
     out = {}
     p = os.path.join(DADOS, "players.db")
@@ -93,7 +105,8 @@ def ler_traits(dic):
             favs = list(dict.fromkeys(f.decode("utf-8", "ignore")[4:] for f in re.findall(rb"Fav:[^\x00-\x1f]{2,40}", blob or b"")))
             out[user] = {"prof": next((t for t in toks if t in dic["profs"]), ""), "traits": [t for t in toks if t in dic["traits"]],
                          "favs": favs, "charName": (name or "").strip(),
-                         "plants": sum(1 for t in toks if t.split(":", 1)[1] in PLANTAS)}
+                         "plants": sum(1 for t in toks if t.split(":", 1)[1] in PLANTAS),
+                         "lab": lab_info(blob or b"")}
         c.close()
     except Exception:
         pass
@@ -448,6 +461,7 @@ def montar():
                 "firstSeen": first_seen.get(u, ""), "lastSeen": last_seen.get(u, ""),
                 "acts": dict(acts.get(u, {})), "chat": chat.get(u, 0), "drives": drives.get(u, 0), "vehicles": len(veics.get(u, ())),
                 "pres": pres.get(u, {"days": 0, "streak": 0, "night": 0}), "plants": ex.get("plants", 0),
+                "lab": ex.get("lab", {"n": 0, "cure": False, "vaccine": False, "has": False}), "labN": ex.get("lab", {}).get("n", 0),
                 "phoenix": fenix.get(u, 0), "first10": first10.get(u, []),
                 "killStreak": (p or {}).get("killStreak", 0), "weekKills": (p or {}).get("weekKills", 0)}
         if p:
