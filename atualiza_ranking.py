@@ -30,10 +30,13 @@ ROLES_PT = {"admin": "Admin", "moderator": "Moderador", "gm": "Game Master", "ob
 
 
 def baixar():
-    import paramiko
-    t = paramiko.Transport((CFG["host"], int(CFG.get("port", 22))))
+    import paramiko, socket
+    sock = socket.create_connection((CFG["host"], int(CFG.get("port", 22))), timeout=30)
+    sock.settimeout(120)
+    t = paramiko.Transport(sock)
     t.connect(username=CFG["user"], password=CFG["password"])
     s = paramiko.SFTPClient.from_transport(t)
+    s.get_channel().settimeout(120)
     for f in glob.glob(os.path.join(DADOS, "stats__*.txt")):
         os.remove(f)
     for f in s.listdir(R_STATS):
