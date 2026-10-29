@@ -244,7 +244,7 @@ def ler_atividade():
                 aberta[u] = ts
             elif u in aberta:
                 sess[u].append((aberta.pop(u), ts))
-    agora = datetime.datetime.utcnow() - datetime.timedelta(hours=3)
+    agora = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None) - datetime.timedelta(hours=3)
     for u, ts in aberta.items():
         sess[u].append((ts, agora))
     pres = {}
@@ -543,5 +543,13 @@ def enviar(js):
 
 if __name__ == "__main__":
     if "--sem-download" not in sys.argv:
-        baixar()
+        import time
+        for tentativa in range(3):
+            try:
+                baixar(); break
+            except Exception as e:
+                print("download falhou:", e)
+                if tentativa == 2:
+                    raise
+                time.sleep(40)
     enviar(montar())
