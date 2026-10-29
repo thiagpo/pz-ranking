@@ -436,6 +436,75 @@ skT('Axe',7,'ouro','🪓','Lenhador'); skT('Spear',7,'ouro','🔱','Lanceiro'); 
 skT('LongBlade',7,'ouro','🗡️','Espadachim'); skT('SmallBlade',7,'ouro','🔪','Lâmina Veloz'); skT('Maintenance',7,'ouro','🛠️','Zelador');
 skT('Sprinting',7,'ouro','🏃','Pernas de Aço'); skT('Sneak',7,'ouro','🥷','Sombra'); skT('Nimble',7,'ouro','🤸','Esquivo'); skT('Lightfoot',7,'ouro','🪶','Passo Leve');
 skT('Strength',10,'platina','💪','Colosso'); skT('Fitness',10,'platina','🫀','Condicionado');
+// Atividade registrada pelo servidor (comandos dos mods, chat, veículos, presença)
+const act=(p,k)=>(p.acts&&p.acts[k])||0, pres=(p,k)=>(p.pres&&p.pres[k])||0;
+add('ho500','bronze','🐎','Cavaleiro Iniciante','500 ações a cavalo',p=>act(p,'horse')>=500,p=>act(p,'horse')/500);
+add('ho2000','prata','🐎','Cavaleiro','2.000 ações a cavalo',p=>act(p,'horse')>=2000,p=>act(p,'horse')/2000);
+add('ho5000','ouro','🐎','Centauro','5.000 ações a cavalo',p=>act(p,'horse')>=5000,p=>act(p,'horse')/5000);
+add('ho15000','platina','🐎','Lenda a Cavalo','15.000 ações a cavalo',p=>act(p,'horse')>=15000,p=>act(p,'horse')/15000);
+add('ar100','bronze','🏹','Primeiras Flechas','100 flechas tensionadas',p=>act(p,'arrows')>=100,p=>act(p,'arrows')/100);
+add('ar500','prata','🏹','Arqueiro de Verdade','500 flechas tensionadas',p=>act(p,'arrows')>=500,p=>act(p,'arrows')/500);
+add('ar2000','ouro','🏹','Robin Hood','2.000 flechas tensionadas',p=>act(p,'arrows')>=2000,p=>act(p,'arrows')/2000);
+add('ar5000','platina','🏹','Legolas da Base','5.000 flechas tensionadas',p=>act(p,'arrows')>=5000,p=>act(p,'arrows')/5000);
+add('pa5','bronze','🔩','Mecânico de Rua','5 peças instaladas em veículos',p=>act(p,'parts')>=5,p=>act(p,'parts')/5);
+add('pa25','prata','🔩','Oficina Aberta','25 peças instaladas',p=>act(p,'parts')>=25,p=>act(p,'parts')/25);
+add('pa100','ouro','🔩','Mestre Mecânico','100 peças instaladas',p=>act(p,'parts')>=100,p=>act(p,'parts')/100);
+add('an5','bronze','🐄','Dono de Bicho','5 animais adotados ou batizados',p=>act(p,'animals')>=5,p=>act(p,'animals')/5);
+add('an20','prata','🐄','Fazenda Viva','20 animais adotados ou batizados',p=>act(p,'animals')>=20,p=>act(p,'animals')/20);
+add('an50','ouro','🐄','Zoológico','50 animais adotados ou batizados',p=>act(p,'animals')>=50,p=>act(p,'animals')/50);
+add('ma3','bronze','🗺️','Cartógrafo','3 mapas lidos',p=>act(p,'maps')>=3,p=>act(p,'maps')/3);
+add('ma10','prata','🗺️','Explorador de Mapas','10 mapas lidos',p=>act(p,'maps')>=10,p=>act(p,'maps')/10);
+add('jo3','bronze','📓','Diarista','Usou o diário de skills 3 vezes',p=>act(p,'journal')>=3,p=>act(p,'journal')/3);
+add('jo10','prata','📓','Memorialista','Usou o diário de skills 10 vezes',p=>act(p,'journal')>=10,p=>act(p,'journal')/10);
+add('tr20','bronze','🗑️','Faxineiro','Esvaziou o lixo 20 vezes',p=>act(p,'trash')>=20,p=>act(p,'trash')/20);
+add('tr100','prata','🗑️','Lixeiro Oficial','Esvaziou o lixo 100 vezes',p=>act(p,'trash')>=100,p=>act(p,'trash')/100);
+add('ch50','bronze','📻','Tagarela','50 mensagens no chat',p=>p.chat>=50,p=>p.chat/50);
+add('ch200','prata','📻','Rádio Bagre','200 mensagens no chat',p=>p.chat>=200,p=>p.chat/200);
+add('ch1000','ouro','📻','Locutor','1.000 mensagens no chat',p=>p.chat>=1000,p=>p.chat/1000);
+add('dr10','bronze','🚗','Motorista','Entrou em veículos 10 vezes',p=>p.drives>=10,p=>p.drives/10);
+add('dr50','prata','🚗','Taxista','Entrou em veículos 50 vezes',p=>p.drives>=50,p=>p.drives/50);
+add('ve5','prata','🚙','Colecionador de Carros','Dirigiu 5 modelos diferentes',p=>p.vehicles>=5,p=>p.vehicles/5);
+add('pd7','bronze','📅','Uma Semana na Base','Presente em 7 dias diferentes',p=>pres(p,'days')>=7,p=>pres(p,'days')/7);
+add('pd30','prata','📅','Um Mês na Base','Presente em 30 dias diferentes',p=>pres(p,'days')>=30,p=>pres(p,'days')/30);
+add('pd90','ouro','📅','Veterano da Base','Presente em 90 dias diferentes',p=>pres(p,'days')>=90,p=>pres(p,'days')/90);
+add('ps7','prata','🔥','Assíduo','7 dias seguidos entrando no servidor',p=>pres(p,'streak')>=7,p=>pres(p,'streak')/7);
+add('ps30','ouro','🔥','Sem Faltar','30 dias seguidos entrando no servidor',p=>pres(p,'streak')>=30,p=>pres(p,'streak')/30);
+add('ps90','platina','🔥','Morador Fixo','90 dias seguidos entrando no servidor',p=>pres(p,'streak')>=90,p=>pres(p,'streak')/90);
+add('ni10','bronze','🦉','Coruja','10 horas jogadas de madrugada',p=>pres(p,'night')>=10,p=>pres(p,'night')/10);
+add('ni50','prata','🦉','Vampiro','50 horas jogadas de madrugada',p=>pres(p,'night')>=50,p=>pres(p,'night')/50);
+add('ni200','ouro','🦉','Noctívago','200 horas jogadas de madrugada',p=>pres(p,'night')>=200,p=>pres(p,'night')/200);
+add('pl10','bronze','🌿','Herbalista','Conhece 10 plantas',p=>p.plants>=10,p=>p.plants/10);
+add('pl30','prata','🌿','Botânico','Conhece 30 plantas',p=>p.plants>=30,p=>p.plants/30);
+add('pl60','ouro','🌿','Enciclopédia Verde','Conhece 60 plantas',p=>p.plants>=60,p=>p.plants/60);
+add('ks7','bronze','🩸','Semana Sangrenta','7 dias seguidos matando',p=>p.killStreak>=7,p=>p.killStreak/7);
+add('ks14','prata','🩸','Quinzena Letal','14 dias seguidos matando',p=>p.killStreak>=14,p=>p.killStreak/14);
+add('ks30','ouro','🩸','Mês de Carnificina','30 dias seguidos matando',p=>p.killStreak>=30,p=>p.killStreak/30);
+add('wk300','prata','💀','Semana de 300','300 abates em 7 dias de jogo',p=>p.weekKills>=300,p=>p.weekKills/300);
+add('wk700','ouro','💀','Semana de 700','700 abates em 7 dias de jogo',p=>p.weekKills>=700,p=>p.weekKills/700);
+add('wk1500','platina','💀','Semana Apocalíptica','1.500 abates em 7 dias de jogo',p=>p.weekKills>=1500,p=>p.weekKills/1500);
+add('fx7','prata','🔥','Fênix','Morreu e voltou a sobreviver 7 dias',p=>p.phoenix>=168,p=>p.phoenix/168);
+add('fx30','ouro','🔥','Fênix de Ouro','Morreu e voltou a sobreviver 30 dias',p=>p.phoenix>=720,p=>p.phoenix/720);
+add('pio1','platina','🥇','Pioneiro','Primeiro da base a chegar ao nível 10 em uma skill',p=>(p.first10||[]).length>=1,p=>(p.first10||[]).length);
+add('pio3','platina','🥇','Desbravador','Primeiro da base ao nível 10 em 3 skills',p=>(p.first10||[]).length>=3,p=>(p.first10||[]).length/3);
+// Platina: os difíceis de verdade
+add('k25000','platina','☠️','Genocida','25.000 zumbis abatidos',p=>p.kills>=25000,p=>p.kills/25000);
+add('d90','platina','🏰','Três Meses Vivo','90 dias com um personagem',p=>p.bestHours>=2160,p=>p.bestHours/2160);
+add('d180','platina','🏰','Meio Ano no Inferno','180 dias com um personagem',p=>p.bestHours>=4320,p=>p.bestHours/4320);
+add('km1000','platina','🧭','Mil Quilômetros','1.000 km andados',p=>p.km>=1000,p=>p.km/1000);
+add('h300','platina','⏱️','Trezentas Horas','300 horas jogadas',p=>p.hoursPlayed>=300,p=>p.hoursPlayed/300);
+add('r300','platina','🌋','Trezentos num Dia','300 abates num só dia',p=>p.daily>=300,p=>p.daily/300);
+add('b500','platina','🧨','Quebra-Tudo Supremo','500 armas quebradas',p=>p.broken>=500,p=>p.broken/500);
+add('all3','platina','🧰','Faz-Tudo','Todas as skills no nível 3 ou mais',p=>Object.keys(PERK).every(k=>sk(p,k)>=3),p=>Object.keys(PERK).filter(k=>sk(p,k)>=3).length/Object.keys(PERK).length);
+add('ten5','ouro','🎓','Polivalente','10 skills no nível 5 ou mais',p=>p.skBestArr.filter(s=>s[1]>=5).length>=10,p=>p.skBestArr.filter(s=>s[1]>=5).length/10);
+add('five10','platina','👑','Cinco Mestres','5 skills no nível 10',p=>p.skBestArr.filter(s=>s[1]>=10).length>=5,p=>p.skBestArr.filter(s=>s[1]>=10).length/5);
+add('comb7','platina','⚔️','Mestre de Armas','Todas as skills de combate no nível 7',p=>COMBAT.every(k=>sk(p,k)>=7),p=>COMBAT.filter(k=>sk(p,k)>=7).length/COMBAT.length);
+add('iron','platina','🛡️','Imortal de Ferro','30 dias vivo, 2.000 abates e nenhuma morte',p=>p.deaths===0&&p.bestHours>=720&&p.kills>=2000,p=>p.deaths===0?Math.min(p.bestHours/720,p.kills/2000):0);
+// Meta: contam as conquistas acima (calculadas antes destas)
+const META=new Set(['gold25','plat10','lenda']);
+const cntTier=(p,t)=>A.filter(a=>!META.has(a.id)&&a.tier===t&&a.fn(p)).length;
+add('gold25','platina','🏅','Colecionador de Ouro','25 conquistas de ouro',p=>cntTier(p,'ouro')>=25,p=>cntTier(p,'ouro')/25);
+add('plat10','platina','💎','Lenda da Base','10 conquistas de platina',p=>cntTier(p,'platina')>=10,p=>cntTier(p,'platina')/10);
+add('lenda','platina','🌟','Bagre Supremo','Todas as conquistas de ouro',p=>cntTier(p,'ouro')>=A.filter(a=>a.tier==='ouro').length,p=>cntTier(p,'ouro')/A.filter(a=>a.tier==='ouro').length);
 const TIER_ORDER = {bronze:0,prata:1,ouro:2,platina:3};
 
 /* ---------- titles (per current character) ---------- */
@@ -450,7 +519,8 @@ const TITLES = [
 ];
 
 const TITLE_ICON = {'@km':'Item_BootsHiking','@broken':'Item_Cudgel_Broken','@bestHours':'Item_Pocketwatch','@daily':'Item_DeadPerson_MaleZombie'};
-const ACH_ICON = {k100:'Mood_Zombified',k500:'Mood_Zombified',k1000:'Item_DeadPerson_FemaleZombie',k2500:'Item_DeadPerson_MaleZombie',k5000:'Item_Medal_Silver',k10000:'Item_Medal_Gold',r50:'Item_DeadPerson_MaleZombie',r100:'Item_DeadPerson_MaleZombie',r200:'Item_Medal_Gold',d7:'Item_AlarmClock',d14:'Item_DigitalWatch',d30:'Item_Pocketwatch',d60:'Item_Medal_Military3',imm:'Item_Medal_Military2',dead1:'Mood_Dead',dead7:'Mood_Dead',ch3:'Mood_Happy',km50:'Item_BootsHiking',km150:'Item_BootsHiking',km500:'Item_Map',h10:'Item_DigitalWatch',h50:'Item_DigitalWatch',h100:'Item_PlushSpiffo',b25:'Item_Cudgel_Broken',b100:'Item_Cudgel_Broken',b250:'Item_Cudgel_Broken',c2:'Item_Medal_Bronze',c4:'Item_Medal_Silver',any10:'Item_Medal_Gold',three7:'Item_Medal_Military1',five5:'Item_Book'};
+const ACH_ICON = {k100:'Mood_Zombified',k500:'Mood_Zombified',k1000:'Item_DeadPerson_FemaleZombie',k2500:'Item_DeadPerson_MaleZombie',k5000:'Item_Medal_Silver',k10000:'Item_Medal_Gold',r50:'Item_DeadPerson_MaleZombie',r100:'Item_DeadPerson_MaleZombie',r200:'Item_Medal_Gold',d7:'Item_AlarmClock',d14:'Item_DigitalWatch',d30:'Item_Pocketwatch',d60:'Item_Medal_Military3',imm:'Item_Medal_Military2',dead1:'Mood_Dead',dead7:'Mood_Dead',ch3:'Mood_Happy',km50:'Item_BootsHiking',km150:'Item_BootsHiking',km500:'Item_Map',h10:'Item_DigitalWatch',h50:'Item_DigitalWatch',h100:'Item_PlushSpiffo',b25:'Item_Cudgel_Broken',b100:'Item_Cudgel_Broken',b250:'Item_Cudgel_Broken',c2:'Item_Medal_Bronze',c4:'Item_Medal_Silver',any10:'Item_Medal_Gold',three7:'Item_Medal_Military1',five5:'Item_Book',
+ ar100:'Item_Bow_Carved',ar500:'Item_Bow_Carved',ar2000:'Item_Bow_Carved',ar5000:'Item_Bow_Carved',pa5:'Item_LugWrench',pa25:'Item_LugWrench',pa100:'Item_LugWrench',an5:'Item_Milk',an20:'Item_Milk',an50:'Item_Milk',ma3:'Item_Map',ma10:'Item_Map',jo3:'Item_Book',jo10:'Item_Book',dr10:'Item_CarJack',dr50:'Item_CarJack',ve5:'Item_CarJack',pd7:'Item_AlarmClock',pd30:'Item_AlarmClock',pd90:'Item_Pocketwatch',ps7:'Item_DigitalWatch',ps30:'Item_DigitalWatch',ps90:'Item_Medal_Military2',ni10:'Mood_Exhausted',ni50:'Mood_Exhausted',ni200:'Mood_Exhausted',pl10:'Item_BerryBlue',pl30:'Item_BerryBlue',pl60:'Item_BerryBlue',ks7:'Mood_Zombified',ks14:'Mood_Zombified',ks30:'Mood_Zombified',wk300:'Item_DeadPerson_FemaleZombie',wk700:'Item_DeadPerson_FemaleZombie',wk1500:'Item_DeadPerson_MaleZombie',fx7:'Mood_Happy',fx30:'Mood_Happy',pio1:'Item_Medal_Gold',pio3:'Item_Medal_Gold',k25000:'Item_Medal_Military3',d90:'Item_Pocketwatch',d180:'Item_Pocketwatch',km1000:'Item_Map',h300:'Item_DigitalWatch',r300:'Item_DeadPerson_MaleZombie',b500:'Item_Cudgel_Broken',all3:'Item_Book',ten5:'Item_Book',five10:'Item_Medal_Gold',comb7:'Item_Machete',iron:'Item_Medal_Military3',gold25:'Item_Medal_Gold',plat10:'Item_Medal_Military3',lenda:'Item_PlushSpiffo'};
 const aicon = a => { const sk=a.id.startsWith('sk_')?a.id.slice(3).replace(/\d+$/,''):null; return (sk?si(sk,'big'):gi(ACH_ICON[a.id],'','big'))||a.ic; };
 
 /* ---------- state ---------- */

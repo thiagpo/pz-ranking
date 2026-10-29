@@ -24,6 +24,7 @@ INI_PUBLICO = ["PVP", "PauseEmpty", "GlobalChat", "Open", "SafetySystem", "Map",
                "FastForwardMultiplier", "Faction", "FactionDaySurvivedToCreate", "VoiceEnable", "Voice3D", "PerkLogs", "SteamVAC",
                "PlayerBumpPlayer", "HidePlayersBehindYou", "MapRemotePlayerVisibility", "DisableVehicleTowing", "DisableTrailerTowing",
                "BackupsCount", "ServerWelcomeMessage", "AllowCoop", "PVPMeleeDamageModifier", "PVPFirearmDamageModifier"]
+TIPOS = ("_PerkLog.txt", "_admin.txt", "_user.txt", "_cmd.txt", "_chat.txt", "_ClientActionLog.txt")
 ROLES_PT = {"admin": "Admin", "moderator": "Moderador", "gm": "Game Master", "observer": "Observador", "priority": "Prioridade", "user": "Jogador", "banned": "Banido"}
 
 
@@ -32,7 +33,7 @@ def baixar():
     t = paramiko.Transport((CFG["host"], int(CFG.get("port", 22))))
     t.connect(username=CFG["user"], password=CFG["password"])
     s = paramiko.SFTPClient.from_transport(t)
-    for f in glob.glob(os.path.join(DADOS, "stats__*.txt")) + glob.glob(os.path.join(DADOS, "user__*.txt")):
+    for f in glob.glob(os.path.join(DADOS, "stats__*.txt")):
         os.remove(f)
     for f in s.listdir(R_STATS):
         if f.endswith(".txt"):
@@ -43,14 +44,11 @@ def baixar():
             p = posixpath.join(d, e.filename)
             if e.longname.startswith("d"):
                 yield from walk(p)
-            elif e.filename.endswith(("_PerkLog.txt", "_admin.txt")):
+            elif e.filename.endswith(TIPOS):
                 yield p
     for p in walk(R_LOGS):
-        kind = "perklog__" if p.endswith("_PerkLog.txt") else "admin__"
+        kind = next(k for k in TIPOS if p.endswith(k)).strip("_").replace(".txt", "").lower() + "__"
         s.get(p, os.path.join(DADOS, kind + p.replace(R_LOGS + "/", "").replace("/", "__")))
-    atuais = sorted(f for f in s.listdir(R_LOGS) if f.endswith("_user.txt"))
-    if atuais:
-        s.get(posixpath.join(R_LOGS, atuais[-1]), os.path.join(DADOS, "user__" + atuais[-1]))
     for remoto, local in [(R_PLAYERS, "players.db"), (R_USERS, "users.db"), (R_SANDBOX, "sandbox.lua"), (R_INI, "server.ini")]:
         try:
             s.get(remoto, os.path.join(DADOS, local))
@@ -94,7 +92,8 @@ def ler_traits(dic):
             toks = list(dict.fromkeys(t.decode() for t in re.findall(rb"base:[A-Za-z0-9_]+", blob or b"")))
             favs = list(dict.fromkeys(f.decode("utf-8", "ignore")[4:] for f in re.findall(rb"Fav:[^\x00-\x1f]{2,40}", blob or b"")))
             out[user] = {"prof": next((t for t in toks if t in dic["profs"]), ""), "traits": [t for t in toks if t in dic["traits"]],
-                         "favs": favs, "charName": (name or "").strip()}
+                         "favs": favs, "charName": (name or "").strip(),
+                         "plants": sum(1 for t in toks if t.split(":", 1)[1] in PLANTAS)}
         c.close()
     except Exception:
         pass
@@ -149,7 +148,10 @@ def ler_adm():
 
 def ler_online():
     online = set()
-    for f in sorted(glob.glob(os.path.join(DADOS, "user__*.txt"))):
+    rxn = re.compile(r"(\d{4}-\d\d-\d\d_\d\d-\d\d)_user")
+    arqs = [f for f in glob.glob(os.path.join(DADOS, "user__*.txt")) if rxn.search(f)]
+    atual = max(arqs, key=lambda f: rxn.search(f).group(1)) if arqs else None
+    for f in ([atual] if atual else []):
         for line in open(f, encoding="utf-8", errors="ignore"):
             m = re.search(r'"([^"]+)" fully connected', line)
             if m:
@@ -158,6 +160,74 @@ def ler_online():
             if m:
                 online.discard(m.group(1))
     return sorted(online)
+
+
+def ler_atividade():
+    acts = collections.defaultdict(collections.Counter); chat = collections.Counter()
+    drives = collections.Counter(); veics = collections.defaultdict(set)
+    rx = re.compile(r'^\[(\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)[^\]]*\] \d+ "([^"]+)" (\S+)')
+    CATS = [("horsemod.", "horse"), ("RadArchery.bowStrainHold", "arrows"), ("that_damn_lib.silentPartInstall", "parts"), ("vehicle.installPart", "parts"),
+            ("animal.", "animals"), ("map.setKnownInSquares", "maps"), ("SkillRecoveryJournal.", "journal"), ("object.emptyTrash", "trash")]
+    for f in glob.glob(os.path.join(DADOS, "cmd__*.txt")):
+        for line in open(f, encoding="utf-8", errors="ignore"):
+            m = rx.match(line)
+            if not m:
+                continue
+            cmd = m.group(8)
+            for pref, cat in CATS:
+                if cmd.startswith(pref):
+                    acts[m.group(7)][cat] += 1
+                    break
+    for f in glob.glob(os.path.join(DADOS, "chat__*.txt")):
+        for line in open(f, encoding="utf-8", errors="ignore"):
+            m = re.search(r"Got message:ChatMessage\{chat=\w+, author='([^']+)'", line)
+            if m:
+                chat[m.group(1)] += 1
+    for f in glob.glob(os.path.join(DADOS, "clientactionlog__*.txt")):
+        for line in open(f, encoding="utf-8", errors="ignore"):
+            m = re.search(r"\[ISEnterVehicle\]\[([^\]]+)\]\[[^\]]*\]\[([^\]]*)\]", line)
+            if m:
+                drives[m.group(1)] += 1; veics[m.group(1)].add(m.group(2))
+    sess = collections.defaultdict(list); aberta = {}
+    rxu = re.compile(r'^\[(\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)[^\]]*\] (?:\d+ )?"([^"]+)" (fully connected|disconnected player)')
+    for f in sorted(glob.glob(os.path.join(DADOS, "user__*.txt"))):
+        for line in open(f, encoding="utf-8", errors="ignore"):
+            m = rxu.match(line)
+            if not m:
+                continue
+            dd, mm, yy, H, M, S, u, ev = m.groups()
+            ts = datetime.datetime(2000 + int(yy), int(mm), int(dd), int(H), int(M), int(S)) - datetime.timedelta(hours=3)
+            if ev == "fully connected":
+                aberta[u] = ts
+            elif u in aberta:
+                sess[u].append((aberta.pop(u), ts))
+    agora = datetime.datetime.utcnow() - datetime.timedelta(hours=3)
+    for u, ts in aberta.items():
+        sess[u].append((ts, agora))
+    pres = {}
+    for u, lst in sess.items():
+        dias = sorted({a.date() for a, b in lst})
+        streak = best = 0; prev = None
+        for d in dias:
+            streak = streak + 1 if prev and (d - prev).days == 1 else 1
+            best = max(best, streak); prev = d
+        noite = 0.0
+        for a, b in lst:
+            d = a.replace(hour=0, minute=0, second=0)
+            while d < b:
+                lo, hi = max(a, d), min(b, d + datetime.timedelta(hours=6))
+                if hi > lo:
+                    noite += (hi - lo).total_seconds() / 3600
+                d += datetime.timedelta(days=1)
+        pres[u] = {"days": len(dias), "streak": best, "night": round(noite, 1)}
+    return acts, chat, drives, veics, pres
+
+
+PLANTAS = {"basil", "chives", "cilantro", "lemongrass", "mint", "oregano", "parsley", "sage", "rosemary", "thyme", "hops", "black", "broadleaf", "comfrey",
+           "common", "wild", "sweet", "carrot", "broccoli", "radish", "strawberry", "tomato", "potato", "cabbage", "corn", "kale", "green", "onion", "garlic",
+           "soybean", "sugar", "bell", "cauliflower", "cucumber", "habanero", "jalapeno", "leek", "lettuce", "pumpkin", "spinach", "sunflower", "turnip",
+           "watermelon", "zucchini", "chamomile", "marigold", "rose", "poppy", "lavender", "out", "ginseng", "dandelion", "plantain", "burdock", "nettle",
+           "violet", "mushroom", "berry", "blueberry", "blackberry", "raspberry", "grape", "flax", "hemp", "tobacco", "barley", "wheat", "rye", "rice", "peanut"}
 
 
 def ler_sandbox():
@@ -265,7 +335,7 @@ def montar():
 
     deaths = collections.defaultdict(list); hours_alive = {}; login_ts = {}
     best = collections.defaultdict(dict); cur = {}; cur_ts = {}
-    first_lvl = collections.defaultdict(dict)
+    first_lvl = collections.defaultdict(dict); morreu = {}; fenix = {}
     last_seen = {}; first_seen = {}
 
     def marca(user, perk, lvl, ts):
@@ -286,9 +356,12 @@ def montar():
             if ev == "Died":
                 h = int(hs.group(1)) if hs else 0
                 if h > 0 and not any(a <= ts <= b for a, b in IGNORAR):
-                    deaths[user].append({"ts": ts, "hours": h})
-            elif ev == "Login" and hs and ts >= login_ts.get(user, ""):
-                login_ts[user] = ts; hours_alive[user] = int(hs.group(1))
+                    deaths[user].append({"ts": ts, "hours": h}); morreu[user] = True
+            elif ev == "Login" and hs:
+                if ts >= login_ts.get(user, ""):
+                    login_ts[user] = ts; hours_alive[user] = int(hs.group(1))
+                if morreu.get(user):
+                    fenix[user] = max(fenix.get(user, 0), int(hs.group(1)))
             elif ev.startswith("Level Changed"):
                 lm = re.search(r"\[([A-Za-z ]+)\]\[(\d+)\]", rest)
                 if lm:
@@ -311,6 +384,26 @@ def montar():
 
     extra = ler_traits(dic)
     online = set(ler_online())
+    acts, chat, drives, veics, pres = ler_atividade()
+    first10 = collections.defaultdict(list)
+    melhor = {}
+    for u, d in first_lvl.items():
+        for (perk, lvl), ts in d.items():
+            if lvl == 10 and (perk not in melhor or ts < melhor[perk][0]):
+                melhor[perk] = (ts, u)
+    for perk, (ts, u) in melhor.items():
+        first10[u].append(perk)
+
+    def streaks(ser):
+        kills = {d: k for d, k in ser}
+        best = run = 0; prev = None
+        for d in sorted(kills):
+            run = run + 1 if (kills[d] > 0 and prev is not None and d == prev + 1) else (1 if kills[d] > 0 else 0)
+            best = max(best, run); prev = d
+        semana = 0
+        for d in kills:
+            semana = max(semana, sum(k for dd, k in kills.items() if d <= dd < d + 7))
+        return best, semana
 
     players = {}
     for cid, kv in chars.items():
@@ -335,6 +428,8 @@ def montar():
                            "daily": int(float(kv.get("dailyRecord", 0) or 0)),
                            "broken": int(float(kv.get("brokenWeaponsTotal", 0) or 0)),
                            "series": series(kv.get("dailySeries"))})
+        st, sem = streaks(series(kv.get("dailySeries")))
+        p["killStreak"] = max(p.get("killStreak", 0), st); p["weekKills"] = max(p.get("weekKills", 0), sem)
         if ls >= p["last"]:
             p["last"] = ls; p["alive"] = not dead; p["cur_kills"] = k; p["name"] = nome
 
@@ -350,7 +445,11 @@ def montar():
                 "curHours": hours_alive.get(u, 0) if (p and p["alive"]) else 0,
                 "skillsCur": cur.get(u, {}), "skillsBest": sorted(best.get(u, {}).items(), key=lambda x: (-x[1], x[0])),
                 "skillsCurTs": {k: first_lvl[u].get((k, v), cur_ts.get(u, "")) for k, v in cur.get(u, {}).items() if v > 0},
-                "firstSeen": first_seen.get(u, ""), "lastSeen": last_seen.get(u, "")}
+                "firstSeen": first_seen.get(u, ""), "lastSeen": last_seen.get(u, ""),
+                "acts": dict(acts.get(u, {})), "chat": chat.get(u, 0), "drives": drives.get(u, 0), "vehicles": len(veics.get(u, ())),
+                "pres": pres.get(u, {"days": 0, "streak": 0, "night": 0}), "plants": ex.get("plants", 0),
+                "phoenix": fenix.get(u, 0), "first10": first10.get(u, []),
+                "killStreak": (p or {}).get("killStreak", 0), "weekKills": (p or {}).get("weekKills", 0)}
         if p:
             p["chars"].sort(key=lambda c: -c["last"])
             base.update({"kills": p["kills"], "curKills": p["cur_kills"], "km": round(p["distance"] / 1000, 1),
