@@ -1,7 +1,7 @@
 -- Bagres Stats: contadores por jogador, somados no servidor e gravados em Lua/bagres_stats/<usuario>.txt
 BagresStats = BagresStats or {}
 local S = BagresStats
-S.VERSION = "1.2"
+S.VERSION = "1.3"
 S.DIR = "bagres_stats/"
 
 local data = {}
@@ -73,6 +73,19 @@ function S.inc(character, key, n)
     if not user then return end
     local t = load(user)
     t[key] = (t[key] or 0) + (n or 1)
+    t["cur." .. key] = (t["cur." .. key] or 0) + (n or 1)
+    dirty[user] = true
+end
+
+-- zera os contadores do personagem atual (cur.*) quando ele morre
+function S.resetCur(character)
+    if not isServer() then return end
+    local user = username(character)
+    if not user then return end
+    local t = load(user)
+    for k in pairs(t) do
+        if k:sub(1, 4) == "cur." then t[k] = nil end
+    end
     dirty[user] = true
 end
 
@@ -82,6 +95,7 @@ function S.max(character, key, v)
     if not user then return end
     local t = load(user)
     if (t[key] or 0) < v then t[key] = v; dirty[user] = true end
+    if (t["cur." .. key] or 0) < v then t["cur." .. key] = v; dirty[user] = true end
 end
 
 function S.flush()

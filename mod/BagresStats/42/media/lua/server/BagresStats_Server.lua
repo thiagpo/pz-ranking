@@ -52,6 +52,7 @@ local function onPlayerDeath(player)
     if infected then S.inc(player, "deaths.infected") end
     local ok, v = pcall(function() return player:getVehicle() ~= nil end)
     if ok and v then S.inc(player, "deaths.vehicle") end
+    S.resetCur(player)
     S.flush()
 end
 

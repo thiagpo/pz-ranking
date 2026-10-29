@@ -552,14 +552,15 @@ const TITLES = [
   ['🧵','Costureiro','Tailoring'],['🎣','Pescador','Fishing'],['🪤','Armadilheiro','Trapping'],['🔩','Mecânico','Mechanics'],['⚡','Eletricista','Electricity'],
   ['🌿','Coletor','PlantScavenging'],['🪵','Entalhador','Carving'],['🪨','Lascador','FlintKnapping'],['🏺','Oleiro','Pottery'],['🫙','Vidreiro','Glassmaking'],
   ['🐾','Rastreador','Tracking'],['🔫','Atirador','Aiming'],['🏹','Arqueiro','Archery'],['🪓','Lenhador','Axe'],['🔱','Lanceiro','Spear'],['🔨','Martelo de Thor','SmallBlunt'],
-  ['🏃','Maratonista','Sprinting'],['🥷','Ninja','Sneak'],['💪','Mais forte','Strength'],['🫀','Mais em forma','Fitness'],['🛠️','Zelador','Maintenance'],
+  ['🏃','Maratonista','Sprinting'],['🥷','Ninja','Sneak'],['💪','Mais forte','Strength'],['🎤','É hora do show porra!','@gainStr','níveis de força treinados'],['🏋️','Atleta virtual','Fitness'],['🛠️','Zelador','Maintenance'],
   ['👟','Andarilho','@km','km andados'],['💥','Quebra-tudo','@broken','armas quebradas'],['⏳','Sobrevivente','@bestHours','melhor vida'],['🌙','Massacre num dia','@daily','abates num dia'],['🧪','Cientista da base','@labN','receitas do laboratório'],
   ['🐇','Terror dos coelhos','@m.rabbits','coelhos abatidos'],['🥩','Carniceiro','@m.animals','animais abatidos'],['🐟','Pescador de verdade','@m.fish','peixes pescados'],['🌽','Fazendeiro de verdade','@m.harvest','colheitas'],
   ['🔨','Artesão','@m.craft','itens fabricados'],['🪓','Lenhador de verdade','@m.trees','árvores derrubadas'],['📚','Leitor','@m.books','livros lidos'],['🎒','Saqueador','@m.loot','itens saqueados'],
   ['🏚️','Explorador','@m.buildings','prédios visitados'],['🗺️','Viajante','@m.towns','cidades visitadas'],['🧭','Mais longe da base','@m.maxdist','quadros da base'],['🌧️','Encharcado','@m.rain','na chuva e neve'],['🦉','Noctívago','@m.night','fora de casa à noite'],['🔥','Incendiário','@m.fire','fogueiras acesas']
 ];
 
-const TITLE_ICON = {'@km':'Item_BootsHiking','@broken':'Item_Cudgel_Broken','@bestHours':'Item_Pocketwatch','@daily':'Item_DeadPerson_MaleZombie','@labN':'Item_FirstAid','@m.animals':'Item_Steak','@m.fish':'Item_FishingRod','@m.harvest':'Item_TZ_GardenTrowel','@m.craft':'Item_Hammer','@m.trees':'Item_Axe','@m.books':'Item_Book','@m.buildings':'Item_Map','@m.towns':'Item_Map','@m.maxdist':'Item_CompassDirectional','@m.night':'Mood_Exhausted','@m.rain':'Status_TemperatureLow'};
+const TIE_KEY={'@gainStr':'Strength'};
+const TITLE_ICON = {'@gainStr':'Item_Barbell','@km':'Item_BootsHiking','@broken':'Item_Cudgel_Broken','@bestHours':'Item_Pocketwatch','@daily':'Item_DeadPerson_MaleZombie','@labN':'Item_FirstAid','@m.animals':'Item_Steak','@m.fish':'Item_FishingRod','@m.harvest':'Item_TZ_GardenTrowel','@m.craft':'Item_Hammer','@m.trees':'Item_Axe','@m.books':'Item_Book','@m.buildings':'Item_Map','@m.towns':'Item_Map','@m.maxdist':'Item_CompassDirectional','@m.night':'Mood_Exhausted','@m.rain':'Status_TemperatureLow'};
 const getv=(p,path)=>path.split('.').reduce((o,k)=>(o==null?undefined:o[k]),p);
 const ACH_ICON = {k100:'Mood_Zombified',k500:'Mood_Zombified',k1000:'Item_DeadPerson_FemaleZombie',k2500:'Item_DeadPerson_MaleZombie',k5000:'Item_Medal_Silver',k10000:'Item_Medal_Gold',r50:'Item_DeadPerson_MaleZombie',r100:'Item_DeadPerson_MaleZombie',r200:'Item_Medal_Gold',d7:'Item_AlarmClock',d14:'Item_DigitalWatch',d30:'Item_Pocketwatch',d60:'Item_Medal_Military3',imm:'Item_Medal_Military2',dead1:'Mood_Dead',dead7:'Mood_Dead',ch3:'Mood_Happy',km50:'Item_BootsHiking',km150:'Item_BootsHiking',km500:'Item_Map',h10:'Item_DigitalWatch',h50:'Item_DigitalWatch',h100:'Item_PlushSpiffo',b25:'Item_Cudgel_Broken',b100:'Item_Cudgel_Broken',b250:'Item_Cudgel_Broken',c2:'Item_Medal_Bronze',c4:'Item_Medal_Silver',any10:'Item_Medal_Gold',three7:'Item_Medal_Military1',five5:'Item_Book',
  ar100:'Item_Bow_Carved',ar500:'Item_Bow_Carved',ar2000:'Item_Bow_Carved',ar5000:'Item_Bow_Carved',pa5:'Item_LugWrench',pa25:'Item_LugWrench',pa100:'Item_LugWrench',an5:'Item_Milk',an20:'Item_Milk',an50:'Item_Milk',ma3:'Item_Map',ma10:'Item_Map',jo3:'Item_Book',jo10:'Item_Book',dr10:'Item_CarJack',dr50:'Item_CarJack',ve5:'Item_CarJack',pd7:'Item_AlarmClock',pd30:'Item_AlarmClock',pd90:'Item_Pocketwatch',ps7:'Item_DigitalWatch',ps30:'Item_DigitalWatch',ps90:'Item_Medal_Military2',ni10:'Mood_Exhausted',ni50:'Mood_Exhausted',ni200:'Mood_Exhausted',pl10:'Item_BerryBlue',pl30:'Item_BerryBlue',pl60:'Item_BerryBlue',ks7:'Mood_Zombified',ks14:'Mood_Zombified',ks30:'Mood_Zombified',wk300:'Item_DeadPerson_FemaleZombie',wk700:'Item_DeadPerson_FemaleZombie',wk1500:'Item_DeadPerson_MaleZombie',fx7:'Mood_Happy',fx30:'Mood_Happy',pio1:'Item_Medal_Gold',pio3:'Item_Medal_Gold',k25000:'Item_Medal_Military3',d90:'Item_Pocketwatch',d180:'Item_Pocketwatch',km1000:'Item_Map',h300:'Item_DigitalWatch',r300:'Item_DeadPerson_MaleZombie',b500:'Item_Cudgel_Broken',all3:'Item_Book',ten5:'Item_Book',five10:'Item_Medal_Gold',comb7:'Item_Machete',iron:'Item_Medal_Military3',gold25:'Item_Medal_Gold',plat10:'Item_Medal_Military3',lenda:'Item_PlushSpiffo',
@@ -578,14 +579,16 @@ function prep(d){
     p.chars=p.chars||[]; p.traits=p.traits||[]; p.favs=p.favs||[];
     p.spec=COMBAT.map(k=>[k,p.skCur[k]||0]).sort((a,b)=>b[1]-a[1])[0];
     // contadores do mod Bagres Stats (chave=valor); derivados usados por titulos e conquistas
-    const M=p.mod||{}; const sumPref=pre=>Object.entries(M).filter(([k])=>k.startsWith(pre)).reduce((a,[,v])=>a+v,0);
-    p.m={kills:M['kills']||0,rabbits:M['animals.killed.rabbit']||0,animals:M['animals.killed']||0,butcher:M['animals.butchered']||0,milk:M['animals.milked']||0,eggs:M['animals.eggs']||0,
+    p.skStart=p.skillsStart||{}; p.gainStr=Math.max(0,(p.skCur.Strength||0)-(p.skStart.Strength!=null?p.skStart.Strength:(p.skCur.Strength||0)));
+    const M=p.mod||{};
+    const derive=M=>({kills:M['kills']||0,rabbits:M['animals.killed.rabbit']||0,animals:M['animals.killed']||0,butcher:M['animals.butchered']||0,milk:M['animals.milked']||0,eggs:M['animals.eggs']||0,
       fish:M['fish']||0,fishmax:M['fish.maxsize']||0,harvest:M['farming.harvest']||0,sow:M['farming.sow']||0,water:M['farming.water']||0,forage:M['forage']||0,craft:M['craft']||0,
       trees:M['trees.cut']||0,books:M['books']||0,loot:M['loot.items']||0,containers:M['loot.containers']||0,fire:M['fire.lit']||0,buried:M['corpses.buried']||0,
       vehicle:(M['vehicle.install']||0)+(M['vehicle.engine']||0)+(M['vehicle.fix']||0),repair:(M['repair.items']||0)+(M['repair.generator']||0),
       buildings:M['explore.buildings']||0,towns:Object.keys(M).filter(k=>k.startsWith('towns.')).length,maxdist:M['explore.maxdist']||0,
-      rain:(M['weather.rain_min']||0)+(M['weather.snow_min']||0),night:M['night.out_min']||0,online:M['online_min']||0,traps:M['traps']||0,nets:M['nets.checked']||0,deathsInf:M['deaths.infected']||0};
-    p.hasMod=Object.keys(M).length>0;
+      rain:(M['weather.rain_min']||0)+(M['weather.snow_min']||0),night:M['night.out_min']||0,online:M['online_min']||0,traps:M['traps']||0,nets:M['nets.checked']||0,deathsInf:M['deaths.infected']||0});
+    p.m=derive(M); p.modCur=Object.fromEntries(Object.entries(M).filter(([k])=>k.startsWith('cur.')).map(([k,v])=>[k.slice(4),v])); p.mc=derive(p.modCur);
+    p.hasMod=Object.keys(M).length>0; p.hasCur=Object.keys(p.modCur).length>0;
     p.ach=A.filter(a=>a.fn(p)).map(a=>a.id);
   });
   const used=new Set(); byTok={};
@@ -653,7 +656,7 @@ function renderTitles(){
     const icon=key.startsWith('@')?gi(TITLE_ICON[key],ic,'big'):si(key,'big')||ic;
     if(!bv) return `<div class="title empty"><div class="ic">${icon}</div><div><div class="t">${name}</div><div class="w">vago</div><div class="lv">ninguém ainda</div></div></div>`;
     // empate: fica com quem chegou primeiro nesse nivel (data do registro do servidor)
-    if(best.length>1&&!key.startsWith('@')) best.sort((a,b)=>((a.skillsCurTs||{})[key]||'9').localeCompare((b.skillsCurTs||{})[key]||'9'));
+    const tk=key.startsWith('@')?TIE_KEY[key]:key; if(best.length>1&&tk) best.sort((a,b)=>((a.skillsCurTs||{})[tk]||'9').localeCompare((b.skillsCurTs||{})[tk]||'9'));
     const lv=key.startsWith('@')?(key==='@bestHours'?dh(bv):(key==='@m.night'||key==='@m.rain')?Math.round(bv/60)+' h '+unit:fmt(bv)+' '+unit):pname(key)+' nível '+bv;
     const extra=best.length>1?` <span class="tie">+${best.length-1} no mesmo nível</span>`:'';
     return `<div class="title"><div class="ic">${icon}</div><div><div class="t">${name}</div><div class="w">${link(best[0])}</div><div class="lv">${lv}${extra}</div></div></div>`;
@@ -713,7 +716,7 @@ function chart(series){
 const CATN={spear:'Lança',smallblunt:'Contundente curta',blunt:'Contundente longa',axe:'Machado',smallblade:'Lâmina curta',longblade:'Lâmina longa',firearm:'Arma de fogo',archery:'Arco',improvised:'Improvisada',unarmed:'Mãos',vehicle:'Veículo'};
 function modPanel(p){
   if(!p.hasMod) return `<h3>Contadores da base <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">mod Bagres Stats</span></h3><div class="empty">Ainda sem registro. O mod começou a contar em 29/10/2026; os números aparecem conforme o jogador age no servidor.</div>`;
-  const M=p.mod, m=p.m, wc=(data.dict&&data.dict.wcat)||{}, NM=(data.dict&&data.dict.nomes)||{};
+  const useCur=p.hasCur, M=useCur?p.modCur:p.mod, m=useCur?p.mc:p.m, wc=(data.dict&&data.dict.wcat)||{}, NM=(data.dict&&data.dict.nomes)||{};
   const nm=(grp,k)=>(NM[grp]&&NM[grp][k])||(grp==='animals'&&k==='desconhecido'?'Espécie não identificada':k);
   const pref=pre=>Object.entries(M).filter(([k])=>k.startsWith(pre)&&k!==pre.slice(0,-1)).map(([k,v])=>[k.slice(pre.length),v]).sort((a,b)=>b[1]-a[1]);
   const weapons=pref('kills.weapon.'); const cats={};
@@ -722,7 +725,7 @@ function modPanel(p){
   const bars=(arr,icon,unit)=>arr.length?`<div class="bars">${arr.slice(0,8).map(([k,v])=>`<div class="bar"><span>${icon?icon(k):''}${esc(k)}</span><div class="tr"><i style="width:${v/arr[0][1]*100}%"></i></div><span class="n">${fmt(v)}${unit||''}</span></div>`).join('')}</div>`:'<div class="empty">nada ainda</div>';
   const h=x=>Math.round(x/60);
   const animals=pref('animals.killed.').map(([k,v])=>[nm('animals',k),v]);
-  return `<h3>Contadores da base <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">mod Bagres Stats · contagem real desde 29/10/2026 · ${h(m.online)} h online</span></h3>
+  return `<h3>Contadores da base <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">${useCur?'personagem atual':'total da conta'} · mod Bagres Stats · desde 29/10/2026 · ${h(m.online)} h online</span></h3>
   <div class="tiles">${stat('Abates (mod)',fmt(m.kills))}${stat('Coelhos',fmt(m.rabbits))}${stat('Animais',fmt(m.animals))}${stat('Peixes',fmt(m.fish),m.fishmax?'maior: '+m.fishmax:'' )}${stat('Colheitas',fmt(m.harvest))}${stat('Fabricados',fmt(m.craft))}${stat('Árvores',fmt(m.trees))}${stat('Livros',fmt(m.books))}${stat('Saqueados',fmt(m.loot),m.containers+' containers')}${stat('Prédios',fmt(m.buildings),m.towns+' cidades')}${stat('Longe da base',fmt(m.maxdist),'quadros')}${stat('Chuva · noite',h(m.rain)+' h · '+h(m.night)+' h')}</div>
   <div class="two" style="margin-top:14px">
     <div class="card"><h3 style="margin-top:0">Abates por arma <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">golpe final, só do jogador</span></h3>${bars(weapons.map(([w,n])=>[w==='Vehicle'?'Veículo':wname(w),n,w]),k=>'',' ')}
@@ -759,11 +762,11 @@ function profile(p){
   const favs=p.favs.filter(f=>f!=='Bare Hands');
   const geral=`<div class="panel" data-p="geral">
     <h3>Destaques</h3>
-    <div class="tiles">${stat('Km andados',fmt(p.km))}${stat('Horas jogadas',fmt(p.hoursPlayed))}${stat('Armas quebradas',p.broken)}${stat('Vida atual',p.alive?dh(p.curHours):'—')}${stat('Skills de combate',nComb(p,1),'com nível 1 ou mais')}${stat('Traits',p.traits.length)}</div>
+    <div class="tiles">${stat('Km andados',fmt(cur?cur.km:0),'personagem atual')}${stat('Horas jogadas',fmt(cur?cur.hours:0),'personagem atual')}${stat('Armas quebradas',cur?cur.broken:0,'personagem atual')}${stat('Vida atual',p.alive?dh(p.curHours):'—')}${stat('Skills de combate',nComb(p,1),'com nível 1 ou mais')}${stat('Traits',p.traits.length)}</div>
     <div class="two" style="margin-top:14px">
       <div class="card"><h3 style="margin-top:0">Estilo de combate <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">skills do personagem atual</span></h3>${comb.length?`<div class="bars">${comb.map(c=>`<div class="bar"><span>${si(c[0])}${pname(c[0])}</span><div class="tr"><i class="a" style="width:${c[1]*10}%"></i></div><span class="n">nível ${c[1]}</span></div>`).join('')}</div><div class="note">Nível de cada skill de combate. A XP só vem dos próprios golpes, então reflete as armas que o jogador realmente usa.</div>`:'<div class="empty">Nenhuma skill de combate ainda.</div>'}
       <h3>Favoritos na barra</h3>${favs.length?`<div class="traits" style="margin-top:6px">${favs.map(f=>`<span class="trait">${ico('items',favType(f))}${esc(fname(f))}</span>`).join('')}</div><div class="note">Itens marcados como favoritos no inventário do personagem atual.</div>`:'<div class="empty">Nenhum item favoritado.</div>'}</div>
-      <div class="card"><h3 style="margin-top:0">Armas que quebrou</h3>${p.brokenList&&p.brokenList.length?`<div class="bars">${p.brokenList.slice(0,10).map(w=>`<div class="bar"><span>${ico('items',w[0])}${esc(wname(w[0]))}</span><div class="tr"><i class="g" style="width:${w[1]/p.brokenList[0][1]*100}%"></i></div><span class="n">${w[1]}×</span></div>`).join('')}</div><div class="note">Somando todos os personagens.</div>`:'<div class="empty">Nenhuma.</div>'}</div>
+      <div class="card"><h3 style="margin-top:0">Armas que quebrou</h3>${(()=>{const bl=(cur&&cur.brokenList)||[];return bl.length?`<div class="bars">${bl.map(w=>`<div class="bar"><span>${ico('items',w[0])}${esc(wname(w[0]))}</span><div class="tr"><i class="g" style="width:${w[1]/bl[0][1]*100}%"></i></div><span class="n">${w[1]}×</span></div>`).join('')}</div><div class="note">Personagem atual.</div>`:'<div class="empty">Nenhuma.</div>';})()}</div>
     </div>
         <h3>Abates por dia <span class="sub" style="font-family:var(--ui);font-size:12px;letter-spacing:.1em">personagem atual${cur&&cur.name?' · '+esc(cur.name):''}</span></h3>${chart(cur&&cur.series)}
   </div>`;

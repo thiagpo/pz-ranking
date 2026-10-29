@@ -381,7 +381,7 @@ def montar():
         chars[kv["characterID"]] = kv
 
     deaths = collections.defaultdict(list); hours_alive = {}; login_ts = {}
-    best = collections.defaultdict(dict); cur = {}; cur_ts = {}
+    best = collections.defaultdict(dict); cur = {}; cur_ts = {}; start = {}; novo = set()
     first_lvl = collections.defaultdict(dict); morreu = {}; fenix = {}
     last_seen = {}; first_seen = {}
 
@@ -401,6 +401,7 @@ def montar():
             hs = re.search(r"Hours Survived: (\d+)", rest)
             last_seen[user] = max(last_seen.get(user, ts), ts); first_seen[user] = min(first_seen.get(user, ts), ts)
             if ev == "Died":
+                novo.add(user)
                 h = int(hs.group(1)) if hs else 0
                 if h > 0 and not any(a <= ts <= b for a, b in IGNORAR):
                     deaths[user].append({"ts": ts, "hours": h}); morreu[user] = True
@@ -428,6 +429,8 @@ def montar():
                     marca(user, k, v, ts)
                 if ts >= cur_ts.get(user, ""):
                     cur_ts[user] = ts; cur[user] = snap
+                if user not in start or user in novo:
+                    start[user] = snap; novo.discard(user)
 
     extra = ler_traits(dic)
     online = set(ler_online())
@@ -475,6 +478,7 @@ def montar():
                            "km": round(float(kv.get("distance", 0) or 0) / 1000, 1), "hours": round(hours, 1),
                            "daily": int(float(kv.get("dailyRecord", 0) or 0)),
                            "broken": int(float(kv.get("brokenWeaponsTotal", 0) or 0)),
+                           "brokenList": sorted(collections.Counter(plist(kv.get("brokenWeapons"))).items(), key=lambda x: -x[1])[:10],
                            "series": series(kv.get("dailySeries"))})
         st, sem = streaks(series(kv.get("dailySeries")))
         p["killStreak"] = max(p.get("killStreak", 0), st); p["weekKills"] = max(p.get("weekKills", 0), sem)
@@ -491,7 +495,7 @@ def montar():
                 "deaths": len(dl), "deathsList": sorted(dl, key=lambda d: d["ts"], reverse=True),
                 "bestHours": max([d["hours"] for d in dl] + [hours_alive.get(u, 0)]),
                 "curHours": hours_alive.get(u, 0) if (p and p["alive"]) else 0,
-                "skillsCur": cur.get(u, {}), "skillsBest": sorted(best.get(u, {}).items(), key=lambda x: (-x[1], x[0])),
+                "skillsCur": cur.get(u, {}), "skillsStart": start.get(u, {}), "skillsBest": sorted(best.get(u, {}).items(), key=lambda x: (-x[1], x[0])),
                 "skillsCurTs": {k: first_lvl[u].get((k, v), cur_ts.get(u, "")) for k, v in cur.get(u, {}).items() if v > 0},
                 "firstSeen": first_seen.get(u, ""), "lastSeen": last_seen.get(u, ""),
                 "acts": dict(acts.get(u, {})), "chat": chat.get(u, 0), "drives": drives.get(u, 0), "vehicles": len(veics.get(u, ())),
