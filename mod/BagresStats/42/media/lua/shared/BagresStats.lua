@@ -1,7 +1,7 @@
 -- Bagres Stats: contadores por jogador, somados no servidor e gravados em Lua/bagres_stats/<usuario>.txt
 BagresStats = BagresStats or {}
 local S = BagresStats
-S.VERSION = "1.1"
+S.VERSION = "1.2"
 S.DIR = "bagres_stats/"
 
 local data = {}
@@ -96,6 +96,31 @@ function S.typeOf(obj, getter)
     return "desconhecido"
 end
 
+-- especie do animal de uma acao (self.animal = IsoAnimal; self.animalItem = item com o animal dentro)
+function S.animalType(action)
+    local a = action.animal
+    if not a and action.animalItem then
+        pcall(function() a = action.animalItem:getAnimal() end)
+    end
+    if not a then return "desconhecido" end
+    local tipo = nil
+    pcall(function() tipo = a:getAnimalType() end)
+    if (not tipo or tipo == "") then
+        pcall(function() local d = a:getData(); if d then tipo = d:getAnimalType() end end)
+    end
+    if (not tipo or tipo == "") then
+        local nome = nil
+        pcall(function() nome = a:getFullName() end)
+        if nome then
+            nome = tostring(nome):lower()
+            for _, k in ipairs({"rabbit", "raccoon", "chicken", "hen", "rooster", "cow", "bull", "calf", "sheep", "ram", "ewe", "lamb", "pig", "boar", "piglet", "deer", "turkey", "mouse", "rat", "goat", "duck", "horse"}) do
+                if nome:find(k, 1, true) then tipo = k; break end
+            end
+        end
+    end
+    return safe(tipo or "desconhecido")
+end
+
 -- ------------------------------------------------------------------
 -- Ganchos nas acoes do jogo. complete()/animEvent() rodam no servidor
 -- com self.character = jogador que executou a acao.
@@ -130,16 +155,13 @@ function S.installHooks()
     end
 
     -- animais
-    W("ISKillAnimal", "complete", function(self, r)
+    local function killed(self, r, ctx)
         if r == false then return end
-        local tipo = self.animal and S.typeOf(self.animal, "getAnimalType") or "desconhecido"
+        local tipo = ctx or "desconhecido"
         S.inc(self.character, "animals.killed." .. tipo); S.inc(self.character, "animals.killed")
-    end)
-    W("ISKillAnimalInInventory", "complete", function(self, r)
-        if r == false then return end
-        local tipo = self.animal and S.typeOf(self.animal, "getAnimalType") or "desconhecido"
-        S.inc(self.character, "animals.killed." .. tipo); S.inc(self.character, "animals.killed")
-    end)
+    end
+    W("ISKillAnimal", "complete", killed, function(self) return S.animalType(self) end)
+    W("ISKillAnimalInInventory", "complete", killed, function(self) return S.animalType(self) end)
     W("ISButcherAnimal", "complete", function(self, r) if r ~= false then S.inc(self.character, "animals.butchered") end end)
     W("ISCutAnimalOnHook", "complete", function(self, r) if r ~= false then S.inc(self.character, "animals.hook") end end)
     W("ISMilkAnimal", "complete", function(self, r) if r ~= false then S.inc(self.character, "animals.milked") end end)
