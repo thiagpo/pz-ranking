@@ -752,7 +752,7 @@ function profile(p){
     ${stat('Abates',fmt(p.curKills),'personagem atual',true)}${stat('Abates somados',fmt(p.kills),p.chars.length+' personage'+(p.chars.length===1?'m':'ns'))}
     ${stat('Mortes',p.deaths)}${stat('Melhor vida',dh(p.bestHours))}${stat('Recorde num dia',p.daily,'abates')}${stat('Conquistas',p.ach.length+'/'+A.length)}
   </div>
-  <div class="tabs" role="tablist">${[['geral','Visão geral'],['skills','Skills'],['conq','Conquistas'],['chars','Personagens'],['hist','Histórico']].map(([k,n],i)=>`<button role="tab" aria-selected="${i===0}" data-t="${k}">${n}</button>`).join('')}</div>`;
+  <div class="tabs" role="tablist">${[['geral','Visão geral'],['base','Contadores da Base'],['skills','Skills'],['conq','Conquistas'],['chars','Personagens'],['hist','Histórico']].map(([k,n],i)=>`<button role="tab" aria-selected="${i===0}" data-t="${k}">${n}</button>`).join('')}</div>`;
 
   const comb=COMBAT.map(k=>[k,p.skCur[k]||0]).filter(c=>c[1]>0).sort((a,b)=>b[1]-a[1]);
   const favs=p.favs.filter(f=>f!=='Bare Hands');
@@ -764,8 +764,7 @@ function profile(p){
       <h3>Favoritos na barra</h3>${favs.length?`<div class="traits" style="margin-top:6px">${favs.map(f=>`<span class="trait">${ico('items',favType(f))}${esc(fname(f))}</span>`).join('')}</div><div class="note">Itens marcados como favoritos no inventário do personagem atual.</div>`:'<div class="empty">Nenhum item favoritado.</div>'}</div>
       <div class="card"><h3 style="margin-top:0">Armas que quebrou</h3>${p.brokenList&&p.brokenList.length?`<div class="bars">${p.brokenList.slice(0,10).map(w=>`<div class="bar"><span>${ico('items',w[0])}${esc(wname(w[0]))}</span><div class="tr"><i class="g" style="width:${w[1]/p.brokenList[0][1]*100}%"></i></div><span class="n">${w[1]}×</span></div>`).join('')}</div><div class="note">Somando todos os personagens.</div>`:'<div class="empty">Nenhuma.</div>'}</div>
     </div>
-    ${modPanel(p)}
-    <h3>Abates por dia <span class="sub" style="font-family:var(--ui);font-size:12px;letter-spacing:.1em">personagem atual${cur&&cur.name?' · '+esc(cur.name):''}</span></h3>${chart(cur&&cur.series)}
+        <h3>Abates por dia <span class="sub" style="font-family:var(--ui);font-size:12px;letter-spacing:.1em">personagem atual${cur&&cur.name?' · '+esc(cur.name):''}</span></h3>${chart(cur&&cur.series)}
   </div>`;
 
   const skills=`<div class="panel" data-p="skills" hidden>
@@ -790,7 +789,8 @@ function profile(p){
     <h3>Mortes</h3>${p.deathsList&&p.deathsList.length?`<div class="log">${p.deathsList.map(x=>`<div class="ev"><b>sobreviveu ${dh(x.hours)}</b><span class="t">${br(x.ts)}</span></div>`).join('')}</div>`:'<div class="empty">Nenhuma morte registrada.</div>'}
     <h3>Presença</h3><div class="tiles">${stat('Na base desde',brD(p.firstSeen)||'—')}${stat('Último registro',br(p.lastSeen)||'—')}${stat('Status',p.online?'online agora':p.alive?'offline, vivo':'morto')}</div>
   </div>`;
-  return head+geral+skills+conq+chars+hist;
+  const base=`<div class="panel" data-p="base" hidden>${modPanel(p)}</div>`;
+  return head+geral+base+skills+conq+chars+hist;
 }
 
 /* ---------- server page ---------- */
