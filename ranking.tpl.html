@@ -713,23 +713,24 @@ function chart(series){
 const CATN={spear:'Lança',smallblunt:'Contundente curta',blunt:'Contundente longa',axe:'Machado',smallblade:'Lâmina curta',longblade:'Lâmina longa',firearm:'Arma de fogo',archery:'Arco',improvised:'Improvisada',unarmed:'Mãos',vehicle:'Veículo'};
 function modPanel(p){
   if(!p.hasMod) return `<h3>Contadores da base <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">mod Bagres Stats</span></h3><div class="empty">Ainda sem registro. O mod começou a contar em 29/10/2026; os números aparecem conforme o jogador age no servidor.</div>`;
-  const M=p.mod, m=p.m, wc=(data.dict&&data.dict.wcat)||{};
+  const M=p.mod, m=p.m, wc=(data.dict&&data.dict.wcat)||{}, NM=(data.dict&&data.dict.nomes)||{};
+  const nm=(grp,k)=>(NM[grp]&&NM[grp][k])||(grp==='animals'&&k==='desconhecido'?'Espécie não identificada':k);
   const pref=pre=>Object.entries(M).filter(([k])=>k.startsWith(pre)&&k!==pre.slice(0,-1)).map(([k,v])=>[k.slice(pre.length),v]).sort((a,b)=>b[1]-a[1]);
   const weapons=pref('kills.weapon.'); const cats={};
   for(const [w,n] of weapons){ const c=w==='Vehicle'?'vehicle':w==='Base.BareHands'?'unarmed':(wc[w]||'improvised'); cats[c]=(cats[c]||0)+n; }
   const catArr=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
   const bars=(arr,icon,unit)=>arr.length?`<div class="bars">${arr.slice(0,8).map(([k,v])=>`<div class="bar"><span>${icon?icon(k):''}${esc(k)}</span><div class="tr"><i style="width:${v/arr[0][1]*100}%"></i></div><span class="n">${fmt(v)}${unit||''}</span></div>`).join('')}</div>`:'<div class="empty">nada ainda</div>';
   const h=x=>Math.round(x/60);
-  const animals=pref('animals.killed.').map(([k,v])=>[k,v]);
+  const animals=pref('animals.killed.').map(([k,v])=>[nm('animals',k),v]);
   return `<h3>Contadores da base <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">mod Bagres Stats · contagem real desde 29/10/2026 · ${h(m.online)} h online</span></h3>
   <div class="tiles">${stat('Abates (mod)',fmt(m.kills))}${stat('Coelhos',fmt(m.rabbits))}${stat('Animais',fmt(m.animals))}${stat('Peixes',fmt(m.fish),m.fishmax?'maior: '+m.fishmax:'' )}${stat('Colheitas',fmt(m.harvest))}${stat('Fabricados',fmt(m.craft))}${stat('Árvores',fmt(m.trees))}${stat('Livros',fmt(m.books))}${stat('Saqueados',fmt(m.loot),m.containers+' containers')}${stat('Prédios',fmt(m.buildings),m.towns+' cidades')}${stat('Longe da base',fmt(m.maxdist),'quadros')}${stat('Chuva · noite',h(m.rain)+' h · '+h(m.night)+' h')}</div>
   <div class="two" style="margin-top:14px">
     <div class="card"><h3 style="margin-top:0">Abates por arma <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">golpe final, só do jogador</span></h3>${bars(weapons.map(([w,n])=>[w==='Vehicle'?'Veículo':wname(w),n,w]),k=>'',' ')}
       <h3>Por tipo de arma</h3>${bars(catArr.map(([c,n])=>[CATN[c]||c,n]))}</div>
     <div class="card"><h3 style="margin-top:0">Animais abatidos</h3>${bars(animals)}
-      <h3>Peixes</h3>${bars(pref('fish.').filter(([k])=>k!=='maxsize'&&k!=='trash').map(([k,v])=>[wname(k),v]))}
-      <h3>Colheitas</h3>${bars(pref('farming.harvest.'))}
-      <h3>Mais fabricados</h3>${bars(pref('craft.'))}
+      <h3>Peixes</h3>${bars(pref('fish.').filter(([k])=>k!=='maxsize'&&k!=='trash').map(([k,v])=>[nm('fish',k)===k?wname(k):nm('fish',k),v]))}
+      <h3>Colheitas</h3>${bars(pref('farming.harvest.').map(([k,v])=>[nm('farming',k),v]))}
+      <h3>Mais fabricados</h3>${bars(pref('craft.').map(([k,v])=>[nm('recipes',k),v]))}
       <h3>Cidades visitadas</h3><div class="traits" style="margin-top:6px">${pref('towns.').map(([k])=>`<span class="trait">${esc(k)}</span>`).join('')||'<span class="empty">nenhuma ainda</span>'}</div></div>
   </div>`;
 }

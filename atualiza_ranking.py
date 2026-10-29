@@ -522,7 +522,7 @@ def montar():
             "generatedIso": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "server": {"nome": CFG.get("nome", ""), "versao": CFG.get("versao", ""), "pop": CFG.get("pop", "")},
             "online": sorted(online), "players": out,
-            "dict": {"traits": dic["traits"], "profs": dic["profs"], "icons": icones, "wcat": wcat}}
+            "dict": {"traits": dic["traits"], "profs": dic["profs"], "icons": icones, "wcat": wcat, "nomes": {k: dic.get(k, {}) for k in ("recipes", "animals", "farming", "fish")}}}
     js = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
     open(os.path.join(AQUI, "data.json"), "w", encoding="utf-8").write(js)
     tpl = os.path.join(AQUI, "ranking.tpl.html")
