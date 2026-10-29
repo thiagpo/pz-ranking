@@ -171,18 +171,6 @@ def ler_adm():
     return {"admins": admins, "actions": acoes}
 
 
-def ler_xp_doado():
-    out = collections.defaultdict(list)
-    rx = re.compile(r"^\[(\d\d)-(\d\d)-(\d\d) (\d\d:\d\d:\d\d)[^\]]*\] .+? added [\d.]+ (\w+) xp's to (.+?)\.?$")
-    for f in glob.glob(os.path.join(DADOS, "admin__*.txt")):
-        for line in open(f, encoding="utf-8", errors="ignore"):
-            m = rx.match(line.strip())
-            if m:
-                dd, mm, yy, t, perk, user = m.groups()
-                out[(user, perk)].append(f"20{yy}-{mm}-{dd} {t}")
-    return out
-
-
 def ler_bagres():
     out = {}
     for f in glob.glob(os.path.join(DADOS, "bagres__*.txt")):
@@ -394,9 +382,6 @@ def montar():
 
     deaths = collections.defaultdict(list); hours_alive = {}; login_ts = {}
     best = collections.defaultdict(dict); cur = {}; cur_ts = {}; start = {}; novo = set()
-    doado = ler_xp_doado(); adj = collections.defaultdict(dict); ultimo = collections.defaultdict(dict)
-    def dt(ts):
-        return datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S")
     first_lvl = collections.defaultdict(dict); morreu = {}; fenix = {}
     last_seen = {}; first_seen = {}
 
@@ -416,7 +401,7 @@ def montar():
             hs = re.search(r"Hours Survived: (\d+)", rest)
             last_seen[user] = max(last_seen.get(user, ts), ts); first_seen[user] = min(first_seen.get(user, ts), ts)
             if ev == "Died":
-                novo.add(user); adj[user] = {}; ultimo[user] = {}
+                novo.add(user)
                 h = int(hs.group(1)) if hs else 0
                 if h > 0 and not any(a <= ts <= b for a, b in IGNORAR):
                     deaths[user].append({"ts": ts, "hours": h}); morreu[user] = True
@@ -428,10 +413,6 @@ def montar():
             elif ev.startswith("Level Changed"):
                 lm = re.search(r"\[([A-Za-z ]+)\]\[(\d+)\]", rest)
                 if lm:
-                    perk, lvl = lm.group(1), int(lm.group(2))
-                    if any(0 <= (dt(ts) - dt(g)).total_seconds() <= 180 for g in doado.get((user, perk), [])):
-                        adj[user][perk] = adj[user].get(perk, 0) + max(1, lvl - ultimo[user].get(perk, lvl - 1))
-                    ultimo[user][perk] = lvl
                     best[user][lm.group(1)] = max(best[user].get(lm.group(1), 0), int(lm.group(2)))
                     marca(user, lm.group(1), int(lm.group(2)), ts)
             elif "=" in ev and "," in ev:
@@ -444,7 +425,6 @@ def montar():
                         except ValueError:
                             pass
                 for k, v in snap.items():
-                    ultimo[user][k] = v
                     best[user][k] = max(best[user].get(k, 0), v)
                     marca(user, k, v, ts)
                 if ts >= cur_ts.get(user, ""):
@@ -515,7 +495,7 @@ def montar():
                 "deaths": len(dl), "deathsList": sorted(dl, key=lambda d: d["ts"], reverse=True),
                 "bestHours": max([d["hours"] for d in dl] + [hours_alive.get(u, 0)]),
                 "curHours": hours_alive.get(u, 0) if (p and p["alive"]) else 0,
-                "skillsCur": {k: max(0, v - adj[u].get(k, 0)) for k, v in cur.get(u, {}).items()}, "skillsStart": start.get(u, {}), "skillsBest": sorted(best.get(u, {}).items(), key=lambda x: (-x[1], x[0])),
+                "skillsCur": cur.get(u, {}), "skillsStart": start.get(u, {}), "skillsBest": sorted(best.get(u, {}).items(), key=lambda x: (-x[1], x[0])),
                 "skillsCurTs": {k: first_lvl[u].get((k, v), cur_ts.get(u, "")) for k, v in cur.get(u, {}).items() if v > 0},
                 "firstSeen": first_seen.get(u, ""), "lastSeen": last_seen.get(u, ""),
                 "acts": dict(acts.get(u, {})), "chat": chat.get(u, 0), "drives": drives.get(u, 0), "vehicles": len(veics.get(u, ())),
