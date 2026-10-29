@@ -530,6 +530,14 @@ def montar():
                 usados.add(k[6:])
     nomes = {k: dic.get(k, {}) for k in ("animals", "farming", "fish")}
     nomes["recipes"] = {k: v for k, v in dic.get("recipes", {}).items() if k in usados}
+    tipos = set(); en = {v: k for k, v in icones.get("names", {}).items()}
+    for pl in out:
+        for w, n in pl.get("brokenList", []): tipos.add(w)
+        for f in pl.get("favs", []):
+            if f in en: tipos.add(en[f])
+        for k in pl.get("mod", {}):
+            if k.startswith("kills.weapon."): tipos.add(k[13:])
+    nomes["items"] = {k: v for k, v in dic.get("items", {}).items() if k in tipos}
     data["dict"]["nomes"] = nomes
     js = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
     open(os.path.join(AQUI, "data.json"), "w", encoding="utf-8").write(js)
