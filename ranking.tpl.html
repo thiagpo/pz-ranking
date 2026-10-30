@@ -226,6 +226,15 @@ select,.btn{background:var(--bg2);border:1px solid var(--line2);color:var(--fg);
 .chr dl{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;margin:8px 0 0;font-size:13px}
 .chr dt{color:var(--mute)} .chr dd{margin:0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
 .chr .t{font-size:12px;color:var(--mute);margin-top:6px}
+.hof .chr{position:relative;padding-right:56px}
+.hof .pos{position:absolute;top:10px;right:12px;font-family:var(--display);font-size:28px;line-height:1;color:var(--mute)}
+.hof .g1{border-color:var(--gold);box-shadow:inset 0 3px 0 var(--gold)} .hof .g1 .pos{color:var(--gold)}
+.hof .g2{border-color:var(--silver);box-shadow:inset 0 3px 0 var(--silver)} .hof .g2 .pos{color:var(--silver)}
+.hof .g3{border-color:var(--bronze);box-shadow:inset 0 3px 0 var(--bronze)} .hof .g3 .pos{color:var(--bronze)}
+.fallen{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.fallen .f{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;border-left:3px solid var(--red2)}
+.fallen .f b{font-family:var(--display);font-size:18px;letter-spacing:.03em}
+.fallen .f .s{font-size:12px;color:var(--mute);margin-top:2px}
 .log{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
 .ev{background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:14px;display:flex;justify-content:space-between;gap:8px}
 .ev .t{color:var(--mute);font-size:12px;white-space:nowrap}
@@ -285,6 +294,7 @@ footer{margin-top:40px;font-size:12px;color:var(--dim);display:flex;justify-cont
     <a href="#ranking" data-v="home">Ranking</a>
     <a href="#titulos" data-v="titulos">Títulos</a>
     <a href="#conquistas" data-v="conq">Conquistas</a>
+    <a href="#hall" data-v="hall">Hall da Fama</a>
     <a href="#comparar" data-v="cmp">Comparar</a>
     <a href="#servidor" data-v="srv">Servidor</a>
     <a href="#adm" data-v="adm">ADM Abuser</a>
@@ -346,6 +356,8 @@ footer{margin-top:40px;font-size:12px;color:var(--dim);display:flex;justify-cont
   <div class="cmp-pick"><select id="cA"></select><div class="vs">VS</div><select id="cB"></select></div>
   <div id="cmpbody"></div>
 </section>
+
+<section id="hall" hidden></section>
 
 <section id="srv" hidden></section>
 
@@ -809,6 +821,44 @@ const sbRaw = k => data.sandbox?data.sandbox[k]:undefined;
 const MONTHS=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
 function kv(keys){ return `<div class="kv">${keys.map(k=>{ const lbl=SB_PT[k]||(data.sandboxMeta&&data.sandboxMeta[k]&&data.sandboxMeta[k].desc.split('.')[0])||k; const v=sbVal(k); return `<div class="k" title="${esc(data.sandboxMeta&&data.sandboxMeta[k]?data.sandboxMeta[k].desc:'')}">${esc(lbl)}</div><div class="v">${esc(v)}</div>`; }).join('')}</div>`; }
 function iniKv(pairs){ const ini=data.ini||{}; return `<div class="kv">${pairs.map(([k,l,f])=>{ let v=ini[k]; if(v===undefined) return ''; if(typeof v==='boolean') v=v?'Sim':'Não'; if(f) v=f(v); return `<div class="k">${l}</div><div class="v">${esc(v)}</div>`; }).join('')}</div>`; }
+function renderHall(){
+  const lives=[];
+  for(const p of P){
+    for(const d of (p.deathsList||[])){
+      const ts=Date.parse(d.ts.replace(' ','T')+'Z')/1000;
+      const c=p.chars.find(c=>c.dead&&c.deathTs&&Math.abs(c.deathTs-ts)<900);
+      lives.push({p,hours:d.hours,ts:d.ts,dead:true,name:c?c.name:'',kills:c?c.kills:null,km:c?c.km:null,daily:c?c.daily:null});
+    }
+    if(p.alive&&p.curHours>0){ const c=p.chars[0]; lives.push({p,hours:p.curHours,dead:false,name:c?c.name:p.name,kills:c?c.kills:p.curKills,km:c?c.km:null,daily:c?c.daily:null}); }
+  }
+  lives.sort((a,b)=>b.hours-a.hours);
+  const chars=[]; for(const p of P) for(const c of p.chars) chars.push({...c,p});
+  const nm=c=>esc(c.name||'Sem nome');
+  const recC=(key,label,f,unit)=>{const c=chars.slice().sort((a,b)=>(b[key]||0)-(a[key]||0))[0]; return c&&c[key]>0?stat(label,f(c[key])+(unit?' '+unit:''),`${nm(c)} · ${link(c.p)}`):stat(label,'—','ninguém ainda');};
+  const recP=(fn,label,f,unit)=>{const p=P.slice().sort((a,b)=>fn(b)-fn(a))[0]; return p&&fn(p)>0?stat(label,f(fn(p))+(unit?' '+unit:''),link(p)+' · todos os personagens'):stat(label,'—','ninguém ainda');};
+  const top=lives[0];
+  const pio={}; for(const p of P) for(const k of (p.first10||[])) pio[k]=p;
+  const pioArr=Object.entries(pio).sort((a,b)=>pname(a[0]).localeCompare(pname(b[0])));
+  const fallen=lives.filter(l=>l.dead).sort((a,b)=>b.ts.localeCompare(a.ts));
+  V.hall.innerHTML=`
+  <h2>Hall da Fama <span class="sub">as lendas da Base dos Bagres</span></h2>
+  <h3>Maiores sobreviventes <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">cada vida conta, viva ou morta</span></h3>
+  ${lives.length?`<div class="chars hof">${lives.slice(0,9).map((l,i)=>`<div class="chr ${i<3?'g'+(i+1):''}"><div class="pos">#${i+1}</div>
+    <div class="nm">${nm(l)} ${l.dead?'<span class="pill dead">morto</span>':'<span class="pill alive">vivo</span>'}</div><div class="t">de ${link(l.p)}</div>
+    <dl><dt>Sobreviveu</dt><dd>${dh(l.hours)}</dd>${l.kills!=null?`<dt>Abates</dt><dd>${fmt(l.kills)}</dd>`:''}${l.km!=null?`<dt>Km andados</dt><dd>${fmt(l.km)}</dd>`:''}${l.daily?`<dt>Recorde num dia</dt><dd>${l.daily}</dd>`:''}</dl>
+    <div class="t">${l.dead?'morreu em '+br(l.ts):'ainda vivo'}</div></div>`).join('')}</div>`:'<div class="empty">Sem registros ainda.</div>'}
+  <h3>Recordes do servidor</h3>
+  <div class="tiles">
+    ${top?stat('Maior sobrevivência',dh(top.hours),`${nm(top)} · ${link(top.p)}`,true):''}
+    ${recC('kills','Mais abates num personagem',fmt)}${recC('daily','Recorde num dia',fmt,'abates')}${recC('km','Mais km num personagem',fmt,'km')}
+    ${recP(p=>p.kills,'Mais abates somados',fmt)}${recP(p=>p.killStreak||0,'Dias seguidos matando',fmt,'dias')}${recP(p=>p.weekKills||0,'Semana mais mortal',fmt,'abates')}
+    ${recP(p=>p.deaths,'Mais mortes',fmt)}${recP(p=>p.broken,'Mais armas quebradas',fmt)}${recP(p=>p.hoursPlayed,'Mais horas jogadas',fmt,'h')}
+  </div>
+  <h3>Pioneiros <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">primeiro da base a chegar ao nível 10</span></h3>
+  ${pioArr.length?`<div class="titles">${pioArr.map(([k,p])=>`<div class="title"><div class="ic">${si(k,'big')||'🥇'}</div><div><div class="t">${pname(k)}</div><div class="w">${link(p)}</div><div class="lv">nível 10</div></div></div>`).join('')}</div>`:'<div class="empty">Ninguém chegou ao nível 10 ainda.</div>'}
+  <h3>Mural dos caídos <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">${fallen.length} mortes registradas</span></h3>
+  ${fallen.length?`<div class="fallen">${fallen.slice(0,40).map(l=>`<div class="f"><b>${nm(l)}</b><div class="s">de ${link(l.p)} · sobreviveu ${dh(l.hours)}${l.kills!=null?' · '+fmt(l.kills)+' abates':''}</div><div class="s">${br(l.ts)}</div></div>`).join('')}</div>`:'<div class="empty">Ninguém morreu ainda.</div>'}`;
+}
 function renderSrv(){
   const sb=data.sandbox||{}, ini=data.ini||{}, S=data.server||{};
   const lootKeys=Object.keys(sb).filter(k=>/LootNew$|^SkillBookLoot$|^RecipeResourceLoot$/.test(k));
@@ -878,13 +928,13 @@ function renderAdm(){
 }
 
 /* ---------- routing ---------- */
-const V={home:document.getElementById('home'),conq:document.getElementById('conq'),cmp:document.getElementById('cmp'),srv:document.getElementById('srv'),adm:document.getElementById('admv'),profile:document.getElementById('profile')};
+const V={home:document.getElementById('home'),hall:document.getElementById('hall'),conq:document.getElementById('conq'),cmp:document.getElementById('cmp'),srv:document.getElementById('srv'),adm:document.getElementById('admv'),profile:document.getElementById('profile')};
 let profTab='geral';
 function route(){
   const h=location.hash.slice(1)||'ranking';
   const p=byTok[h];
   let view='home';
-  if(p) view='profile'; else if(h==='conquistas') view='conq'; else if(h==='comparar') view='cmp'; else if(h==='servidor') view='srv'; else if(h==='adm') view='adm'; else if(h==='titulos') view='titulos';
+  if(p) view='profile'; else if(h==='conquistas') view='conq'; else if(h==='comparar') view='cmp'; else if(h==='servidor') view='srv'; else if(h==='hall') view='hall'; else if(h==='adm') view='adm'; else if(h==='titulos') view='titulos';
   for(const k in V) V[k].hidden=!(k===view||(view==='titulos'&&k==='home'));
   document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.v===view));
   if(view==='profile'){
@@ -893,7 +943,7 @@ function route(){
     const show=t=>{profTab=t; tabs.forEach(x=>x.setAttribute('aria-selected',x.dataset.t===t)); V.profile.querySelectorAll('.panel').forEach(x=>x.hidden=x.dataset.p!==t);};
     tabs.forEach(b=>b.onclick=()=>show(b.dataset.t)); show(profTab);
     document.title=p.user+' · Ranking Base dos Bagres';
-  } else { document.title='Ranking Base dos Bagres'; if(view==='conq') renderConq(); if(view==='cmp') renderCmpPick(); if(view==='srv') renderSrv(); if(view==='adm') renderAdm(); }
+  } else { document.title='Ranking Base dos Bagres'; if(view==='conq') renderConq(); if(view==='cmp') renderCmpPick(); if(view==='srv') renderSrv(); if(view==='hall') renderHall(); if(view==='adm') renderAdm(); }
   if(view==='titulos'){ document.getElementById('titulos').scrollIntoView({behavior:'smooth'}); } else window.scrollTo(0,0);
 }
 function renderAll(){ renderHome(); route(); document.getElementById('foot').textContent='Atualizado em '+data.generated+' · horários de Brasília'; }
