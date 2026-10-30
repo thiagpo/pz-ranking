@@ -1,7 +1,7 @@
 -- Bagres Stats: contadores por jogador, somados no servidor e gravados em Lua/bagres_stats/<usuario>.txt
 BagresStats = BagresStats or {}
 local S = BagresStats
-S.VERSION = "1.3"
+S.VERSION = "1.4"
 S.DIR = "bagres_stats/"
 
 local data = {}
@@ -66,6 +66,8 @@ local function username(character)
     if ok and u and u ~= "" then return u end
     return nil
 end
+
+S.username = username
 
 function S.inc(character, key, n)
     if not isServer() then return end

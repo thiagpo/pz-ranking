@@ -171,6 +171,33 @@ def ler_adm():
     return {"admins": admins, "actions": acoes}
 
 
+PODER_PT = {"god": "modo deus", "invisible": "invisível", "noclip": "atravessar paredes", "ghost": "modo fantasma",
+            "carry": "carga ilimitada", "build": "construção instantânea", "instant": "ações instantâneas", "health": "vida infinita",
+            "seeall": "ver todos", "hearall": "ouvir todos", "noattack": "zumbis não atacam", "farming": "cultivo instantâneo",
+            "mechanics": "mecânica instantânea", "movables": "móveis instantâneos", "endurance": "resistência infinita", "fastmove": "movimento rápido"}
+
+
+def ler_poderes():
+    out = []; ligado = {}
+    f = os.path.join(DADOS, "bagres___adm.txt")
+    if not os.path.exists(f):
+        return out
+    for line in open(f, encoding="utf-8", errors="ignore"):
+        parts = line.strip().split("|")
+        if len(parts) != 4 or not parts[0].isdigit():
+            continue
+        ts, user, flag, on = int(parts[0]), parts[1], parts[2], parts[3] == "1"
+        nome = PODER_PT.get(flag, flag)
+        sts = datetime.datetime.fromtimestamp(ts, datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+        if on:
+            ligado[(user, flag)] = ts; texto = f"ligou {nome}"
+        else:
+            t0 = ligado.pop((user, flag), None)
+            texto = f"desligou {nome}" + (f" depois de {max(1, (ts - t0) // 60)} min" if t0 else "")
+        out.append({"ts": sts, "actor": user, "type": "poder", "text": texto, "target": ""})
+    return out
+
+
 def ler_bagres():
     out = {}
     for f in glob.glob(os.path.join(DADOS, "bagres__*.txt")):
@@ -521,7 +548,8 @@ def montar():
         tz = datetime.timezone(datetime.timedelta(hours=-3))
     sandbox, sandbox_meta = ler_sandbox()
     ini, ws = ler_ini()
-    data = {"sandbox": sandbox, "sandboxMeta": sandbox_meta, "ini": ini, "mods": ler_mods(ws), "adm": ler_adm(),
+    adm = ler_adm(); adm["actions"] = sorted(adm["actions"] + ler_poderes(), key=lambda a: a["ts"], reverse=True)
+    data = {"sandbox": sandbox, "sandboxMeta": sandbox_meta, "ini": ini, "mods": ler_mods(ws), "adm": adm,
             "generated": datetime.datetime.now(tz).strftime("%d/%m/%Y %H:%M"),
             "generatedIso": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "server": {"nome": CFG.get("nome", ""), "versao": CFG.get("versao", ""), "pop": CFG.get("pop", "")},

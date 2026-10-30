@@ -67,6 +67,43 @@ local function onClientCommand(module, command, player, args)
     end
 end
 
+-- poderes de admin (modo deus, invisivel...): minutos ligados e cada troca de estado
+local FLAGS = {
+    { "god", "isGodMod" }, { "invisible", "isInvisible" }, { "noclip", "isNoClip" }, { "ghost", "isGhostMode" },
+    { "carry", "isUnlimitedCarry" }, { "build", "isBuildCheat" }, { "instant", "isTimedActionInstantCheat" },
+    { "health", "isHealthCheat" }, { "seeall", "isCanSeeAll" }, { "hearall", "isCanHearAll" },
+    { "noattack", "isZombiesDontAttack" }, { "farming", "isFarmingCheat" }, { "mechanics", "isMechanicsCheat" },
+    { "movables", "isMovablesCheat" }, { "endurance", "isUnlimitedEndurance" }, { "fastmove", "isFastMoveCheat" },
+}
+local powerState = {}
+
+local function logPower(user, flag, on)
+    pcall(function()
+        local w = getFileWriter(S.DIR .. "_adm.txt", true, true)
+        w:write(tostring(getTimestamp()) .. "|" .. user .. "|" .. flag .. "|" .. (on and "1" or "0") .. "\n")
+        w:close()
+    end)
+end
+
+local function checkPowers(p)
+    local user = S.username(p)
+    if not user then return end
+    local st = powerState[user] or {}
+    powerState[user] = st
+    for _, f in ipairs(FLAGS) do
+        local ok, on = pcall(function() return p[f[2]](p) end)
+        if ok and type(on) == "boolean" then
+            if on then S.inc(p, "adm." .. f[1] .. "_min") end
+            if st[f[1]] == nil then
+                if on then logPower(user, f[1], true) end
+            elseif st[f[1]] ~= on then
+                logPower(user, f[1], on)
+            end
+            st[f[1]] = on
+        end
+    end
+end
+
 -- a cada minuto real: clima, noite, exploracao, distancia da base
 local base = nil
 local function baseXY()
@@ -97,6 +134,7 @@ local function everyMinute()
         pcall(function()
             if not p or p:isDead() then return end
             S.inc(p, "online_min")
+            checkPowers(p)
             local outside = p:isOutside()
             if outside and rain then S.inc(p, "weather.rain_min") end
             if outside and snow then S.inc(p, "weather.snow_min") end

@@ -931,7 +931,8 @@ function renderSrv(){
 }
 
 /* ---------- ADM page ---------- */
-const ADM_T={teleporte:['🌀','Teleporte'],acesso:['🔑','Nível de acesso'],horda:['🧟','Horda criada'],limpeza:['🧹','Zumbis removidos'],item:['📦','Item criado'],xp:['📈','XP dado'],ban:['⛔','Ban / expulsão'],servidor:['🖥️','Servidor'],outro:['❓','Outra ação']};
+const ADM_T={teleporte:['🌀','Teleporte'],acesso:['🔑','Nível de acesso'],horda:['🧟','Horda criada'],limpeza:['🧹','Zumbis removidos'],item:['📦','Item criado'],xp:['📈','XP dado'],ban:['⛔','Ban / expulsão'],servidor:['🖥️','Servidor'],poder:['👁️','Poder de admin'],outro:['❓','Outra ação']};
+const PODER_PT={god:'modo deus',invisible:'invisível',noclip:'atravessar paredes',ghost:'modo fantasma',carry:'carga ilimitada',build:'construção instantânea',instant:'ações instantâneas',health:'vida infinita',seeall:'ver todos',hearall:'ouvir todos',noattack:'zumbis não atacam',farming:'cultivo instantâneo',mechanics:'mecânica instantânea',movables:'móveis instantâneos',endurance:'resistência infinita',fastmove:'movimento rápido'};
 function renderAdm(){
   const A=data.adm||{admins:[],actions:[]};
   const byUser=u=>P.find(p=>p.user===u);
@@ -940,9 +941,9 @@ function renderAdm(){
   const actors=Object.keys(cnt).sort((x,y)=>A.actions.filter(a=>a.actor===y).length-A.actions.filter(a=>a.actor===x).length);
   document.getElementById('admv').innerHTML=`
   <h2>ADM Abuser <span class="sub">transparência das ações de admin dentro do jogo</span></h2>
-  <p class="note">Aqui aparecem os admins atuais e tudo que foi feito pelo painel de admin dentro do jogo: teleportes, itens criados, hordas, mudanças de acesso. Comandos digitados no console da hospedagem não entram. Fonte: registro oficial do servidor. Horários de Brasília.</p>
+  <p class="note">Aqui aparecem os admins atuais e tudo que foi feito pelo painel de admin dentro do jogo: teleportes, itens criados, hordas, mudanças de acesso. Comandos digitados no console da hospedagem não entram. Modo deus, invisível e outros poderes são detectados pelo mod Bagres Stats a cada minuto. Fonte: registro oficial do servidor e mod. Horários de Brasília.</p>
   <h3>Admins atuais</h3>
-  <div class="tiles">${admins.length?admins.map(a=>{const p=byUser(a.user);return `<div class="tile ${a.role==='admin'?'hi':''}"><div class="l">${esc(a.roleName)}</div><div class="v">${p?link(p):esc(a.user)}</div><div class="s">${a.last?'última conexão '+br(a.last):''}${p&&p.online?' · <span class="pill on">online</span>':''}</div></div>`;}).join(''):'<div class="empty">Nenhum admin cadastrado.</div>'}</div>
+  <div class="tiles">${admins.length?admins.map(a=>{const p=byUser(a.user);const pw=p?Object.entries(p.mod||{}).filter(([k])=>k.startsWith('adm.')&&k.endsWith('_min')).sort((x,y)=>y[1]-x[1]).map(([k,v])=>(PODER_PT[k.slice(4,-4)]||k)+' '+(v>=60?Math.round(v/60)+' h':v+' min')).join(' · '):'';return `<div class="tile ${a.role==='admin'?'hi':''}"><div class="l">${esc(a.roleName)}</div><div class="v">${p?link(p):esc(a.user)}</div><div class="s">${a.last?'última conexão '+br(a.last):''}${p&&p.online?' · <span class="pill on">online</span>':''}</div>${pw?`<div class="s" style="margin-top:4px">${pw}</div>`:''}</div>`;}).join(''):'<div class="empty">Nenhum admin cadastrado.</div>'}</div>
   <h3>Resumo por pessoa</h3>
   <div class="tiles">${actors.length?actors.map(u=>{const p=byUser(u);const c=cnt[u];return `<div class="tile"><div class="l">${Object.values(c).reduce((x,y)=>x+y,0)} ações</div><div class="v">${p?link(p):esc(u)}</div><div class="s">${Object.entries(c).sort((x,y)=>y[1]-x[1]).map(([t,n])=>ADM_T[t][0]+' '+n+' '+ADM_T[t][1].toLowerCase()).join(' · ')}</div></div>`;}).join(''):'<div class="empty">Nenhuma ação registrada.</div>'}</div>
   <h3>Todas as ações <span class="sub" style="font-family:var(--ui);font-size:12px;letter-spacing:.1em">${A.actions.length} registros · mais recente primeiro</span></h3>
