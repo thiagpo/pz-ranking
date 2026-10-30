@@ -231,6 +231,21 @@ select,.btn{background:var(--bg2);border:1px solid var(--line2);color:var(--fg);
 .hof .g1{border-color:var(--gold);box-shadow:inset 0 3px 0 var(--gold)} .hof .g1 .pos{color:var(--gold)}
 .hof .g2{border-color:var(--silver);box-shadow:inset 0 3px 0 var(--silver)} .hof .g2 .pos{color:var(--silver)}
 .hof .g3{border-color:var(--bronze);box-shadow:inset 0 3px 0 var(--bronze)} .hof .g3 .pos{color:var(--bronze)}
+.legends{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:6px}
+.legend{position:relative;background:linear-gradient(180deg,var(--bg2),var(--bg));border:1px solid var(--line);border-radius:14px;padding:24px 18px 18px;text-align:center;overflow:hidden;min-width:0}
+.legend::before{content:"";position:absolute;inset:0 0 auto;height:4px;background:var(--red)}
+.legend::after{content:"";position:absolute;inset:auto -40% -60% -40%;height:70%;background:radial-gradient(closest-side,rgba(227,48,61,.18),transparent);pointer-events:none}
+.legend .rn{position:absolute;top:10px;left:14px;font-family:var(--display);font-size:24px;line-height:1;color:var(--dim)}
+.legend .skull{display:flex;justify-content:center;font-size:40px;line-height:1} .legend .skull img{width:52px;height:52px;image-rendering:pixelated;filter:drop-shadow(0 0 12px rgba(227,48,61,.6))}
+.legend .ln{font-family:var(--display);font-size:32px;line-height:1;margin-top:10px;text-wrap:balance}
+.legend .lo{font-size:13px;color:var(--mute);margin-top:4px}
+.legend .big{font-family:var(--display);font-size:50px;line-height:1;color:var(--red);margin-top:16px;font-variant-numeric:tabular-nums}
+.legend .bl{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute);margin-top:2px}
+.legend .ls{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:14px;font-size:13px;color:var(--mute)} .legend .ls b{color:var(--fg);font-variant-numeric:tabular-nums;font-size:15px}
+.legend .ld{margin-top:14px;font-size:12px;color:var(--mute);border-top:1px dashed var(--line2);padding-top:10px;position:relative}
+.legend.l1 .big{color:var(--gold)} .legend.l1::before{background:var(--gold)} .legend.l1 .skull img{filter:drop-shadow(0 0 14px rgba(242,193,78,.7))} .legend.l1::after{background:radial-gradient(closest-side,rgba(242,193,78,.16),transparent)}
+.legend.l2 .big{color:var(--silver)} .legend.l2::before{background:var(--silver)}
+.legend.l3 .big{color:var(--bronze)} .legend.l3::before{background:var(--bronze)}
 .fallen{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
 .fallen .f{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;border-left:3px solid var(--red2)}
 .fallen .f b{font-family:var(--display);font-size:18px;letter-spacing:.03em}
@@ -294,7 +309,7 @@ footer{margin-top:40px;font-size:12px;color:var(--dim);display:flex;justify-cont
     <a href="#ranking" data-v="home">Ranking</a>
     <a href="#titulos" data-v="titulos">Títulos</a>
     <a href="#conquistas" data-v="conq">Conquistas</a>
-    <a href="#hall" data-v="hall">Hall da Fama</a>
+    <a href="#lendas" data-v="hall">Lendas</a>
     <a href="#comparar" data-v="cmp">Comparar</a>
     <a href="#servidor" data-v="srv">Servidor</a>
     <a href="#adm" data-v="adm">ADM Abuser</a>
@@ -840,9 +855,16 @@ function renderHall(){
   const pio={}; for(const p of P) for(const k of (p.first10||[])) pio[k]=p;
   const pioArr=Object.entries(pio).sort((a,b)=>pname(a[0]).localeCompare(pname(b[0])));
   const fallen=lives.filter(l=>l.dead).sort((a,b)=>b.ts.localeCompare(a.ts));
+  const lendas=lives.filter(l=>l.dead).sort((a,b)=>(b.hours-a.hours)||((b.kills||0)-(a.kills||0))).slice(0,4);
+  const RN=['I','II','III','IV'];
   V.hall.innerHTML=`
-  <h2>Hall da Fama <span class="sub">as lendas da Base dos Bagres</span></h2>
-  <h3>Maiores sobreviventes <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">cada vida conta, viva ou morta</span></h3>
+  <h2>Lendas <span class="sub">os que caíram e ficaram na história da base</span></h2>
+  ${lendas.length?`<div class="legends">${lendas.map((l,i)=>`<div class="legend l${i+1}"><div class="rn">${RN[i]}</div><div class="skull">${gi('Mood_Dead','💀')}</div>
+    <div class="ln">${nm(l)}</div><div class="lo">de ${link(l.p)}</div>
+    <div class="big">${dh(l.hours)}</div><div class="bl">sobreviveu</div>
+    <div class="ls">${l.kills!=null?`<span><b>${fmt(l.kills)}</b> abates</span>`:''}${l.km!=null?`<span><b>${fmt(l.km)}</b> km</span>`:''}${l.daily?`<span><b>${l.daily}</b> num dia</span>`:''}</div>
+    <div class="ld">† ${br(l.ts)}</div></div>`).join('')}</div>`:'<div class="empty">Nenhuma morte registrada ainda. As lendas nascem quando alguém cai.</div>'}
+  <h3>Vidas mais longas <span class="sub" style="font-family:var(--ui);font-size:11px;letter-spacing:.1em">vivas ou mortas</span></h3>
   ${lives.length?`<div class="chars hof">${lives.slice(0,9).map((l,i)=>`<div class="chr ${i<3?'g'+(i+1):''}"><div class="pos">#${i+1}</div>
     <div class="nm">${nm(l)} ${l.dead?'<span class="pill dead">morto</span>':'<span class="pill alive">vivo</span>'}</div><div class="t">de ${link(l.p)}</div>
     <dl><dt>Sobreviveu</dt><dd>${dh(l.hours)}</dd>${l.kills!=null?`<dt>Abates</dt><dd>${fmt(l.kills)}</dd>`:''}${l.km!=null?`<dt>Km andados</dt><dd>${fmt(l.km)}</dd>`:''}${l.daily?`<dt>Recorde num dia</dt><dd>${l.daily}</dd>`:''}</dl>
@@ -934,7 +956,7 @@ function route(){
   const h=location.hash.slice(1)||'ranking';
   const p=byTok[h];
   let view='home';
-  if(p) view='profile'; else if(h==='conquistas') view='conq'; else if(h==='comparar') view='cmp'; else if(h==='servidor') view='srv'; else if(h==='hall') view='hall'; else if(h==='adm') view='adm'; else if(h==='titulos') view='titulos';
+  if(p) view='profile'; else if(h==='conquistas') view='conq'; else if(h==='comparar') view='cmp'; else if(h==='servidor') view='srv'; else if(h==='hall'||h==='lendas') view='hall'; else if(h==='adm') view='adm'; else if(h==='titulos') view='titulos';
   for(const k in V) V[k].hidden=!(k===view||(view==='titulos'&&k==='home'));
   document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.dataset.v===view));
   if(view==='profile'){
