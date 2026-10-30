@@ -71,11 +71,12 @@ end
 local FLAGS = {
     { "god", "isGodMod" }, { "invisible", "isInvisible" }, { "noclip", "isNoClip" }, { "ghost", "isGhostMode" },
     { "carry", "isUnlimitedCarry" }, { "build", "isBuildCheat" }, { "instant", "isTimedActionInstantCheat" },
-    { "health", "isHealthCheat" }, { "seeall", "isCanSeeAll" }, { "hearall", "isCanHearAll" },
+    { "health", "isHealthCheat" }, { "seeall", "isSeeEveryone" },
     { "noattack", "isZombiesDontAttack" }, { "farming", "isFarmingCheat" }, { "mechanics", "isMechanicsCheat" },
     { "movables", "isMovablesCheat" }, { "endurance", "isUnlimitedEndurance" }, { "fastmove", "isFastMoveCheat" },
 }
 local powerState = {}
+local powerOff = {}
 
 local function logPower(user, flag, on)
     pcall(function()
@@ -91,7 +92,9 @@ local function checkPowers(p)
     local st = powerState[user] or {}
     powerState[user] = st
     for _, f in ipairs(FLAGS) do
-        local ok, on = pcall(function() return p[f[2]](p) end)
+        local ok, on = false, nil
+        if not powerOff[f[1]] then ok, on = pcall(function() return p[f[2]](p) end) end
+        if not ok then powerOff[f[1]] = true end
         if ok and type(on) == "boolean" then
             if on then S.inc(p, "adm." .. f[1] .. "_min") end
             if st[f[1]] == nil then

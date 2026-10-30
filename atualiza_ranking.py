@@ -173,7 +173,7 @@ def ler_adm():
 
 PODER_PT = {"god": "modo deus", "invisible": "invisível", "noclip": "atravessar paredes", "ghost": "modo fantasma",
             "carry": "carga ilimitada", "build": "construção instantânea", "instant": "ações instantâneas", "health": "vida infinita",
-            "seeall": "ver todos", "hearall": "ouvir todos", "noattack": "zumbis não atacam", "farming": "cultivo instantâneo",
+            "seeall": "ver todos", "noattack": "zumbis não atacam", "farming": "cultivo instantâneo",
             "mechanics": "mecânica instantânea", "movables": "móveis instantâneos", "endurance": "resistência infinita", "fastmove": "movimento rápido"}
 
 

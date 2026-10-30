@@ -1,7 +1,7 @@
 -- Bagres Stats: contadores por jogador, somados no servidor e gravados em Lua/bagres_stats/<usuario>.txt
 BagresStats = BagresStats or {}
 local S = BagresStats
-S.VERSION = "1.4"
+S.VERSION = "1.4.1"
 S.DIR = "bagres_stats/"
 
 local data = {}
