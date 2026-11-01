@@ -25,7 +25,7 @@
     "IGUI_BF_Painel": "Farms do Bagres",
     "IGUI_BF_Nada": "Nenhum efeito ativo.",
     "IGUI_BF_MoodDopado": "Dopado",
-    "IGUI_BF_MoodDopadoDesc": "%1 efeito(s) de remédio ativos. Clique para ver.",
+    "IGUI_BF_MoodDopadoDesc": "%1 efeito(s) de remédio ativos. Clique para abrir o painel.",
     "IGUI_BF_MoodRessacaDesc": "Efeito posterior de remédio. Clique para ver.",
     "IGUI_BF_MoodAbstDesc": "Vício cobrando: tristeza, estresse e cansaço até a próxima dose ou até limpar.",
     "IGUI_BF_TolInfo": "%1% de efeito, +%2% de colateral",
@@ -89,5 +89,9 @@
     "IGUI_BF_RessacaDesc": "efeito posterior ainda ativo",
     "IGUI_ItemCat_Farmacia": "Farmácia",
     "IGUI_BF_Pedido": "%1 quer te aplicar %2. Aceita?",
-    "IGUI_BF_PedidoEnviado": "Pedido enviado para %1"
+    "IGUI_BF_PedidoEnviado": "Pedido enviado para %1",
+    "IGUI_BF_AbaDuracao": "Duração",
+    "IGUI_BF_AbaPositivos": "Positivos",
+    "IGUI_BF_AbaNegativos": "Negativos",
+    "IGUI_BF_L_curando": "curando o resfriado"
 }

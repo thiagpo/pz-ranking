@@ -25,7 +25,7 @@
     "IGUI_BF_Painel": "Farms do Bagres",
     "IGUI_BF_Nada": "No active effect.",
     "IGUI_BF_MoodDopado": "Dosed",
-    "IGUI_BF_MoodDopadoDesc": "%1 active drug effect(s). Click to view.",
+    "IGUI_BF_MoodDopadoDesc": "%1 active drug effect(s). Click to open the panel.",
     "IGUI_BF_MoodRessacaDesc": "Drug after-effect. Click to view.",
     "IGUI_BF_MoodAbstDesc": "Addiction kicking in: sadness, stress and tiredness until the next dose or until clean.",
     "IGUI_BF_TolInfo": "%1% effect, +%2% side effects",
@@ -89,5 +89,9 @@
     "IGUI_BF_RessacaDesc": "after-effect still active",
     "IGUI_ItemCat_Farmacia": "Pharmacy",
     "IGUI_BF_Pedido": "%1 wants to inject you with %2. Accept?",
-    "IGUI_BF_PedidoEnviado": "Request sent to %1"
+    "IGUI_BF_PedidoEnviado": "Request sent to %1",
+    "IGUI_BF_AbaDuracao": "Duration",
+    "IGUI_BF_AbaPositivos": "Positive",
+    "IGUI_BF_AbaNegativos": "Negative",
+    "IGUI_BF_L_curando": "curing the cold"
 }

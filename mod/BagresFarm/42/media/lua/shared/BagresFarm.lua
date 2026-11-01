@@ -236,6 +236,68 @@ function BF.aplicarFerida(p, f)
     end)
 end
 
+-- soma dos efeitos ativos: retorna duas listas de texto (positivos, negativos)
+function BF.agregados(st, t)
+    local pos, neg = {}, {}
+    local soma = { fomeB = 0, fomeM = 0, peso = 0, fadB = 0, fadM = 0, forca = 0, dor = 0, rig = 0, xpF = 0, xpA = 0, sangra = 0 }
+    local flags = {}
+    local function pct(v) return math.floor(math.abs(v) * 100 + 0.5) end
+    for id, e in pairs(st.ef or {}) do
+        local d = BF.DROGAS[id]
+        if d then
+            local m, dm = BF.mult(e, t)
+            if d.fome and d.fome < 0 then soma.fomeB = soma.fomeB + d.fome * m end
+            if d.fome and d.fome > 0 then soma.fomeM = soma.fomeM + d.fome * dm end
+            if d.pesoDia then soma.peso = soma.peso + d.pesoDia * m end
+            if d.fadiga and d.fadiga < 0 then soma.fadB = soma.fadB + d.fadiga * m end
+            if d.fadiga and d.fadiga > 0 then soma.fadM = soma.fadM + d.fadiga * dm end
+            if d.forca then soma.forca = math.max(soma.forca, d.forca * m) end
+            if d.dor then soma.dor = soma.dor + d.dor * m end
+            if d.rigidez then soma.rig = soma.rig + d.rigidez * m end
+            if d.xpForca then soma.xpF = soma.xpF + d.xpForca * m end
+            if d.xpFitness then soma.xpA = soma.xpA + d.xpFitness * m end
+            if d.sangramento then soma.sangra = math.max(soma.sangra, d.sangramento * dm) end
+            for _, k in ipairs({ "folego", "audicao", "visao", "adrenalina", "gripe", "cura" }) do if d[k] then flags[k] = true end end
+            if d.paranoia and (st.usos[id] or 0) >= d.paranoia then flags.paranoia = true end
+            if d.vicio then flags.vicio = true end
+            if d.fadigaFim then flags.fadigaFim = math.max(flags.fadigaFim or 0, d.fadigaFim * dm) end
+            if d.tristezaFim then flags.tristezaFim = math.max(flags.tristezaFim or 0, d.tristezaFim * dm) end
+            if d.recuperacao then flags.recuperacao = math.max(flags.recuperacao or 0, d.recuperacao * dm) end
+        end
+    end
+    for id, e in pairs(st.pos or {}) do
+        local d = BF.DROGAS[id]
+        if d and e.fim > t then
+            if d.recuperacao then table.insert(neg, getText("IGUI_BF_L_sono") .. " -" .. pct(d.recuperacao * e.d) .. "% (" .. BF.horasTxt(e.fim - t) .. ")") end
+            if d.sangramento then soma.sangra = math.max(soma.sangra, d.sangramento * e.d) end
+        end
+    end
+    if soma.fomeB < 0 then table.insert(pos, getText("IGUI_BF_L_fome") .. " -" .. pct(soma.fomeB) .. "%") end
+    if soma.peso > 0 then table.insert(pos, "-" .. string.format("%.2f", soma.peso) .. " kg/" .. getText("IGUI_BF_L_dia")) end
+    if soma.fadB < 0 then table.insert(pos, getText("IGUI_BF_L_cansaco") .. " -" .. pct(soma.fadB) .. "%") end
+    if soma.forca > 0 then table.insert(pos, getText("IGUI_BF_L_forca") .. " +" .. pct(soma.forca) .. "%") end
+    if soma.dor > 0 then table.insert(pos, getText("IGUI_BF_L_dor") .. " -" .. pct(math.min(0.95, soma.dor)) .. "%") end
+    if soma.rig > 0 then table.insert(pos, getText("IGUI_BF_L_rigidez") .. " -" .. pct(math.min(0.9, soma.rig)) .. "%/min") end
+    if soma.xpF > 0 then table.insert(pos, "+" .. pct(soma.xpF) .. "% XP " .. getText("IGUI_BF_L_xpforca")) end
+    if soma.xpA > 0 then table.insert(pos, "+" .. pct(soma.xpA) .. "% XP " .. getText("IGUI_BF_L_xpfitness")) end
+    for _, k in ipairs({ "folego", "audicao", "visao", "adrenalina" }) do if flags[k] then table.insert(pos, getText("IGUI_BF_L_" .. k)) end end
+    if flags.cura then table.insert(pos, getText("IGUI_BF_L_curando")) elseif flags.gripe then table.insert(pos, getText("IGUI_BF_L_gripe")) end
+    if soma.fomeM > 0 then table.insert(neg, getText("IGUI_BF_L_fome") .. " +" .. pct(soma.fomeM) .. "%") end
+    if soma.fadM > 0 then table.insert(neg, getText("IGUI_BF_L_cansaco") .. " +" .. pct(soma.fadM) .. "%") end
+    if soma.sangra > 0 then table.insert(neg, getText("IGUI_BF_L_sangra") .. " +" .. pct(soma.sangra) .. "%") end
+    if flags.paranoia then table.insert(neg, getText("IGUI_BF_L_paranoia")) end
+    if flags.vicio then table.insert(neg, getText("IGUI_BF_L_vicio")) end
+    if flags.fadigaFim then table.insert(neg, getText("IGUI_BF_L_depois") .. " " .. getText("IGUI_BF_L_cansaco") .. " +" .. pct(flags.fadigaFim) .. "%") end
+    if flags.tristezaFim then table.insert(neg, getText("IGUI_BF_L_depois") .. " " .. getText("IGUI_BF_L_tristeza") .. " " .. math.floor(math.min(100, flags.tristezaFim) + 0.5)) end
+    if flags.recuperacao then table.insert(neg, getText("IGUI_BF_L_depois") .. " " .. getText("IGUI_BF_L_sono") .. " -" .. pct(flags.recuperacao) .. "%") end
+    if st.abst then table.insert(neg, getText("IGUI_BF_Abstinencia") .. " x" .. st.abst) end
+    return pos, neg
+end
+function BF.horasTxt(h)
+    if h < 1 then return math.max(1, math.floor(h * 60 + 0.5)) .. " min" end
+    return string.format("%.1f h", h)
+end
+
 -- tolerancia: cada dose anterior tira 2% do efeito e soma 2% ao colateral, maximo 20%
 function BF.tolerancia(usos)
     return math.min(BF.TOLERANCIA_MAX, BF.TOLERANCIA_PASSO * math.max(0, (usos or 1) - 1))
