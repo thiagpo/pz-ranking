@@ -22,7 +22,7 @@
     "IGUI_BF_Ha": "ago:",
     "IGUI_BF_TesteTitulo": "Anti-doping test: %1",
     "IGUI_BF_TesteLimpo": "Clean in the last 48 h.",
-    "IGUI_BF_Painel": "Farms do Bagres: effects",
+    "IGUI_BF_Painel": "Farms do Bagres",
     "IGUI_BF_Nada": "No active effect.",
     "IGUI_BF_MoodDopado": "Dosed",
     "IGUI_BF_MoodDopadoDesc": "%1 active drug effect(s). Click to view.",
@@ -85,5 +85,6 @@
     "IGUI_BF_LaudoData": "Test done %1 game hours ago.",
     "IGUI_BF_Careca": "Your hair fell out",
     "IGUI_BF_Diag": "hunger x%1 · tiredness x%2 | hunger now %3%, tiredness now %4%",
-    "IGUI_BF_L_adrenalina": "adrenaline junkie"
+    "IGUI_BF_L_adrenalina": "adrenaline junkie",
+    "IGUI_BF_RessacaDesc": "after-effect still active"
 }

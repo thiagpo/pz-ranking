@@ -6,7 +6,7 @@ BF.TOLERANCIA_MAX = 0.20
 BF.TOLERANCIA_PASSO = 0.02
 BF.OVERDOSE_H = 2
 BF.VALIDADE_H = 336
-BF.LAB_SPRITE = "location_community_medical_01_136"
+BF.LAB_SPRITE = "location_community_medical_01_65"
 BF.HIST_H = 48
 BF.SUBIDA_H = 10 / 60
 
@@ -54,7 +54,7 @@ BF.DROGAS = {
     BenegripeForte = { item = "Base.BF_BenegripeForte", inj = false, drenavel = true, dur = 36, gripe = true, cura = 4 },
     VitaminaC      = { item = "Base.BF_VitaminaC",      inj = false, drenavel = true, dur = 6,  gripe = true, fadigaJa = -0.10 },
     Creatina       = { item = "Base.BF_Creatina",       inj = false, drenavel = true, dur = 6,  xpForca = 0.50, fomeJa = -0.05 },
-    Whey           = { item = "Base.BF_Whey",           inj = false, dur = 6,  xpFitness = 0.50, fomeJa = -0.15, bebida = true },
+    Whey           = { item = "Base.BF_Whey",           inj = false, dur = 6,  xpFitness = 0.50, fomeJa = -0.15, bebida = true, devolve = "Base.EmptyJar" },
     Lolo           = { item = "Base.BF_Lolo",           inj = false, dur = 0,  drenavel = true, lolo = true },
 }
 BF.POR_ITEM = {}
@@ -186,6 +186,37 @@ function BF.pertoDoLab(item, character)
         end
     end
     return false
+end
+
+-- fogo aceso por perto (fogao, lareira, churrasqueira, fogueira) a ate 3 quadros
+local function objetoAceso(o)
+    local ok, v = pcall(function() return o:isLit() end); if ok and v then return true end
+    ok, v = pcall(function() return o:isActivated() end); if ok and v and instanceof(o, "IsoStove") then return true end
+    if instanceof(o, "IsoFire") then return true end
+    return false
+end
+function BF.pertoDoFogo(item, character)
+    if not character then return true end
+    local sq = character:getSquare(); if not sq then return false end
+    local cell = character:getCell()
+    local sistema = (CCampfireSystem and CCampfireSystem.instance) or (SCampfireSystem and SCampfireSystem.instance)
+    for dx = -3, 3 do
+        for dy = -3, 3 do
+            local s = cell:getGridSquare(sq:getX() + dx, sq:getY() + dy, sq:getZ())
+            if s then
+                local objs = s:getObjects()
+                for i = 0, objs:size() - 1 do if objetoAceso(objs:get(i)) then return true end end
+                if sistema then
+                    local ok, cf = pcall(function() return sistema:getLuaObjectOnSquare(s) end)
+                    if ok and cf and cf.isLit then return true end
+                end
+            end
+        end
+    end
+    return false
+end
+function BF.labEFogo(item, character)
+    return BF.pertoDoLab(item, character) and BF.pertoDoFogo(item, character)
 end
 
 -- tolerancia: cada dose anterior tira 2% do efeito e soma 2% ao colateral, maximo 20%

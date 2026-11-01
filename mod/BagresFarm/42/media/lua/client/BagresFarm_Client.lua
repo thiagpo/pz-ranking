@@ -234,10 +234,10 @@ local function listaAtivos(p)
     for id, e in pairs(st.ef) do
         local desc = BF.descricaoEfeito(id, e.m, e.d)
         if e.peso0 then desc = desc .. " " .. getText("IGUI_BF_Peso", string.format("%.1f", p:getNutrition():getWeight()), string.format("%.2f", e.peso0 - p:getNutrition():getWeight())) end
-        table.insert(linhas, { txt = nome(id), resta = e.fim - t, total = e.fim - e.ini, m = e.m, bom = true, desc = desc })
+        table.insert(linhas, { id = id, txt = nome(id), resta = e.fim - t, total = e.fim - e.ini, m = e.m, bom = true, desc = desc })
     end
     for id, e in pairs(st.pos) do
-        if e.fim > t then table.insert(linhas, { txt = nome(id) .. " (" .. getText("IGUI_BF_Ressaca") .. ")", resta = e.fim - t, total = e.fim - (e.ini or (e.fim - 2)), bom = false }) end
+        if e.fim > t then table.insert(linhas, { id = id, txt = nome(id) .. " (" .. getText("IGUI_BF_Ressaca") .. ")", resta = e.fim - t, total = e.fim - (e.ini or (e.fim - 2)), bom = false, desc = getText("IGUI_BF_RessacaDesc") }) end
     end
     if st.abst then table.insert(linhas, { txt = getText("IGUI_BF_Abstinencia") .. " x" .. st.abst, resta = 0, total = 0, bom = false }) end
     table.sort(linhas, function(a, b) return a.txt < b.txt end)
@@ -667,37 +667,62 @@ end)
 
 -- moodles proprios (coluna abaixo dos moodles do jogo) e painel de efeitos
 BF_Painel = ISPanel:derive("BF_Painel")
+local LINHA = 26
 function BF_Painel:new(pn)
-    local o = ISPanel.new(self, 80, 120, 330, 60)
-    o.pn = pn; o.moveWithMouse = true; o.backgroundColor = { r = 0.05, g = 0.06, b = 0.07, a = 0.85 }
+    local o = ISPanel.new(self, 80, 120, 300, 60)
+    o.pn = pn; o.moveWithMouse = true; o.backgroundColor = { r = 0.05, g = 0.06, b = 0.07, a = 0.88 }; o.borderColor = { r = 0.3, g = 0.5, b = 0.35, a = 0.8 }
+    o.aberto = {}; o.diag = false; o.linhas = {}
     return o
 end
 function BF_Painel:prerender()
     local p = getSpecificPlayer(self.pn)
-    local linhas = p and listaAtivos(p) or {}
-    self:setHeight(26 + math.max(1, #linhas) * 31 + 4)
+    local ativos = p and listaAtivos(p) or {}
+    self.linhas = {}
+    local y = 26
+    for _, l in ipairs(ativos) do
+        local alt = LINHA + ((self.aberto[l.txt] and l.desc and l.desc ~= "") and 16 or 0)
+        table.insert(self.linhas, { l = l, y = y, alt = alt }); y = y + alt
+    end
+    if #ativos == 0 then y = y + LINHA end
+    local v = BF.visual[self.pn]
+    if self.diag and v and v.fomeM then y = y + 16 end
+    self:setHeight(y + 6)
     ISPanel.prerender(self)
     self:drawText(getText("IGUI_BF_Painel"), 8, 5, 1, 1, 1, 1, UIFont.Small)
-    local y = 24
-    for _, l in ipairs(linhas) do
+    -- botoes do cabecalho: i (diagnostico) e x (fechar)
+    self:drawRectBorder(self.width - 44, 5, 16, 16, 0.7, 0.6, 0.6, 0.6); self:drawTextCentre("i", self.width - 36, 4, 1, 1, 1, self.diag and 1 or 0.6, UIFont.Small)
+    self:drawRectBorder(self.width - 24, 5, 16, 16, 0.7, 0.6, 0.6, 0.6); self:drawTextCentre("x", self.width - 16, 4, 1, 0.6, 0.6, 1, UIFont.Small)
+    for _, r in ipairs(self.linhas) do
+        local l = r.l
         local frac = l.total > 0 and clamp(l.resta / l.total, 0, 1) or 1
-        self:drawRect(8, y + 1, self.width - 16, 14, 0.5, 0.15, 0.15, 0.17)
+        self:drawRect(8, r.y, self.width - 16, 22, 0.45, 0.14, 0.15, 0.17)
         if l.resta > 0 then
-            if l.bom then self:drawRect(8, y + 1, (self.width - 16) * frac, 14, 0.55, 0.25, 0.6, 0.3)
-            else self:drawRect(8, y + 1, (self.width - 16) * frac, 14, 0.55, 0.7, 0.3, 0.2) end
+            if l.bom then self:drawRect(8, r.y, (self.width - 16) * frac, 22, 0.5, 0.22, 0.55, 0.28)
+            else self:drawRect(8, r.y, (self.width - 16) * frac, 22, 0.5, 0.65, 0.3, 0.2) end
         end
-        self:drawText(l.txt, 12, y, 1, 1, 1, 1, UIFont.Small)
-        if l.resta > 0 then self:drawTextRight(horas(l.resta), self.width - 12, y, 0.85, 0.85, 0.85, 1, UIFont.Small) end
-        if l.desc and l.desc ~= "" then self:drawText(l.desc, 12, y + 15, 0.75, 0.75, 0.75, 1, UIFont.Small) end
-        y = y + 31
+        if l.id then
+            local ic = getTexture("Item_BF_" .. l.id)
+            if ic then self:drawTextureScaled(ic, 11, r.y + 2, 18, 18, 1, 1, 1, 1) end
+        end
+        self:drawText(l.txt, 34, r.y + 3, 1, 1, 1, 1, UIFont.Small)
+        if l.resta > 0 then self:drawTextRight(horas(l.resta), self.width - 12, r.y + 3, 0.85, 0.85, 0.85, 1, UIFont.Small) end
+        if self.aberto[l.txt] and l.desc and l.desc ~= "" then self:drawText(l.desc, 34, r.y + 23, 0.75, 0.8, 0.75, 1, UIFont.Small) end
     end
-    if #linhas == 0 then self:drawText(getText("IGUI_BF_Nada"), 12, 24, 0.7, 0.7, 0.7, 1, UIFont.Small) end
-    local v = BF.visual[self.pn]
-    if p and v and v.fomeM then
+    if #ativos == 0 then self:drawText(getText("IGUI_BF_Nada"), 12, 30, 0.7, 0.7, 0.7, 1, UIFont.Small) end
+    if self.diag and v and v.fomeM and p then
         local diag = getText("IGUI_BF_Diag", string.format("%.2f", v.fomeM), string.format("%.2f", v.fadM or 1), math.floor(stat(p, CharacterStat.HUNGER) * 100 + 0.5), math.floor(stat(p, CharacterStat.FATIGUE) * 100 + 0.5))
-        self:setHeight(self.height + 16)
-        self:drawText(diag, 12, self.height - 18, 0.6, 0.8, 0.6, 1, UIFont.Small)
+        self:drawText(diag, 12, self.height - 20, 0.6, 0.8, 0.6, 1, UIFont.Small)
     end
+end
+function BF_Painel:onMouseDown(x, y)
+    if y >= 5 and y <= 21 then
+        if x >= self.width - 44 and x <= self.width - 28 then self.diag = not self.diag; return true end
+        if x >= self.width - 24 and x <= self.width - 8 then self:setVisible(false); return true end
+    end
+    for _, r in ipairs(self.linhas) do
+        if y >= r.y and y < r.y + 22 then self.aberto[r.l.txt] = not self.aberto[r.l.txt]; return true end
+    end
+    return ISPanel.onMouseDown(self, x, y)
 end
 
 -- botao pequeno que abre e fecha o painel

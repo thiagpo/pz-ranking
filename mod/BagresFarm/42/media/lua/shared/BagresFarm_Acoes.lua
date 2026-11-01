@@ -58,6 +58,10 @@ function BF_UsarAction:complete()
     local suja = BF.suja(self.item)
     if d.drenavel then
         self.item:Use()
+        if d.devolve and self.item:getCurrentUsesFloat() <= 0.001 then
+            local j = inv:AddItem(d.devolve)
+            if isServer() and j then sendAddItemToContainer(inv, j) end
+        end
     else
         inv:Remove(self.item)
         if isServer() then sendRemoveItemFromContainer(inv, self.item) end

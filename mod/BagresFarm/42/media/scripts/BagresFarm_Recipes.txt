@@ -9,6 +9,7 @@ module Base
         Tags = AnySurfaceCraft;Health,
         category = Farmacia,
         xpAward = Pharmacy:5,
+        SkillRequired = Pharmacy:2,
         inputs
         {
             item 1 [Base.Pen;Base.BluePen;Base.RedPen;Base.GreenPen],
@@ -51,6 +52,7 @@ module Base
         SkillRequired = Pharmacy:1,
         xpAward = Pharmacy:15,
         OnCreate = BagresFarm.aoCriar,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
             item 1 [Base.BF_SeringaVazia;Base.BF_SeringaUsada],
@@ -75,6 +77,7 @@ module Base
         SkillRequired = Pharmacy:4,
         xpAward = Pharmacy:30,
         OnCreate = BagresFarm.aoCriar,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
             item 1 [Base.BF_SeringaVazia;Base.BF_SeringaUsada],
@@ -100,6 +103,7 @@ module Base
         SkillRequired = Pharmacy:3,
         xpAward = Pharmacy:25,
         OnCreate = BagresFarm.aoCriar,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
             item 1 [Base.BF_SeringaVazia;Base.BF_SeringaUsada],
@@ -121,7 +125,7 @@ module Base
         NeedToBeLearn = true,
         Tags = AnySurfaceCraft;Health,
         category = Farmacia,
-        SkillRequired = Pharmacy:6,
+        SkillRequired = Pharmacy:7,
         xpAward = Pharmacy:40,
         OnCreate = BagresFarm.aoCriar,
         OnTest = BagresFarm.pertoDoLab,
@@ -148,7 +152,7 @@ module Base
         NeedToBeLearn = true,
         Tags = AnySurfaceCraft;Health,
         category = Farmacia,
-        SkillRequired = Pharmacy:5,
+        SkillRequired = Pharmacy:6,
         xpAward = Pharmacy:35,
         OnCreate = BagresFarm.aoCriar,
         OnTest = BagresFarm.pertoDoLab,
@@ -174,9 +178,10 @@ module Base
         NeedToBeLearn = true,
         Tags = AnySurfaceCraft;Health,
         category = Farmacia,
-        SkillRequired = Pharmacy:4,
+        SkillRequired = Pharmacy:5,
         xpAward = Pharmacy:30,
         OnCreate = BagresFarm.aoCriar,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
             item 1 [Base.BF_SeringaVazia;Base.BF_SeringaUsada],
@@ -202,6 +207,7 @@ module Base
         SkillRequired = Pharmacy:2,
         xpAward = Pharmacy:20,
         OnCreate = BagresFarm.aoCriar,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep,
@@ -225,6 +231,7 @@ module Base
         SkillRequired = Pharmacy:1,
         xpAward = Pharmacy:10,
         OnCreate = BagresFarm.aoCriar,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep,
@@ -245,19 +252,19 @@ module Base
         NeedToBeLearn = true,
         Tags = AnySurfaceCraft;Health,
         category = Farmacia,
-        SkillRequired = Pharmacy:7,
+        SkillRequired = Pharmacy:8,
         xpAward = Pharmacy:50,
         OnCreate = BagresFarm.aoCriar,
-        OnTest = BagresFarm.pertoDoLab,
+        OnTest = BagresFarm.labEFogo,
         inputs
         {
             item 1 [Base.BF_Vidraria] mode:keep,
             item 1 tags[base:mortarpestle] mode:keep,
-            item 2 [Base.PillsBeta],
-            item 1 [Base.Battery],
-            item 1 [Base.Charcoal;Base.CharcoalCrafted],
             item 1 [*],
-            -fluid 0.1 [Bleach],
+            -fluid 0.5 [Bleach;CleaningLiquid],
+            item 1 [Base.Plantain;Base.PlantainDried;Base.PlantainCataplasm],
+            item 1 [Base.ElectronicsScrap],
+            item 1 [Base.Charcoal;Base.CharcoalCrafted],
         }
         outputs
         {
@@ -275,6 +282,7 @@ module Base
         SkillRequired = Pharmacy:3,
         xpAward = Pharmacy:20,
         OnCreate = BagresFarm.aoCriar,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep,
@@ -299,6 +307,7 @@ module Base
         SkillRequired = Pharmacy:2,
         xpAward = Pharmacy:15,
         OnCreate = BagresFarm.aoCriar,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep,
@@ -343,6 +352,7 @@ module Base
         category = Farmacia,
         SkillRequired = Pharmacy:1,
         xpAward = Pharmacy:10,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep,
@@ -361,17 +371,17 @@ module Base
         timedAction = MixingMortarPestle,
         time = 120,
         NeedToBeLearn = true,
-        AutoLearnAny = Pharmacy:2,
+        AutoLearnAny = Pharmacy:3,
         Tags = AnySurfaceCraft;Health,
         category = Farmacia,
-        SkillRequired = Pharmacy:2,
+        SkillRequired = Pharmacy:3,
         xpAward = Pharmacy:15,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep,
-            item 2 [Base.PoppyPods;Base.PoppyPodsDried],
-            item 1 [Base.Plantain;Base.PlantainDried],
-            item 1 [Base.Sugar;Base.SugarBrown],
+            item 10 [Base.SageDried;Base.BlackSageDried],
+            item 1 [Base.Plasticbag],
         }
         outputs
         {
@@ -384,11 +394,12 @@ module Base
         timedAction = MixingMortarPestle,
         time = 120,
         NeedToBeLearn = true,
-        AutoLearnAny = Pharmacy:3,
+        AutoLearnAny = Pharmacy:5,
         Tags = AnySurfaceCraft;Health,
         category = Farmacia,
-        SkillRequired = Pharmacy:3,
+        SkillRequired = Pharmacy:5,
         xpAward = Pharmacy:20,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep,
@@ -407,11 +418,12 @@ module Base
         timedAction = MixingMortarPestle,
         time = 120,
         NeedToBeLearn = true,
-        AutoLearnAny = Pharmacy:4,
+        AutoLearnAny = Pharmacy:6,
         Tags = AnySurfaceCraft;Health,
         category = Farmacia,
-        SkillRequired = Pharmacy:4,
+        SkillRequired = Pharmacy:6,
         xpAward = Pharmacy:25,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep,
@@ -430,17 +442,18 @@ module Base
         timedAction = MixingMortarPestle,
         time = 150,
         NeedToBeLearn = true,
-        AutoLearnAny = Pharmacy:5,
+        AutoLearnAny = Pharmacy:6,
         Tags = AnySurfaceCraft;Health,
         category = Farmacia,
-        SkillRequired = Pharmacy:5,
+        SkillRequired = Pharmacy:6,
         xpAward = Pharmacy:30,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep,
-            item 2 [Base.Ginseng],
-            item 1 [Base.Violets;Base.Lavender],
-            item 1 [Base.Sugar;Base.SugarBrown],
+            item 2 [Base.Rosemary;Base.RosemaryDried],
+            item 1 [Base.MushroomGeneric1;Base.MushroomGeneric2;Base.MushroomGeneric3;Base.MushroomGeneric4;Base.MushroomGeneric5;Base.MushroomGeneric6;Base.MushroomGeneric7],
+            item 2 [Base.Dandelions],
         }
         outputs
         {
@@ -453,17 +466,17 @@ module Base
         timedAction = MixingMortarPestle,
         time = 180,
         NeedToBeLearn = true,
-        AutoLearnAny = Pharmacy:6,
+        AutoLearnAny = Pharmacy:7,
         Tags = AnySurfaceCraft;Health,
         category = Farmacia,
-        SkillRequired = Pharmacy:6,
+        SkillRequired = Pharmacy:7,
         xpAward = Pharmacy:40,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep,
             item 2 [Base.WildGarlic2;Base.Garlic],
-            item 1 [Base.MushroomGeneric1;Base.MushroomGeneric2;Base.MushroomGeneric3;Base.MushroomGeneric4;Base.MushroomGeneric5;Base.MushroomGeneric6;Base.MushroomGeneric7],
-            item 1 [Base.Honey],
+            item 5 [Base.MushroomGeneric1;Base.MushroomGeneric2;Base.MushroomGeneric3;Base.MushroomGeneric4;Base.MushroomGeneric5;Base.MushroomGeneric6;Base.MushroomGeneric7],
         }
         outputs
         {
@@ -500,10 +513,10 @@ module Base
         Tags = InHandCraft;Health,
         category = Farmacia,
         xpAward = Pharmacy:3,
+        OnTest = BagresFarm.pertoDoFogo,
         inputs
         {
             item 1 [Base.BF_SeringaUsada],
-            item 1 [Base.Lighter;Base.LighterDisposable;Base.Matches;Base.Matchbox],
         }
         outputs
         {
@@ -522,6 +535,7 @@ module Base
         SkillRequired = Pharmacy:4,
         xpAward = Pharmacy:25,
         OnCreate = BagresFarm.aoCriar,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep,
@@ -547,6 +561,7 @@ module Base
         SkillRequired = Pharmacy:1,
         xpAward = Pharmacy:10,
         OnCreate = BagresFarm.aoCriar,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep,
@@ -598,8 +613,11 @@ module Base
         inputs
         {
             item 1 [*],
-            -fluid 1.0 [CowMilk;AnimalMilk;SheepMilk],
+            -fluid 10.0 [CowMilk;AnimalMilk;SheepMilk],
+            item 1 [Base.Sugar;Base.SugarBrown],
             item 1 [Base.Salt],
+            item 1 [Base.Pot;Base.Saucepan] mode:keep,
+            item 1 [Base.EmptyJar;Base.WaterBottle;Base.PopBottle],
         }
         outputs
         {
@@ -612,10 +630,10 @@ module Base
         timedAction = Making,
         time = 120,
         NeedToBeLearn = true,
-        AutoLearnAny = Pharmacy:3,
+        AutoLearnAny = Pharmacy:4,
         Tags = AnySurfaceCraft;Health,
         category = Farmacia,
-        SkillRequired = Pharmacy:3,
+        SkillRequired = Pharmacy:4,
         xpAward = Pharmacy:15,
         inputs
         {
@@ -635,10 +653,10 @@ module Base
         timedAction = Making,
         time = 150,
         NeedToBeLearn = true,
-        AutoLearnAny = Pharmacy:3,
+        AutoLearnAny = Pharmacy:4,
         Tags = AnySurfaceCraft,
         category = Farmacia,
-        SkillRequired = Pharmacy:3,
+        SkillRequired = Pharmacy:4,
         xpAward = Pharmacy:20,
         inputs
         {
@@ -658,10 +676,10 @@ module Base
         timedAction = Making,
         time = 300,
         NeedToBeLearn = true,
-        AutoLearnAny = Pharmacy:5,
+        AutoLearnAny = Pharmacy:6,
         Tags = AnySurfaceCraft,
         category = Farmacia,
-        SkillRequired = Pharmacy:5,
+        SkillRequired = Pharmacy:6,
         xpAward = Pharmacy:50,
         inputs
         {
