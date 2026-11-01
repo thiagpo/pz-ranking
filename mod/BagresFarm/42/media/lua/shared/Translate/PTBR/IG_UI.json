@@ -87,5 +87,7 @@
     "IGUI_BF_Diag": "fome x%1 · cansaço x%2 | fome atual %3%, cansaço atual %4%",
     "IGUI_BF_L_adrenalina": "viciado em adrenalina",
     "IGUI_BF_RessacaDesc": "efeito posterior ainda ativo",
-    "IGUI_ItemCat_Farmacia": "Farmácia"
+    "IGUI_ItemCat_Farmacia": "Farmácia",
+    "IGUI_BF_Pedido": "%1 quer te aplicar %2. Aceita?",
+    "IGUI_BF_PedidoEnviado": "Pedido enviado para %1"
 }

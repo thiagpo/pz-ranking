@@ -219,6 +219,23 @@ function BF.labEFogo(item, character)
     return BF.pertoDoLab(item, character) and BF.pertoDoFogo(item, character)
 end
 
+-- acidente com a agulha: sorteia (tipo 1 arranhao, 2 corte, 3 laceracao; parte do braco) e aplica no personagem
+BF.PARTES_SERINGA = { "Hand_L", "Hand_R", "ForeArm_L", "ForeArm_R" }
+function BF.sortearFerida(doutor)
+    local risco = math.max(0, 5 - (doutor or 0)) * (BF.sb("RiscoAgulha", 4) / 100)
+    if ZombRandFloat(0, 1) >= risco then return nil end
+    local r = ZombRandFloat(0, 1)
+    return { tipo = (r < 0.6) and 1 or ((r < 0.9) and 2 or 3), parte = BF.PARTES_SERINGA[ZombRand(1, #BF.PARTES_SERINGA + 1)] }
+end
+function BF.aplicarFerida(p, f)
+    if not p or not f then return end
+    pcall(function()
+        local bp = p:getBodyDamage():getBodyPart(BodyPartType[f.parte])
+        if f.tipo == 1 then bp:setScratched(true, true) elseif f.tipo == 2 then bp:setCut(true) else bp:generateDeepWound() end
+        pcall(function() p:addBlood(BloodBodyPartType[f.parte], false, true, false) end)
+    end)
+end
+
 -- tolerancia: cada dose anterior tira 2% do efeito e soma 2% ao colateral, maximo 20%
 function BF.tolerancia(usos)
     return math.min(BF.TOLERANCIA_MAX, BF.TOLERANCIA_PASSO * math.max(0, (usos or 1) - 1))

@@ -101,8 +101,9 @@ end
 
 local function desmaiar(p)
     local n = p:getPlayerNum()
-    BF.desmaio[n] = { fim = getTimestampMs() + DESMAIO_MS, prox = getTimestampMs() + 9000 }
+    BF.desmaio[n] = { fim = getTimestampMs() + DESMAIO_MS, sentar = getTimestampMs() + 2500 }
     cair(p)
+    pcall(function() p:StopAllActionQueue() end)
     pcall(function() p:setBlockMovement(true) end)
     pcall(function() p:getStats():set(CharacterStat.FATIGUE, math.max(p:getStats():get(CharacterStat.FATIGUE), 0.7)) end)
     HaloTextHelper.addBadText(p, getText("IGUI_BF_Overdose"))
@@ -116,12 +117,25 @@ Events.OnPlayerUpdate.Add(function(p)
     local agoraMs = getTimestampMs()
     if p:isDead() or agoraMs >= e.fim then
         BF.desmaio[n] = nil
-        pcall(function() p:setBlockMovement(false) end)
+        pcall(function()
+            p:setBlockMovement(false); p:setBumpFall(false); p:setBumpDone(true)
+            if p:isSitOnGround() or p:isSitting() then p:setVariable("forceGetUp", true) end
+        end)
         if not p:isDead() then HaloTextHelper.addGoodText(p, getText("IGUI_BF_Acordou")) end
         return
     end
     pcall(function() p:setBlockMovement(true) end)
-    if agoraMs >= e.prox then e.prox = agoraMs + 9000; cair(p) end
+    if e.sentar and agoraMs >= e.sentar then
+        e.sentar = nil
+        pcall(function() p:setAutoWalk(false); p:reportEvent("EventSitOnGround") end)
+    end
+    if not e.sentar then
+        pcall(function()
+            if p:getCurrentActionContextStateName() == "idle" and not p:isSitOnGround() and not p:isSitting() then p:reportEvent("EventSitOnGround") end
+            local fila = ISTimedActionQueue.getTimedActionQueue(p)
+            if fila and fila.queue and #fila.queue > 0 then p:StopAllActionQueue() end
+        end)
+    end
 end)
 
 BF.visual = BF.visual or {}
@@ -284,7 +298,7 @@ local function menu(playerNum, context, items)
                 for _, alvo in ipairs(BF.jogadoresPerto(p)) do
                     local quem = alvo:getDescriptor() and alvo:getDescriptor():getForename() or tostring(alvo:getUsername())
                     local op2 = context:addOption(getText("ContextMenu_BF_InjetarEm") .. " " .. quem .. ": " .. item:getDisplayName(), p, function(pl)
-                        ISTimedActionQueue.add(BF_AplicarAction:new(pl, alvo, item, id))
+                        BF.pedirInjecao(pl, alvo, item, id)
                     end)
                     local tip2 = ISInventoryPaneContextMenu.addToolTip()
                     tip2.description = getText("IGUI_BF_AplicarInfo", p:getPerkLevel(Perks.Doctor), math.floor(math.max(0, 5 - p:getPerkLevel(Perks.Doctor)) * 4 + 0.5), 3 * p:getPerkLevel(Perks.Doctor))
@@ -298,18 +312,49 @@ end
 Events.OnFillInventoryObjectContextMenu.Add(menu)
 
 -- uso proprio confirmado pelo servidor (a acao termina la): aplica o efeito no cliente
+local AVISO_FERIDA = { "IGUI_BF_Arranhao", "IGUI_BF_Corte", "IGUI_BF_Laceracao" }
 function BF.receberUso(p, args)
     if not p or not args or not BF.DROGAS[args.id] then return end
-    if args.inj then BF.acidenteSeringa(p) end
+    if args.ferida then BF.aplicarFerida(p, args.ferida); HaloTextHelper.addBadText(p, getText(AVISO_FERIDA[args.ferida.tipo] or "IGUI_BF_Arranhao")) end
     BF.usar(p, args.id, args.pot, args.suja)
+end
+
+-- autorizacao: quem vai receber a injecao precisa aceitar (como na avaliacao medica)
+BF.pedidos = BF.pedidos or {}
+function BF.pedirInjecao(p, alvo, item, id)
+    local quem = p:getDescriptor() and p:getDescriptor():getForename() or tostring(p:getUsername())
+    BF.pedidos[alvo:getUsername()] = { item = item, id = id, alvo = alvo, t = getTimestampMs() }
+    local args = { alvo = alvo:getUsername(), de = p:getUsername(), quem = quem, droga = nome(id) }
+    if alvo:isLocalPlayer() then
+        BF.receberPedido(alvo, args)
+    elseif isClient() then
+        sendClientCommand(p, "BagresFarm", "pedir", args)
+    end
+    HaloTextHelper.addText(p, getText("IGUI_BF_PedidoEnviado", quem))
+end
+function BF.receberPedido(p, args)
+    local modal = ISModalDialog:new(getCore():getScreenWidth() / 2 - 175, getCore():getScreenHeight() / 2 - 75, 350, 150,
+        getText("IGUI_BF_Pedido", args.quem or "?", args.droga or "?"), true, nil, function(_, button)
+            if button.internal == "YES" then
+                local resposta = { alvo = args.de, de = p:getUsername() }
+                if isClient() then sendClientCommand(p, "BagresFarm", "aceitar", resposta) else BF.receberAceite(getSpecificPlayer(0), resposta) end
+            end
+        end)
+    modal:initialise(); modal:addToUIManager(); modal.moveWithMouse = true; modal:bringToTop()
+end
+function BF.receberAceite(p, args)
+    local ped = BF.pedidos[args.de]
+    if not ped or getTimestampMs() - ped.t > 120000 then return end
+    BF.pedidos[args.de] = nil
+    if not p:getInventory():containsRecursive(ped.item) then return end
+    ISTimedActionQueue.add(ISWalkToTimedAction:new(p, ped.alvo:getSquare()))
+    ISTimedActionQueue.add(BF_AplicarAction:new(p, ped.alvo, ped.item, ped.id))
 end
 
 -- aplicacao em outro jogador: o efeito roda no cliente do alvo
 function BF.receberAplicacao(p, args, quem)
     if args.ferida then
-        local bp = p:getBodyDamage():getBodyPart(BodyPartType[PARTES_SERINGA[ZombRand(1, #PARTES_SERINGA + 1)]])
-        local r = ZombRandFloat(0, 1)
-        if r < 0.6 then bp:setScratched(true, true) elseif r < 0.9 then bp:setCut(true) else bp:generateDeepWound() end
+        BF.aplicarFerida(p, args.ferida)
         HaloTextHelper.addBadText(p, getText("IGUI_BF_AplicouMal", quem))
     end
     HaloTextHelper.addGoodText(p, getText("IGUI_BF_Injetado", quem, nome(args.id)))
@@ -331,7 +376,9 @@ Events.OnServerCommand.Add(function(module, command, args)
         if p and not p:isDead() and p:getUsername() == args.alvo then
             if command == "aplicado" then receberAplicacao(p, args, args.quem or "?")
             elseif command == "usar" then BF.receberUso(p, args)
-            elseif command == "teste" then BF.mostrarTeste(p, args) end
+            elseif command == "teste" then BF.mostrarTeste(p, args)
+            elseif command == "pedido" then BF.receberPedido(p, args)
+            elseif command == "aceite" then BF.receberAceite(p, args) end
         end
     end
 end)

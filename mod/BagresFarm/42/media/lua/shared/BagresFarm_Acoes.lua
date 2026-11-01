@@ -73,6 +73,7 @@ function BF_UsarAction:complete()
         if not isClient() and BF.PERK then p:getXp():AddXP(BF.PERK, 2) end
     end
     local args = { alvo = p:getUsername(), id = self.id, pot = pot, suja = suja, inj = d.inj }
+    if d.inj then args.ferida = BF.sortearFerida(p:getPerkLevel(Perks.Doctor)); if args.ferida then BF.aplicarFerida(p, args.ferida) end end
     if isServer() then
         sendServerCommand(p, "BagresFarm", "usar", args)
     elseif not isClient() and BF.receberUso then
@@ -181,7 +182,8 @@ function BF_AplicarAction:complete()
     if isServer() and s then sendAddItemToContainer(inv, s) end
     local doutor = p:getPerkLevel(Perks.Doctor)
     if not isClient() and BF.PERK then p:getXp():AddXP(BF.PERK, 2); p:getXp():AddXP(Perks.Doctor, 3) end
-    local ferida = ZombRandFloat(0, 1) < math.max(0, 5 - doutor) * (BF.sb("RiscoAgulha", 4) / 100)
+    local ferida = BF.sortearFerida(doutor)
+    if ferida then BF.aplicarFerida(self.alvo, ferida) end
     local quem = p:getDescriptor() and p:getDescriptor():getForename() or tostring(p:getUsername())
     local args = { alvo = self.alvo:getUsername(), id = self.id, pot = pot * (1 + 0.03 * doutor), suja = suja, ferida = ferida, quem = quem }
     if isServer() then
