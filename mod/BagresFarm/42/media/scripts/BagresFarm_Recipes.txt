@@ -228,7 +228,7 @@ module Base
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep,
-            item 2 [Base.Plantain;Base.PlantainDried],
+            item 2 [Base.BlackSage;Base.BlackSageDried],
             item 1 [Base.Pills],
             item 1 [Base.Salt],
         }
@@ -302,7 +302,7 @@ module Base
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep,
-            item 2 [Base.WildGarlic2;Base.Garlic],
+            item 2 [Base.CommonMallow],
             item 1 [Base.Rosehips;Base.LemonGrass],
             item 1 [Base.Sugar;Base.SugarBrown],
         }
@@ -525,7 +525,7 @@ module Base
         inputs
         {
             item 1 tags[base:mortarpestle] mode:keep,
-            item 3 [Base.WildGarlic2;Base.Garlic],
+            item 3 [Base.CommonMallow],
             item 2 [Base.Rosehips],
             item 1 [Base.Ginseng],
             item 1 [Base.Sugar;Base.SugarBrown],
@@ -598,9 +598,8 @@ module Base
         inputs
         {
             item 1 [*],
-            -fluid 0.3 [CowMilk;AnimalMilk;SheepMilk],
-            item 1 [Base.Egg],
-            item 1 [Base.Sugar;Base.SugarBrown],
+            -fluid 1.0 [CowMilk;AnimalMilk;SheepMilk],
+            item 1 [Base.Salt],
         }
         outputs
         {

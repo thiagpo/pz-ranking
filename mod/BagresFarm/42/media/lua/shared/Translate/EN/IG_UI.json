@@ -80,5 +80,7 @@
     "IGUI_BF_L_bebado": "drunkenness",
     "IGUI_BF_Desnutrido": "Your body gave in: Malnourished (permanent)",
     "IGUI_BF_Coracao": "Your heart gave in: Tired Heart (permanent)",
-    "IGUI_CraftingCategories_Farmacia": "Pharmacy"
+    "IGUI_CraftingCategories_Farmacia": "Pharmacy",
+    "IGUI_BF_LaudoVazio": "Blank report.",
+    "IGUI_BF_LaudoData": "Test done %1 game hours ago."
 }

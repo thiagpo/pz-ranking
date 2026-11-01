@@ -113,7 +113,14 @@ function BF_TesteAction:complete()
     local hist = {}
     if md and md.hist then for i, h in ipairs(md.hist) do hist[i] = { id = h.id, t = h.t } end end
     local quem = self.alvo:getDescriptor() and self.alvo:getDescriptor():getForename() or tostring(self.alvo:getUsername())
-    local args = { alvo = self.character:getUsername(), quem = quem, hist = hist }
+    local args = { alvo = self.character:getUsername(), quem = quem, hist = hist, t = getGameTime():getWorldAgeHours() }
+    local laudo = inv:AddItem("Base.BF_Resultado")
+    if laudo then
+        local md2 = laudo:getModData()
+        md2.bf_teste = { quem = quem, t = args.t, hist = hist }
+        laudo:setName(getText("ItemName_Base.BF_Resultado") .. ": " .. quem)
+        if isServer() then sendAddItemToContainer(inv, laudo) end
+    end
     if isServer() then
         sendServerCommand(self.character, "BagresFarm", "teste", args)
     elseif not isClient() and BF.mostrarTeste then

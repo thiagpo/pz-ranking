@@ -29,5 +29,6 @@
     "Base.BF_KitAntidoping": "Kit Antidoping",
     "Base.BF_Vidraria": "Vidraria de Laboratório",
     "Base.BF_Laboratorio": "Bancada de Laboratório",
-    "Base.BF_LivroHorta": "Horta Medicinal"
+    "Base.BF_LivroHorta": "Horta Medicinal",
+    "Base.BF_Resultado": "Laudo antidoping"
 }

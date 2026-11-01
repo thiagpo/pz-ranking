@@ -16,9 +16,10 @@
     "Tooltip_BF_BenegripeForte": "Cura o resfriado em 4 h e impede pegar outro por 36 h.",
     "Tooltip_BF_VitaminaC": "6 h sem pegar resfriado e tira um pouco do cansaço. Mais fraca que a vitamina de farmácia.",
     "Tooltip_BF_Creatina": "6 h. +50% de XP de Força ao treinar e lutar. Sem efeito colateral.",
-    "Tooltip_BF_Whey": "6 h. +50% de XP de Aptidão ao treinar e correr, e mata um pouco a fome. Sem efeito colateral. Bebida: use com o botão direito.",
-    "Tooltip_BF_KitAntidoping": "Botão direito no kit com outro jogador a até 3 quadros: mostra o que ele tomou nas últimas 48 h. Gasta o kit.",
+    "Tooltip_BF_Whey": "6 h. +50% de XP de Aptidão ao treinar e correr, e mata um pouco a fome. Sem efeito colateral. Feito com 1 L de leite e sal.",
+    "Tooltip_BF_KitAntidoping": "Botão direito no kit com outro jogador a até 3 quadros: testa o que ele tomou nas últimas 48 h e gera um laudo. Gasta o kit.",
     "Tooltip_BF_Vidraria": "Frascos, mangueira e funil. Necessária para Morfina, Deca e Metanfetamina, e para montar a bancada.",
     "Tooltip_BF_Laboratorio": "Bancada com microscópio. Morfina, Deca e Metanfetamina só podem ser preparadas a até 3 quadros dela.",
-    "Tooltip_BF_LivroHorta": "Ensina a época de plantio das ervas medicinais. Quem leu colhe uma erva a mais por planta e ganha XP de Farmácia."
+    "Tooltip_BF_LivroHorta": "Ensina a época de plantio das ervas medicinais. Quem leu colhe uma erva a mais por planta e ganha XP de Farmácia.",
+    "Tooltip_BF_Resultado": "Resultado de um teste antidoping. Botão direito para ler."
 }

@@ -47,4 +47,6 @@ module Base
     item BF_Vidraria { DisplayCategory = Tool, ItemType = base:normal, Weight = 1.5, Icon = BF_Vidraria, Tooltip = Tooltip_BF_Vidraria, WorldStaticModel = PillBottleGround, }
     item BF_Laboratorio { DisplayCategory = Furniture, ItemType = base:moveable, Weight = 12.0, Icon = BF_Laboratorio, Tooltip = Tooltip_BF_Laboratorio, WorldObjectSprite = location_community_medical_01_136, }
     item BF_LivroHorta { DisplayCategory = RecipeResource, ItemType = base:literature, Weight = 0.8, Icon = BF_LivroHorta, BoredomChange = -30, StressChange = -20, LearnedRecipes = base:poppy growing season;base:sage growing season;base:black sage growing season;base:comfrey growing season;base:broadleaf plantain growing season;base:wild garlic growing season;base:chamomile growing season;base:lavender growing season;base:tobacco growing season, StaticModel = BookLightBlue, WorldStaticModel = BookLightBlue_Ground, }
+
+    item BF_Resultado { DisplayCategory = Literature, ItemType = base:normal, Weight = 0.05, Icon = BF_Resultado, Tooltip = Tooltip_BF_Resultado, WorldStaticModel = SheetOfPaper, }
 }

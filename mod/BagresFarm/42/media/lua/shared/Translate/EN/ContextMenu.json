@@ -2,5 +2,6 @@
     "ContextMenu_BF_Injetar": "Inject",
     "ContextMenu_BF_Tomar": "Take",
     "ContextMenu_BF_Teste": "Anti-doping test on",
-    "ContextMenu_BF_InjetarEm": "Inject into"
+    "ContextMenu_BF_InjetarEm": "Inject into",
+    "ContextMenu_BF_Ler": "Read report"
 }

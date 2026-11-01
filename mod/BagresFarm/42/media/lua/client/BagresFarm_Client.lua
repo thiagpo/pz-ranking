@@ -331,6 +331,17 @@ function BF.jogadoresPerto(p)
     return lista
 end
 
+function BF.textoLaudo(args)
+    local t0 = args.t or agora(); local linhas = {}
+    for _, h in ipairs(args.hist or {}) do
+        if t0 - h.t <= BF.HIST_H and BF.DROGAS[h.id] then table.insert(linhas, nome(h.id) .. " - " .. getText("IGUI_BF_Ha") .. " " .. horas(t0 - h.t)) end
+    end
+    local quem = args.quem or "?"
+    local texto = getText("IGUI_BF_TesteTitulo", quem) .. " <LINE> <LINE> "
+    if #linhas == 0 then texto = texto .. getText("IGUI_BF_TesteLimpo") else texto = texto .. table.concat(linhas, " <LINE> ") end
+    return texto
+end
+
 function BF.mostrarTeste(p, args)
     local t = agora(); local linhas = {}
     for _, h in ipairs(args.hist or {}) do
@@ -353,6 +364,20 @@ local function menuKit(playerNum, context, items)
     for _, entry in ipairs(items) do
         local item = entry
         if not instanceof(entry, "InventoryItem") then item = entry.items and entry.items[1] end
+        if item and item:getFullType() == "Base.BF_Resultado" then
+            local md = item:getModData().bf_teste
+            local op = context:addOption(getText("ContextMenu_BF_Ler"), p, function(pl)
+                local texto = md and BF.textoLaudo(md) or getText("IGUI_BF_LaudoVazio")
+                if ISModalRichText then
+                    local m = ISModalRichText:new(getCore():getScreenWidth() / 2 - 180, getCore():getScreenHeight() / 2 - 100, 360, 200, texto, false)
+                    m:initialise(); m:addToUIManager()
+                else HaloTextHelper.addText(pl, texto) end
+            end)
+            local tip = ISInventoryPaneContextMenu.addToolTip(); tip:setName(item:getDisplayName())
+            tip.description = (md and BF.textoLaudo(md) or getText("IGUI_BF_LaudoVazio")) .. " <LINE> <LINE> " .. getText("IGUI_BF_LaudoData", md and string.format("%.0f", (agora() - (md.t or agora()))) or "0")
+            op.toolTip = tip
+            return
+        end
         if item and item:getFullType() == "Base.BF_KitAntidoping" and p:getInventory():containsRecursive(item) then
             local perto = BF.jogadoresPerto(p)
             if #perto == 0 then

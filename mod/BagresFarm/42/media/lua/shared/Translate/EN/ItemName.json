@@ -29,5 +29,6 @@
     "Base.BF_KitAntidoping": "Anti-doping Kit",
     "Base.BF_Vidraria": "Lab Glassware",
     "Base.BF_Laboratorio": "Lab Bench",
-    "Base.BF_LivroHorta": "Medicinal Garden"
+    "Base.BF_LivroHorta": "Medicinal Garden",
+    "Base.BF_Resultado": "Anti-doping report"
 }

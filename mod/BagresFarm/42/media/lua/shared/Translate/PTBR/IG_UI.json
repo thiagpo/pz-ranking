@@ -80,5 +80,7 @@
     "IGUI_BF_L_bebado": "embriaguez",
     "IGUI_BF_Desnutrido": "Seu corpo cedeu: Desnutrido (permanente)",
     "IGUI_BF_Coracao": "Seu coração cedeu: Coração Cansado (permanente)",
-    "IGUI_CraftingCategories_Farmacia": "Farmácia"
+    "IGUI_CraftingCategories_Farmacia": "Farmácia",
+    "IGUI_BF_LaudoVazio": "Laudo em branco.",
+    "IGUI_BF_LaudoData": "Teste feito há %1 h de jogo."
 }
