@@ -18,6 +18,8 @@ local function estado(p)
 end
 
 local function nome(id)
+    local si = getScriptManager():getItem(BF.DROGAS[id].item)
+    if si then local n = si:getDisplayName(); if n and n ~= "" then return n end end
     local ok, n = pcall(getItemNameFromFullType, BF.DROGAS[id].item)
     if ok and n and n ~= "" then return n end
     return id
@@ -138,10 +140,7 @@ function BF.usar(p, id, pot, suja)
         return
     end
     local overdose = d.inj and st.ultDose[id] and (t - st.ultDose[id]) < BF.OVERDOSE_H
-    if d.cura then
-        local bd = p:getBodyDamage()
-        bd:setHasACold(false); bd:setColdStrength(0); bd:setCatchACold(0)
-    end
+    if d.cura then p:getBodyDamage():setCatchACold(0) end
     if d.fadigaJa then setStat(p, CharacterStat.FATIGUE, clamp(stat(p, CharacterStat.FATIGUE) + d.fadigaJa * (pot or 1), 0, 1)) end
     if d.fomeJa then setStat(p, CharacterStat.HUNGER, clamp(stat(p, CharacterStat.HUNGER) + d.fomeJa, 0, 1)) end
     if d.panico then setStat(p, CharacterStat.PANIC, clamp(stat(p, CharacterStat.PANIC) + d.panico, 0, 100)) end
@@ -202,11 +201,12 @@ local function menu(playerNum, context, items)
         local item = entry
         if not instanceof(entry, "InventoryItem") then item = entry.items and entry.items[1] end
         local id = BF.droga(item)
-        if id and item:getContainer() and p:getInventory():containsRecursive(item)
-            and (not BF.DROGAS[id].drenavel or item:getCurrentUsesFloat() > 0) then
+        if id and item:getContainer() and (not BF.DROGAS[id].drenavel or item:getCurrentUsesFloat() > 0) then
             local d = BF.DROGAS[id]
+            local noInv = p:getInventory():containsRecursive(item)
             local txt = getText(d.inj and "ContextMenu_BF_Injetar" or "ContextMenu_BF_Tomar") .. " " .. item:getDisplayName()
             local op = context:addOption(txt, p, function(pl)
+                if not noInv then ISTimedActionQueue.add(ISInventoryTransferAction:new(pl, item, item:getContainer(), pl:getInventory())) end
                 ISTimedActionQueue.add(BF_UsarAction:new(pl, item, id))
             end)
             local tip = ISInventoryPaneContextMenu.addToolTip()
@@ -399,6 +399,14 @@ local function minuto()
                 local d = BF.DROGAS[id]
                 if d then
                     if d.gripe then local bd = p:getBodyDamage(); if bd:getCatchACold() > 0 then bd:setCatchACold(0) end end
+                    if d.cura then
+                        local bd = p:getBodyDamage(); local cs = bd:getColdStrength()
+                        if cs > 0 then
+                            cs = cs - (100 / (d.cura * 60)) * e.m
+                            if cs <= 0 then cs = 0; bd:setHasACold(false); HaloTextHelper.addGoodText(p, getText("IGUI_BF_Curado") .. ": " .. getText("IGUI_BF_Resfriado")) end
+                            bd:setColdStrength(cs)
+                        end
+                    end
                     if d.rigidez then rig = rig + d.rigidez * e.m end
                     if d.pesoDia then peso = peso + d.pesoDia * e.m end
                     if d.paranoia and (st.usos[id] or 0) >= d.paranoia then paranoia = paranoia + 0.12 * e.d * (1 + 0.15 * ((st.usos[id] or 0) - d.paranoia)) end

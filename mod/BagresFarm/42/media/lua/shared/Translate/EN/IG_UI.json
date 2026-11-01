@@ -46,9 +46,10 @@
     "IGUI_BF_Ef_Dipirona": "removes strain, −30% pain",
     "IGUI_BF_Ef_Metanfetamina": "removes strain, −70% tiredness | paranoia and addiction",
     "IGUI_BF_Ef_Tadala": "removes strain | after: extreme sadness",
-    "IGUI_BF_Ef_Benegripe": "protected against colds",
-    "IGUI_BF_Ef_BenegripeForte": "protected against colds",
+    "IGUI_BF_Ef_Benegripe": "cures the cold in 8 h, protects 12 h",
+    "IGUI_BF_Ef_BenegripeForte": "cures the cold in 4 h, protects 36 h",
     "IGUI_BF_Ef_VitaminaC": "protected against colds",
     "IGUI_BF_Ef_Creatina": "+50% Strength XP",
-    "IGUI_BF_Ef_Whey": "+50% Fitness XP"
+    "IGUI_BF_Ef_Whey": "+50% Fitness XP",
+    "IGUI_BF_Resfriado": "cold"
 }
