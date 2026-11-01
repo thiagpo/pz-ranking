@@ -30,7 +30,7 @@ BF.DROGAS = {
     Deca           = { item = "Base.BF_Deca",           inj = true,  dur = 48, forca = 0.15, fome = 0.80 },
     Morfina        = { item = "Base.BF_Morfina",        inj = true,  dur = 8,  dor = 0.80, rigidez = 0.10, paranoia = 3, depressao = 6, vicio = { limiar = 4, horas = 24, limpar = 72 } },
     Adrenalina     = { item = "Base.BF_Adrenalina",     inj = true,  dur = 1,  folego = true, audicao = true, panico = -100, fadigaFim = 0.80, sangramento = 0.60, posDur = 2 },
-    Rebite         = { item = "Base.BF_Rebite",         inj = false, dur = 6,  fadiga = -0.90, recuperacao = 0.60, vicio = { limiar = 5, horas = 36, limpar = 48 } },
+    Rebite         = { item = "Base.BF_Rebite",         inj = false, dur = 6,  fadiga = -0.90, recuperacao = 0.60, visao = true, vicio = { limiar = 5, horas = 36, limpar = 48 } },
     Dipirona       = { item = "Base.BF_Dipirona",       inj = false, dur = 4,  rigidez = 0.05, dor = 0.30 },
     Metanfetamina  = { item = "Base.BF_Metanfetamina",  inj = false, dur = 6,  rigidez = 0.12, fadiga = -0.70, paranoia = 1, vicio = { limiar = 3, horas = 24, limpar = 96 } },
     Tadala         = { item = "Base.BF_Tadala",         inj = false, dur = 6,  rigidez = 0.08, tristezaFim = 90 },

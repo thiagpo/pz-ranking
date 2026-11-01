@@ -64,6 +64,20 @@ local function audicao(p, st, ligar)
     end)
 end
 
+-- visao noturna: quem nao tem Olhos de Gato ganha o traco temporario; quem ja tem ganha o efeito dos oculos de visao noturna
+local function visao(p, st, ligar)
+    pcall(function()
+        local t = CharacterTrait.NIGHT_VISION
+        if ligar then
+            if not p:hasTrait(t) then p:getCharacterTraits():add(t); st.visaoTemp = true
+            else p:setWearingNightVisionGoggles(true); st.visaoNV = true end
+        else
+            if st.visaoTemp then p:getCharacterTraits():remove(t); st.visaoTemp = nil end
+            if st.visaoNV then p:setWearingNightVisionGoggles(false); st.visaoNV = nil end
+        end
+    end)
+end
+
 -- desmaio: cai no chao (animacao que os outros veem) e fica 2 minutos sem conseguir se mover
 BF.desmaio = BF.desmaio or {}
 local DESMAIO_MS = 120000
@@ -109,6 +123,7 @@ local function terminar(p, st, id)
     if d.recuperacao then st.pos[id] = { fim = t + d.dur, d = e.d } end
     if d.posDur then st.pos[id] = { fim = t + d.posDur, d = e.d } end
     if d.audicao then audicao(p, st, false) end
+    if d.visao then visao(p, st, false) end
     if d.forca then aplicarForca(p, st) end
     HaloTextHelper.addBadText(p, nome(id) .. " " .. getText("IGUI_BF_Passou"))
 end
@@ -150,6 +165,7 @@ function BF.usar(p, id, pot, suja)
     if d.dur > 0 then st.ef[id] = { ini = t, fim = t + d.dur, m = (pot or 1) * (1 - tol), d = fator, peso0 = d.pesoDia and p:getNutrition():getWeight() or nil } end
     st.ultDose[id] = t
     if d.audicao then audicao(p, st, true) end
+    if d.visao then visao(p, st, true) end
     if d.forca then aplicarForca(p, st) end
     if suja then
         local bp = p:getBodyDamage():getBodyPart(BodyPartType[PARTES_SERINGA[ZombRand(1, #PARTES_SERINGA + 1)]])
@@ -600,10 +616,14 @@ Events.OnCreatePlayer.Add(function(i, p)
     local st = estado(p); local t = agora()
     for id, e in pairs(st.ef) do if t >= e.fim then st.ef[id] = nil end end
     aplicarForca(p, st)
-    if not st.audicaoTemp then return end
-    local ativo = false
-    for id in pairs(st.ef) do if BF.DROGAS[id] and BF.DROGAS[id].audicao then ativo = true end end
-    if not ativo then audicao(p, st, false) end
+    local temAud, temVis = false, false
+    for id in pairs(st.ef) do
+        if BF.DROGAS[id] and BF.DROGAS[id].audicao then temAud = true end
+        if BF.DROGAS[id] and BF.DROGAS[id].visao then temVis = true end
+    end
+    if st.audicaoTemp and not temAud then audicao(p, st, false) end
+    if (st.visaoTemp or st.visaoNV) and not temVis then visao(p, st, false) end
+    if temVis and not st.visaoTemp and not st.visaoNV then visao(p, st, true) end
 end)
 
 Events.OnPlayerDeath.Add(function(p)
