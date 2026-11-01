@@ -7,7 +7,7 @@ module BagresFarm
         UIName = UI_prof_Farmaceutico,
         UIDescription = UI_prof_FarmaceuticoDesc,
         IconPathName = profession_farmaceutico,
-        XPBoosts = Pharmacy=3;Doctor=2,
-        GrantedRecipes = BF_MakeOzempic;BF_MakeDipirona;BF_MakeRebite;BF_MakeBenegripe;BF_MakePainkillers;BF_MakeVitamins,
+        XPBoosts = Pharmacy=3,
+        GrantedRecipes = BF_MakeOzempic;BF_MakeDipirona;BF_MakeRebite;BF_MakeBenegripe;BF_MakePainkillers;BF_MakeVitamins;BF_MakeTrembolona;BF_MakeWhey;BF_MakeCreatina,
     }
 }

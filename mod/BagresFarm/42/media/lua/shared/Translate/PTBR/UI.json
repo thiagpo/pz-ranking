@@ -1,6 +1,6 @@
 {
     "UI_prof_Farmaceutico": "Farmacêutico",
-    "UI_prof_FarmaceuticoDesc": "Trabalhava no balcão da farmácia do bairro e sabe o que cada comprimido faz. <br> +3 Farmácia, +2 Primeiros Socorros. <br> XP: +100% Farmácia, +75% Primeiros Socorros, +100% Lâminas Curtas. <br> Já sabe preparar Ozempic, Dipirona, Rebite, Benegripe, analgésicos e vitaminas.",
+    "UI_prof_FarmaceuticoDesc": "Trabalhava no balcão da farmácia do bairro e sabe o que cada comprimido faz. <br> +3 Farmácia (XP +125%), +2 Primeiros Socorros (XP +75%), XP +100% em Lâminas Curtas. <br> Já sabe preparar Ozempic, Trembolona, Dipirona, Rebite, Benegripe, analgésicos, vitaminas, whey e creatina.",
     "UI_trait_ConhecimentosFarmaco": "Conhecimentos Fármaco",
-    "UI_trait_ConhecimentosFarmacoDesc": "Leu bula a vida inteira. <br> +1 Farmácia e +75% de XP em Farmácia (com a profissão Farmacêutico, no máximo +125%). <br> Já sabe fazer vitaminas e Dipirona."
+    "UI_trait_ConhecimentosFarmacoDesc": "Leu bula a vida inteira. <br> +1 Farmácia e +75% de XP em Farmácia. <br> Já sabe fazer vitaminas e Dipirona."
 }

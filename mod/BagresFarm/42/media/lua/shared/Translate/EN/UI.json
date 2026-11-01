@@ -1,6 +1,6 @@
 {
     "UI_prof_Farmaceutico": "Pharmacist",
-    "UI_prof_FarmaceuticoDesc": "Worked the counter at the local pharmacy and knows what every pill does. <br> +3 Pharmacy, +2 First Aid. <br> XP: +100% Pharmacy, +75% First Aid, +100% Short Blade. <br> Starts knowing Ozempic, Dipyrone, Rebite, Benegripe, painkillers and vitamins.",
+    "UI_prof_FarmaceuticoDesc": "Worked the counter at the local pharmacy and knows what every pill does. <br> +3 Pharmacy (+125% XP), +2 First Aid (+75% XP), +100% Short Blade XP. <br> Starts knowing Ozempic, Trenbolone, Dipyrone, Rebite, Benegripe, painkillers, vitamins, whey and creatine.",
     "UI_trait_ConhecimentosFarmaco": "Pharmaceutical Knowledge",
-    "UI_trait_ConhecimentosFarmacoDesc": "Read every package insert. <br> +1 Pharmacy and +75% Pharmacy XP (capped at +125% with the Pharmacist profession). <br> Starts knowing vitamins and Dipyrone."
+    "UI_trait_ConhecimentosFarmacoDesc": "Read every package insert. <br> +1 Pharmacy and +75% Pharmacy XP. <br> Starts knowing vitamins and Dipyrone."
 }

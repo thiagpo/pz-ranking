@@ -24,21 +24,21 @@ end)
 -- fome/fadiga: negativo = buff (x potencia), positivo = debuff (x tolerancia)
 -- vicio = { limiar = doses por nivel de vicio, horas = sem dose ate abstinencia, limpar = horas limpo por nivel }
 BF.DROGAS = {
-    Ozempic        = { item = "Base.BF_Ozempic",        inj = true,  dur = 24, fome = -0.20, pesoDia = 0.40, fadiga = 0.15 },
-    Monjaro        = { item = "Base.BF_Monjaro",        inj = true,  dur = 24, fome = -0.30, pesoDia = 0.80, fadiga = 0.25 },
-    Trembolona     = { item = "Base.BF_Trembolona",     inj = true,  dur = 36, forca = 0.10, fome = 0.30 },
-    Deca           = { item = "Base.BF_Deca",           inj = true,  dur = 48, forca = 0.15, fome = 0.40 },
+    Ozempic        = { item = "Base.BF_Ozempic",        inj = true,  dur = 24, fome = -0.40, pesoDia = 0.60, fadiga = 0.35 },
+    Monjaro        = { item = "Base.BF_Monjaro",        inj = true,  dur = 24, fome = -0.60, pesoDia = 1.20, fadiga = 0.50 },
+    Trembolona     = { item = "Base.BF_Trembolona",     inj = true,  dur = 36, forca = 0.10, fome = 0.60 },
+    Deca           = { item = "Base.BF_Deca",           inj = true,  dur = 48, forca = 0.15, fome = 0.80 },
     Morfina        = { item = "Base.BF_Morfina",        inj = true,  dur = 8,  dor = 0.80, rigidez = 0.10, paranoia = 3, depressao = 6, vicio = { limiar = 4, horas = 24, limpar = 72 } },
-    Adrenalina     = { item = "Base.BF_Adrenalina",     inj = true,  dur = 1,  folego = true, audicao = true, panico = -60, fadigaFim = 0.50, sangramento = 0.50, posDur = 2 },
-    Rebite         = { item = "Base.BF_Rebite",         inj = false, dur = 6,  fadiga = -0.80, recuperacao = 0.50, vicio = { limiar = 5, horas = 36, limpar = 48 } },
+    Adrenalina     = { item = "Base.BF_Adrenalina",     inj = true,  dur = 1,  folego = true, audicao = true, panico = -100, fadigaFim = 0.80, sangramento = 0.60, posDur = 2 },
+    Rebite         = { item = "Base.BF_Rebite",         inj = false, dur = 6,  fadiga = -0.90, recuperacao = 0.60, vicio = { limiar = 5, horas = 36, limpar = 48 } },
     Dipirona       = { item = "Base.BF_Dipirona",       inj = false, dur = 4,  rigidez = 0.05, dor = 0.30 },
-    Metanfetamina  = { item = "Base.BF_Metanfetamina",  inj = false, dur = 6,  rigidez = 0.12, fadiga = -0.50, paranoia = 1, vicio = { limiar = 3, horas = 24, limpar = 96 } },
-    Tadala         = { item = "Base.BF_Tadala",         inj = false, dur = 6,  rigidez = 0.08, tristezaFim = 70 },
+    Metanfetamina  = { item = "Base.BF_Metanfetamina",  inj = false, dur = 6,  rigidez = 0.12, fadiga = -0.70, paranoia = 1, vicio = { limiar = 3, horas = 24, limpar = 96 } },
+    Tadala         = { item = "Base.BF_Tadala",         inj = false, dur = 6,  rigidez = 0.08, tristezaFim = 90 },
     Benegripe      = { item = "Base.BF_Benegripe",      inj = false, dur = 12, gripe = true, cura = true },
     BenegripeForte = { item = "Base.BF_BenegripeForte", inj = false, dur = 36, gripe = true, cura = true },
     VitaminaC      = { item = "Base.BF_VitaminaC",      inj = false, dur = 6,  gripe = true, fadigaJa = -0.10 },
     Creatina       = { item = "Base.BF_Creatina",       inj = false, dur = 6,  xpForca = 0.50, fomeJa = -0.05 },
-    Whey           = { item = "Base.BF_Whey",           inj = false, dur = 6,  xpFitness = 0.50, fomeJa = -0.15 },
+    Whey           = { item = "Base.BF_Whey",           inj = false, dur = 6,  xpFitness = 0.50, fomeJa = -0.15, bebida = true },
     Lolo           = { item = "Base.BF_Lolo",           inj = false, dur = 0,  drenavel = true, lolo = true },
 }
 BF.POR_ITEM = {}
@@ -127,27 +127,24 @@ function BF.pertoDoLab(item, character)
     return false
 end
 
--- tolerancia: cada dose anterior soma 2%, maximo 20%
-function BF.fatorTolerancia(usos)
-    return 1 + math.min(BF.TOLERANCIA_MAX, BF.TOLERANCIA_PASSO * math.max(0, (usos or 1) - 1))
+-- tolerancia: cada dose anterior tira 2% do efeito e soma 2% ao colateral, maximo 20%
+function BF.tolerancia(usos)
+    return math.min(BF.TOLERANCIA_MAX, BF.TOLERANCIA_PASSO * math.max(0, (usos or 1) - 1))
 end
+function BF.fatorTolerancia(usos) return 1 + BF.tolerancia(usos) end
 
 -- profissao e traco (registrados em media/registries.lua)
 pcall(function() BF.PROF = BF.PROF or CharacterProfession.get(ResourceLocation.of("bagresfarm:farmaceutico")) end)
 pcall(function() BF.TRAIT = BF.TRAIT or CharacterTrait.get(ResourceLocation.of("bagresfarm:conhecimentosfarmaco")) end)
 
--- bonus de XP: profissao Farmacia +100%, Primeiros Socorros +75%, Laminas Curtas +100%; traco Farmacia +75% (Farmacia no maximo +125%)
--- creatina/whey: +50% de XP em Forca / Aptidao enquanto ativos
+-- bonus de XP: Farmacia vem dos niveis iniciais do jogo (3 niveis = +125%, traco 1 nivel = +75%);
+-- a profissao soma +75% em Primeiros Socorros e +100% em Laminas Curtas; creatina/whey +50% em Forca / Aptidao enquanto ativos
 local dentro = false
 Events.AddXP.Add(function(p, perk, amount)
     if dentro or not p or not amount or amount <= 0 or isServer() or not p:isLocalPlayer() then return end
     local bonus = 0
     local prof = BF.PROF and p:getDescriptor():isCharacterProfession(BF.PROF)
-    local traco = BF.TRAIT and p:hasTrait(BF.TRAIT)
-    if perk == BF.PERK then
-        bonus = (prof and 1.0 or 0) + (traco and 0.75 or 0)
-        if bonus > 1.25 then bonus = 1.25 end
-    elseif prof and perk == Perks.Doctor then bonus = 0.75
+    if prof and perk == Perks.Doctor then bonus = 0.75
     elseif prof and perk == Perks.SmallBlade then bonus = 1.0 end
     local md = p:getModData().BF
     if md and md.ef then

@@ -1,5 +1,5 @@
 require "BagresFarm"
-require "TimedActions/ISBaseTimedAction"
+require "BagresFarm_Acoes"
 require "ISUI/ISPanel"
 
 local BF = BagresFarm
@@ -62,16 +62,40 @@ local function audicao(p, st, ligar)
     end)
 end
 
-local function desmaiar(p)
+-- desmaio: cai no chao (animacao que os outros veem) e fica 2 minutos sem conseguir se mover
+BF.desmaio = BF.desmaio or {}
+local DESMAIO_MS = 120000
+
+local function cair(p)
     pcall(function()
-        local wake = GameTime.getInstance():getTimeOfDay() + 1
-        if wake >= 24 then wake = wake - 24 end
-        p:setForceWakeUpTime(wake); p:setAsleepTime(0.0); p:setAsleep(true)
-        getSleepingEvent():setPlayerFallAsleep(p, 1)
-        UIManager.setFadeBeforeUI(p:getPlayerNum(), true); UIManager.FadeOut(p:getPlayerNum(), 1)
+        p:setBumpType("pushed"); p:setBumpDone(false); p:setBumpFall(true); p:setBumpFallType("pushed")
     end)
-    HaloTextHelper.addBadText(p, getText("IGUI_BF_Overdose"))
 end
+
+local function desmaiar(p)
+    local n = p:getPlayerNum()
+    BF.desmaio[n] = { fim = getTimestampMs() + DESMAIO_MS, prox = getTimestampMs() + 9000 }
+    cair(p)
+    pcall(function() p:setBlockMovement(true) end)
+    pcall(function() p:getStats():set(CharacterStat.FATIGUE, math.max(p:getStats():get(CharacterStat.FATIGUE), 0.7)) end)
+    HaloTextHelper.addBadText(p, getText("IGUI_BF_Overdose"))
+    HaloTextHelper.addBadText(p, getText("IGUI_BF_Desmaio"))
+end
+
+Events.OnPlayerUpdate.Add(function(p)
+    if not p or not p:isLocalPlayer() then return end
+    local n = p:getPlayerNum(); local e = BF.desmaio[n]
+    if not e then return end
+    local agoraMs = getTimestampMs()
+    if p:isDead() or agoraMs >= e.fim then
+        BF.desmaio[n] = nil
+        pcall(function() p:setBlockMovement(false) end)
+        if not p:isDead() then HaloTextHelper.addGoodText(p, getText("IGUI_BF_Acordou")) end
+        return
+    end
+    pcall(function() p:setBlockMovement(true) end)
+    if agoraMs >= e.prox then e.prox = agoraMs + 9000; cair(p) end
+end)
 
 local function terminar(p, st, id)
     local e = st.ef[id]; local d = BF.DROGAS[id]
@@ -100,7 +124,8 @@ function BF.usar(p, id, pot, suja)
     local d = BF.DROGAS[id]; if not d then return end
     local st = estado(p)
     st.usos[id] = (st.usos[id] or 0) + 1
-    local fator = BF.fatorTolerancia(st.usos[id])
+    local tol = BF.tolerancia(st.usos[id])
+    local fator = 1 + tol
     local t = agora()
     if d.lolo then
         setStat(p, CharacterStat.NICOTINE_WITHDRAWAL, 0)
@@ -123,7 +148,7 @@ function BF.usar(p, id, pot, suja)
     if d.depressao and st.usos[id] >= d.depressao then
         setStat(p, CharacterStat.UNHAPPINESS, clamp(stat(p, CharacterStat.UNHAPPINESS) + 5 * (st.usos[id] - d.depressao + 1), 0, 100))
     end
-    if d.dur > 0 then st.ef[id] = { ini = t, fim = t + d.dur, m = fator * (pot or 1), d = fator } end
+    if d.dur > 0 then st.ef[id] = { ini = t, fim = t + d.dur, m = (pot or 1) * (1 - tol), d = fator, peso0 = d.pesoDia and p:getNutrition():getWeight() or nil } end
     st.ultDose[id] = t
     if d.audicao then audicao(p, st, true) end
     if d.forca then aplicarForca(p, st) end
@@ -144,7 +169,7 @@ function BF.usar(p, id, pot, suja)
 end
 
 -- pouca pratica em Primeiros Socorros: chance de se machucar com a agulha
-local function acidenteSeringa(p)
+function BF.acidenteSeringa(p)
     local doutor = p:getPerkLevel(Perks.Doctor)
     local risco = math.max(0, 5 - doutor) * 0.04
     if ZombRandFloat(0, 1) >= risco then return end
@@ -155,69 +180,12 @@ local function acidenteSeringa(p)
     else bp:generateDeepWound(); HaloTextHelper.addBadText(p, getText("IGUI_BF_Laceracao")) end
 end
 
--- acao de injetar / tomar / cheirar
-BF_UsarAction = ISBaseTimedAction:derive("BF_UsarAction")
-
-function BF_UsarAction:isValid()
-    return self.item and self.character:getInventory():containsRecursive(self.item)
-end
-
-function BF_UsarAction:update()
-    self.item:setJobDelta(self:getJobDelta())
-end
-
-function BF_UsarAction:start()
-    self.item:setJobType(getText(self.inj and "ContextMenu_BF_Injetar" or "ContextMenu_BF_Tomar"))
-    self.item:setJobDelta(0.0)
-    if BF.DROGAS[self.id].lolo then
-        self:setAnimVariable("FoodType", "Sniff"); self:setActionAnim(CharacterActionAnims.Eat)
-    else
-        self:setActionAnim(self.inj and CharacterActionAnims.Bandage or CharacterActionAnims.TakePills)
-    end
-    self:setOverrideHandModels(nil, nil)
-end
-
-function BF_UsarAction:stop()
-    ISBaseTimedAction.stop(self)
-    self.item:setJobDelta(0.0)
-end
-
-function BF_UsarAction:perform()
-    self.item:setJobDelta(0.0)
-    local p = self.character
-    local pot = BF.potencia(self.item)
-    local suja = BF.suja(self.item)
-    if BF.DROGAS[self.id].drenavel then
-        self.item:Use()
-    else
-        local c = self.item:getContainer()
-        c:Remove(self.item)
-        if isClient() then sendRemoveItemFromContainer(c, self.item) end
-    end
-    if self.inj then
-        local s = p:getInventory():AddItem("Base.BF_SeringaUsada")
-        if isClient() and s then sendAddItemToContainer(p:getInventory(), s) end
-        pot = pot * (1 + 0.03 * p:getPerkLevel(Perks.Doctor))
-        acidenteSeringa(p)
-        if BF.PERK then p:getXp():AddXP(BF.PERK, 2) end
-    end
-    BF.usar(p, self.id, pot, suja)
-    ISBaseTimedAction.perform(self)
-end
-
-function BF_UsarAction:new(character, item, id)
-    local o = ISBaseTimedAction.new(self, character)
-    o.item = item; o.id = id; o.inj = BF.DROGAS[id].inj
-    o.stopOnWalk = false; o.stopOnRun = true; o.stopOnAim = false
-    o.maxTime = o.inj and 120 or 80
-    if character:isTimedActionInstant() then o.maxTime = 1 end
-    return o
-end
-
 local function listaAtivos(p)
     local st = estado(p); local t = agora(); local linhas = {}
     for id, e in pairs(st.ef) do
-        table.insert(linhas, { txt = nome(id), resta = e.fim - t, total = e.fim - e.ini, m = e.m, bom = true })
+        local desc = getTextOrNull("IGUI_BF_Ef_" .. id) or ""
+        if e.peso0 then desc = desc .. " " .. getText("IGUI_BF_Peso", string.format("%.1f", p:getNutrition():getWeight()), string.format("%.2f", e.peso0 - p:getNutrition():getWeight())) end
+        table.insert(linhas, { txt = nome(id), resta = e.fim - t, total = e.fim - e.ini, m = e.m, bom = true, desc = desc })
     end
     for id, e in pairs(st.pos) do
         if e.fim > t then table.insert(linhas, { txt = nome(id) .. " (" .. getText("IGUI_BF_Ressaca") .. ")", resta = e.fim - t, total = e.fim - (e.ini or (e.fim - 2)), bom = false }) end
@@ -248,7 +216,8 @@ local function menu(playerNum, context, items)
                 .. getText("IGUI_BF_Potencia") .. ": x" .. string.format("%.2f", BF.potencia(item))
             if d.inj then desc = desc .. " <LINE> " .. getText("IGUI_BF_ForaGeladeira") .. ": " .. string.format("%.1f", BF.horasFora(item) / 24) .. " d" end
             if BF.suja(item) then desc = desc .. " <LINE> " .. getText("IGUI_BF_SeringaSujaAviso") end
-            desc = desc .. " <LINE> " .. getText("IGUI_BF_Doses") .. ": " .. (st.usos[id] or 0) .. " (" .. getText("IGUI_BF_Tolerancia") .. " +" .. math.floor((BF.fatorTolerancia((st.usos[id] or 0) + 1) - 1) * 100 + 0.5) .. "%)"
+            local pct = math.floor(BF.tolerancia((st.usos[id] or 0) + 1) * 100 + 0.5)
+            desc = desc .. " <LINE> " .. getText("IGUI_BF_Doses") .. ": " .. (st.usos[id] or 0) .. " (" .. getText("IGUI_BF_Tolerancia") .. ": " .. getText("IGUI_BF_TolInfo", 100 - pct, pct) .. ")"
             if d.inj and st.ultDose[id] and agora() - st.ultDose[id] < BF.OVERDOSE_H then desc = desc .. " <LINE> " .. getText("IGUI_BF_OverdoseAviso") end
             local ativos = listaAtivos(p)
             if #ativos > 0 then
@@ -264,59 +233,62 @@ local function menu(playerNum, context, items)
 end
 Events.OnFillInventoryObjectContextMenu.Add(menu)
 
--- kit antidoping: clicar em outro jogador
-BF_TesteAction = ISBaseTimedAction:derive("BF_TesteAction")
-function BF_TesteAction:isValid() return self.alvo and not self.alvo:isDead() and self.character:getInventory():containsRecursive(self.kit) end
-function BF_TesteAction:update() self.character:faceThisObject(self.alvo) end
-function BF_TesteAction:start() self:setActionAnim(CharacterActionAnims.Bandage) end
-function BF_TesteAction:perform()
-    local c = self.kit:getContainer(); c:Remove(self.kit)
-    if isClient() then sendRemoveItemFromContainer(c, self.kit) end
-    if BF.PERK then self.character:getXp():AddXP(BF.PERK, 5) end
-    local md = self.alvo:getModData().BF
+-- kit antidoping: botao direito no kit lista os jogadores a ate 3 quadros
+local function jogadoresPerto(p)
+    local lista = {}
+    local function add(o)
+        if o and o ~= p and not o:isDead() and math.abs(o:getX() - p:getX()) <= 3 and math.abs(o:getY() - p:getY()) <= 3 then table.insert(lista, o) end
+    end
+    if isClient() then
+        local ok, on = pcall(getOnlinePlayers)
+        if ok and on then for i = 0, on:size() - 1 do add(on:get(i)) end end
+    end
+    for i = 0, getNumActivePlayers() - 1 do add(getSpecificPlayer(i)) end
+    return lista
+end
+
+function BF.mostrarTeste(p, alvo)
+    local md = alvo:getModData().BF
     local t = agora(); local linhas = {}
     if md and md.hist then
         for _, h in ipairs(md.hist) do
             if t - h.t <= BF.HIST_H and BF.DROGAS[h.id] then table.insert(linhas, nome(h.id) .. " - " .. getText("IGUI_BF_Ha") .. " " .. horas(t - h.t)) end
         end
     end
-    local texto = getText("IGUI_BF_TesteTitulo", self.alvo:getDescriptor():getForename()) .. " <LINE> <LINE> "
+    local quem = alvo:getDescriptor() and alvo:getDescriptor():getForename() or tostring(alvo:getUsername())
+    local texto = getText("IGUI_BF_TesteTitulo", quem) .. " <LINE> <LINE> "
     if #linhas == 0 then texto = texto .. getText("IGUI_BF_TesteLimpo") else texto = texto .. table.concat(linhas, " <LINE> ") end
     if ISModalRichText then
         local m = ISModalRichText:new(getCore():getScreenWidth() / 2 - 180, getCore():getScreenHeight() / 2 - 100, 360, 200, texto, false)
         m:initialise(); m:addToUIManager()
     else
-        HaloTextHelper.addText(self.character, texto)
+        HaloTextHelper.addText(p, texto)
     end
-    ISBaseTimedAction.perform(self)
-end
-function BF_TesteAction:new(character, alvo, kit)
-    local o = ISBaseTimedAction.new(self, character)
-    o.alvo = alvo; o.kit = kit; o.maxTime = 150
-    if character:isTimedActionInstant() then o.maxTime = 1 end
-    return o
 end
 
-Events.OnFillWorldObjectContextMenu.Add(function(playerNum, context, worldobjects, test)
-    if test then return end
+local function menuKit(playerNum, context, items)
     local p = getSpecificPlayer(playerNum)
     if not p or p:isDead() then return end
-    local kit = p:getInventory():getFirstTypeRecurse("Base.BF_KitAntidoping")
-    if not kit then return end
-    local sq
-    for _, o in ipairs(worldobjects) do if o and o:getSquare() then sq = o:getSquare(); break end end
-    if not sq then return end
-    local objs = p:getCell():getObjectList()
-    for i = 0, objs:size() - 1 do
-        local o = objs:get(i)
-        if instanceof(o, "IsoPlayer") and o ~= p and not o:isDead() and o:DistTo(sq:getX() + 0.5, sq:getY() + 0.5) < 1.6 then
-            context:addOption(getText("ContextMenu_BF_Teste") .. " " .. o:getDescriptor():getForename(), p, function(pl)
-                ISTimedActionQueue.add(ISWalkToTimedAction:new(pl, o:getSquare()))
-                ISTimedActionQueue.add(BF_TesteAction:new(pl, o, kit))
-            end)
+    for _, entry in ipairs(items) do
+        local item = entry
+        if not instanceof(entry, "InventoryItem") then item = entry.items and entry.items[1] end
+        if item and item:getFullType() == "Base.BF_KitAntidoping" and p:getInventory():containsRecursive(item) then
+            local perto = jogadoresPerto(p)
+            if #perto == 0 then
+                local op = context:addOption(getText("ContextMenu_BF_Teste") .. "...", nil, nil); op.notAvailable = true
+                local tip = ISInventoryPaneContextMenu.addToolTip(); tip.description = getText("IGUI_BF_Ninguem"); op.toolTip = tip
+            end
+            for _, alvo in ipairs(perto) do
+                local quem = alvo:getDescriptor() and alvo:getDescriptor():getForename() or tostring(alvo:getUsername())
+                context:addOption(getText("ContextMenu_BF_Teste") .. " " .. quem, p, function(pl)
+                    ISTimedActionQueue.add(BF_TesteAction:new(pl, alvo, item))
+                end)
+            end
+            return
         end
     end
-end)
+end
+Events.OnFillInventoryObjectContextMenu.Add(menuKit)
 
 -- efeitos continuos (so no jogador local)
 local function tick(p)
@@ -429,7 +401,7 @@ local function minuto()
                     if d.gripe then local bd = p:getBodyDamage(); if bd:getCatchACold() > 0 then bd:setCatchACold(0) end end
                     if d.rigidez then rig = rig + d.rigidez * e.m end
                     if d.pesoDia then peso = peso + d.pesoDia * e.m end
-                    if d.paranoia and (st.usos[id] or 0) >= d.paranoia then paranoia = paranoia + 0.06 * e.d * (1 + 0.1 * ((st.usos[id] or 0) - d.paranoia)) end
+                    if d.paranoia and (st.usos[id] or 0) >= d.paranoia then paranoia = paranoia + 0.12 * e.d * (1 + 0.15 * ((st.usos[id] or 0) - d.paranoia)) end
                     if d.depressao and (st.usos[id] or 0) >= d.depressao then depress = depress + 0.01 * (st.usos[id] or 0) * e.d end
                 end
             end
@@ -446,7 +418,9 @@ local function minuto()
             end
             if paranoia > 0 and ZombRandFloat(0, 1) < paranoia then
                 p:getEmitter():playSound(VOZES[ZombRand(1, #VOZES + 1)])
-                setStat(p, CharacterStat.PANIC, clamp(stat(p, CharacterStat.PANIC) + 10, 0, 100))
+                setStat(p, CharacterStat.PANIC, 100)
+                setStat(p, CharacterStat.STRESS, clamp(stat(p, CharacterStat.STRESS) + 0.15, 0, 1))
+                HaloTextHelper.addBadText(p, getText("IGUI_BF_Paranoia"))
             end
             if depress > 0 then setStat(p, CharacterStat.UNHAPPINESS, clamp(stat(p, CharacterStat.UNHAPPINESS) + depress, 0, 100)) end
             abstinencia(p, st, t)
@@ -491,29 +465,56 @@ end)
 -- moodles proprios (coluna abaixo dos moodles do jogo) e painel de efeitos
 BF_Painel = ISPanel:derive("BF_Painel")
 function BF_Painel:new(pn)
-    local o = ISPanel.new(self, 80, 120, 300, 120)
-    o.pn = pn; o.moveWithMouse = true; o.backgroundColor = { r = 0, g = 0, b = 0, a = 0.8 }
+    local o = ISPanel.new(self, 80, 120, 330, 60)
+    o.pn = pn; o.moveWithMouse = true; o.backgroundColor = { r = 0.05, g = 0.06, b = 0.07, a = 0.85 }
     return o
 end
 function BF_Painel:prerender()
     local p = getSpecificPlayer(self.pn)
     local linhas = p and listaAtivos(p) or {}
-    self:setHeight(40 + #linhas * 34)
+    self:setHeight(26 + math.max(1, #linhas) * 31 + 4)
     ISPanel.prerender(self)
-    self:drawText(getText("IGUI_BF_Painel"), 10, 8, 1, 1, 1, 1, UIFont.Medium)
-    local y = 36
+    self:drawText(getText("IGUI_BF_Painel"), 8, 5, 1, 1, 1, 1, UIFont.Small)
+    local y = 24
     for _, l in ipairs(linhas) do
-        self:drawText(l.txt, 10, y, 1, 1, 1, 1, UIFont.Small)
+        local frac = l.total > 0 and clamp(l.resta / l.total, 0, 1) or 1
+        self:drawRect(8, y + 1, self.width - 16, 14, 0.5, 0.15, 0.15, 0.17)
         if l.resta > 0 then
-            self:drawText(horas(l.resta), self.width - 70, y, 0.8, 0.8, 0.8, 1, UIFont.Small)
-            local frac = l.total > 0 and clamp(l.resta / l.total, 0, 1) or 1
-            self:drawRect(10, y + 18, self.width - 20, 6, 0.6, 0.2, 0.2, 0.2)
-            if l.bom then self:drawRect(10, y + 18, (self.width - 20) * frac, 6, 0.9, 0.3, 0.7, 0.3)
-            else self:drawRect(10, y + 18, (self.width - 20) * frac, 6, 0.9, 0.8, 0.3, 0.2) end
+            if l.bom then self:drawRect(8, y + 1, (self.width - 16) * frac, 14, 0.55, 0.25, 0.6, 0.3)
+            else self:drawRect(8, y + 1, (self.width - 16) * frac, 14, 0.55, 0.7, 0.3, 0.2) end
         end
-        y = y + 34
+        self:drawText(l.txt, 12, y, 1, 1, 1, 1, UIFont.Small)
+        if l.resta > 0 then self:drawTextRight(horas(l.resta), self.width - 12, y, 0.85, 0.85, 0.85, 1, UIFont.Small) end
+        if l.desc and l.desc ~= "" then self:drawText(l.desc, 12, y + 15, 0.75, 0.75, 0.75, 1, UIFont.Small) end
+        y = y + 31
     end
-    if #linhas == 0 then self:drawText(getText("IGUI_BF_Nada"), 10, 36, 0.7, 0.7, 0.7, 1, UIFont.Small) end
+    if #linhas == 0 then self:drawText(getText("IGUI_BF_Nada"), 12, 24, 0.7, 0.7, 0.7, 1, UIFont.Small) end
+end
+
+-- botao pequeno que abre e fecha o painel
+BF_Botao = ISUIElement:derive("BF_Botao")
+function BF_Botao:new(pn)
+    local o = ISUIElement.new(self, 0, 0, 26, 26)
+    o.pn = pn
+    return o
+end
+function BF_Botao:render()
+    local tex = getTexture("media/ui/BF_botao.png")
+    if tex then self:drawTexture(tex, 0, 0, 1, 1, 1, 1) else self:drawRect(0, 0, 26, 26, 0.8, 0.2, 0.5, 0.3) end
+    local p = getSpecificPlayer(self.pn)
+    local md = p and p:getModData().BF
+    local n = 0
+    if md then for _ in pairs(md.ef or {}) do n = n + 1 end end
+    if n > 0 then self:drawTextCentre(tostring(n), 13, 1, 1, 1, 1, 1, UIFont.Small) end
+    if self:isMouseOver() then
+        local txt = getText("IGUI_BF_Botao")
+        local w = getTextManager():MeasureStringX(UIFont.Small, txt) + 12
+        self:drawRect(-w - 4, 2, w, 20, 0.85, 0, 0, 0); self:drawText(txt, -w + 2, 4, 1, 1, 1, 1, UIFont.Small)
+    end
+end
+function BF_Botao:onMouseDown(x, y)
+    if BF.painel[self.pn] then BF.painel[self.pn]:setVisible(not BF.painel[self.pn]:isVisible()) end
+    return true
 end
 
 BF_Moodles = ISUIElement:derive("BF_Moodles")
@@ -538,7 +539,10 @@ end
 function BF_Moodles:render()
     self:calcular()
     local mui = MoodlesUI.getInstance()
-    if mui then self:setX(mui:getX()); self:setY(mui:getY() + mui:getHeight() + 6) end
+    local bx, by = getCore():getScreenWidth() - 80, 40
+    if mui then bx = mui:getX() - 44; by = mui:getY() end
+    self:setX(bx); self:setY(by + 30)
+    if BF.botao[self.pn] then BF.botao[self.pn]:setX(bx + 5); BF.botao[self.pn]:setY(by) end
     self:setHeight(#self.itens * 36 + 1)
     local mx, my = self:getMouseX(), self:getMouseY()
     for i, it in ipairs(self.itens) do
@@ -564,6 +568,7 @@ function BF_Moodles:onMouseDown(x, y)
 end
 BF.painel = BF.painel or {}
 BF.moodles = BF.moodles or {}
+BF.botao = BF.botao or {}
 
 Events.OnCreatePlayer.Add(function(i, p)
     if not p then return end
@@ -571,6 +576,15 @@ Events.OnCreatePlayer.Add(function(i, p)
         if not BF.painel[i] then
             BF.painel[i] = BF_Painel:new(i); BF.painel[i]:initialise(); BF.painel[i]:addToUIManager(); BF.painel[i]:setVisible(false)
             BF.moodles[i] = BF_Moodles:new(i); BF.moodles[i]:initialise(); BF.moodles[i]:addToUIManager()
+            BF.botao[i] = BF_Botao:new(i); BF.botao[i]:initialise(); BF.botao[i]:addToUIManager()
+        end
+        -- farmaceutico: comeca com Primeiros Socorros 2 (o bonus de XP vem do Lua, nao do nivel)
+        local st0 = estado(p)
+        if not st0.inicial then
+            st0.inicial = true
+            if BF.PROF and p:getDescriptor():isCharacterProfession(BF.PROF) and p:getPerkLevel(Perks.Doctor) < 2 and p:getHoursSurvived() < 1 then
+                pcall(function() p:getXp():setXPToLevel(Perks.Doctor, 2) end)
+            end
         end
     end
     local md = p:getModData().BF
