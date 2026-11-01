@@ -76,6 +76,7 @@ function BF_UsarAction:complete()
     if d.inj then args.ferida = BF.sortearFerida(p:getPerkLevel(Perks.Doctor)); if args.ferida then BF.aplicarFerida(p, args.ferida) end end
     if isServer() then
         sendServerCommand(p, "BagresFarm", "usar", args)
+        if BF.usar then BF.usar(p, self.id, pot, suja) end
     elseif not isClient() and BF.receberUso then
         BF.receberUso(p, args)
     end
@@ -188,6 +189,7 @@ function BF_AplicarAction:complete()
     local args = { alvo = self.alvo:getUsername(), id = self.id, pot = pot * (1 + 0.03 * doutor), suja = suja, ferida = ferida, quem = quem }
     if isServer() then
         sendServerCommand(self.alvo, "BagresFarm", "aplicado", args)
+        if BF.usar then BF.usar(self.alvo, self.id, args.pot, suja) end
     elseif not isClient() and BF.receberAplicacao then
         BF.receberAplicacao(self.alvo, args, quem)
     end

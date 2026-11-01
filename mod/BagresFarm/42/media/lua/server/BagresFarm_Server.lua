@@ -79,6 +79,10 @@ end)
 -- uso de droga: registra no Bagres Stats quando ele estiver presente
 Events.OnClientCommand.Add(function(module, command, player, args)
     if module ~= "BagresFarm" or not player or not args then return end
+    if command == "limpar" then
+        if BF.limparEfeitos then BF.limparEfeitos(player) end
+        return
+    end
     if (command == "pedir" or command == "aceitar") and args.alvo then
         local on = getOnlinePlayers()
         for i = 0, on:size() - 1 do
