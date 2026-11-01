@@ -17,7 +17,11 @@ local function estado(p)
     return st
 end
 
-local function nome(id) return getTextOrNull("ItemName_" .. BF.DROGAS[id].item) or id end
+local function nome(id)
+    local ok, n = pcall(getItemNameFromFullType, BF.DROGAS[id].item)
+    if ok and n and n ~= "" then return n end
+    return id
+end
 local function stat(p, k) return p:getStats():get(k) end
 local function setStat(p, k, v) p:getStats():set(k, v) end
 local function clamp(v, a, b) if v < a then return a elseif v > b then return b end return v end
