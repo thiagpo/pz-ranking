@@ -3,8 +3,8 @@
     "Tooltip_BF_SeringaUsada": "Must be sterilized: with alcohol or bleach anywhere, or by fire (lit stove, fireplace or campfire within 3 tiles).",
     "Tooltip_BF_Monjaro": "24 h. Loses 1.2 kg/day, 60% less hunger. <LINE> Side effect: tires 50% faster.",
     "Tooltip_BF_Ozempic": "24 h. Loses 0.6 kg/day, 40% less hunger. <LINE> Side effect: tires 35% faster.",
-    "Tooltip_BF_Deca": "48 h. +15% strength (carry weight and melee damage). <LINE> Side effect: hunger 80% faster. From the 3rd anabolic or slimming dose your hair falls out.",
-    "Tooltip_BF_Trembolona": "36 h. +10% strength (carry weight and melee damage). <LINE> Side effect: hunger 60% faster. From the 3rd anabolic or slimming dose your hair falls out.",
+    "Tooltip_BF_Deca": "48 h. +15% strength (carry weight and melee damage). <LINE> Side effect: hunger 80% faster and occasional screams of pain. From the 3rd anabolic or slimming dose your hair falls out.",
+    "Tooltip_BF_Trembolona": "36 h. +10% strength (carry weight and melee damage). <LINE> Side effect: hunger 60% faster and occasional screams of pain. From the 3rd anabolic or slimming dose your hair falls out.",
     "Tooltip_BF_Morfina": "8 h. Cuts 80% of pain and relieves muscle strain. <LINE> From the 3rd dose: paranoia (phantom zombie sounds) and growing depression.",
     "Tooltip_BF_Adrenalina": "1 h. Near infinite stamina, keen hearing, cuts panic and acts as Adrenaline Junkie. <LINE> Afterwards: extreme tiredness and, for 2 h, cuts bleed more. <LINE> Recipe: alcohol, black sage, tobacco, sedative, poppy and comfrey.",
     "Tooltip_BF_Rebite": "6 h. Tires 90% less and sees in the dark like Cat's Eyes (trait owners see even better). <LINE> Afterwards: for 6 h sleep recovers only 40% of tiredness.",
@@ -12,7 +12,7 @@
     "Tooltip_BF_Metanfetamina": "Bottle with 10 doses. 6 h: removes muscle strain fast and tires 70% less. <LINE> Paranoia from the 1st dose, addictive from the 3rd. Cooked at the lab bench, next to a lit fire, with glassware and a mortar.",
     "Tooltip_BF_Tadala": "6 h. Relieves muscle strain. <LINE> Afterwards: extreme sadness.",
     "Tooltip_BF_Benegripe": "Cures a cold over 8 h and prevents a new one for 12 h.",
-    "Tooltip_BF_Lolo": "Solvent-soaked rag, 5 sniffs. Kills nicotine craving and relieves stress. <LINE> Causes nausea and drunkenness.",
+    "Tooltip_BF_Lolo": "Solvent-soaked rag, 5 sniffs. Kills nicotine craving and relieves stress. <LINE> Causes nausea, drunkenness and coughing for 1 h.",
     "Tooltip_BF_BenegripeForte": "Cures a cold over 4 h and prevents a new one for 36 h.",
     "Tooltip_BF_VitaminaC": "6 h cold protection and a little less tiredness. Weaker than pharmacy vitamins.",
     "Tooltip_BF_Creatina": "6 h. +50% Strength XP. No side effects.",
@@ -22,5 +22,6 @@
     "Tooltip_BF_Laboratorio": "Lab bench. Every medicine and injectable can only be prepared within 3 tiles of it. Meth also needs a lit fire nearby. Building it requires Carpentry 2 and Pharmacy 1.",
     "Tooltip_BF_LivroHorta": "Teaches the growing seasons of medicinal herbs. Readers harvest one extra herb per plant and earn Pharmacy XP.",
     "Tooltip_BF_Resultado": "Result of an anti-doping test. Right click to read.",
-    "Tooltip_BF_AlcoolIsopropilico": "Bottle with 1 L of alcohol. Sterilizes syringes and goes into injectables. Made from 1 L of bleach and 10 L of clean water."
+    "Tooltip_BF_AlcoolIsopropilico": "Bottle with 1 L of alcohol. Sterilizes syringes and goes into injectables. Made from 1 L of bleach and 10 L of clean water.",
+    "Tooltip_BF_Cafeina": "3 h. Tires 30% less. Base of the injectables. Made from tobacco and ginseng boiled in 1 L of water, next to a fire."
 }

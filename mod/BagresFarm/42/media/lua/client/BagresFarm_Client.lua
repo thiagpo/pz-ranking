@@ -189,6 +189,8 @@ function BF.usar(p, id, pot, suja)
         setStat(p, CharacterStat.SICKNESS, clamp(stat(p, CharacterStat.SICKNESS) + 15 * fator, 0, 100))
         setStat(p, CharacterStat.INTOXICATION, clamp(stat(p, CharacterStat.INTOXICATION) + 25 * fator, 0, 100))
         BF.visual[p:getPlayerNum()] = BF.visual[p:getPlayerNum()] or {}; BF.visual[p:getPlayerNum()].loloAte = getTimestampMs() + 90000
+        if d.dur > 0 then st.ef[id] = { ini = t, fim = t + d.dur, m = 1, d = fator } end
+        st.ultDose[id] = t
         HaloTextHelper.addGoodText(p, nome(id))
         registrar(p, st, id, t)
         return
@@ -316,6 +318,7 @@ local AVISO_FERIDA = { "IGUI_BF_Arranhao", "IGUI_BF_Corte", "IGUI_BF_Laceracao" 
 function BF.receberUso(p, args)
     if not p or not args or not BF.DROGAS[args.id] then return end
     if args.ferida then BF.aplicarFerida(p, args.ferida); HaloTextHelper.addBadText(p, getText(AVISO_FERIDA[args.ferida.tipo] or "IGUI_BF_Arranhao")) end
+    if args.inj then pcall(function() p:playerVoiceSound(args.ferida and "PainFromLacerate" or "PainFromGlassCut") end) end
     BF.usar(p, args.id, args.pot, args.suja)
 end
 
@@ -358,6 +361,7 @@ function BF.receberAplicacao(p, args, quem)
         HaloTextHelper.addBadText(p, getText("IGUI_BF_AplicouMal", quem))
     end
     HaloTextHelper.addGoodText(p, getText("IGUI_BF_Injetado", quem, nome(args.id)))
+    pcall(function() p:playerVoiceSound(args.ferida and "PainFromLacerate" or "PainFromGlassCut") end)
     BF.usar(p, args.id, args.pot, args.suja)
 end
 local receberAplicacao = BF.receberAplicacao
@@ -590,6 +594,8 @@ local function minuto()
                             bd:setColdStrength(cs)
                         end
                     end
+                    if d.tosse and ZombRandFloat(0, 1) < 0.3 then pcall(function() p:playerVoiceSound("Cough") end) end
+                    if d.grito and ZombRandFloat(0, 1) < 0.08 then pcall(function() p:playerVoiceSound("PainFromScratch") end) end
                     if d.rigidez then rig = rig + d.rigidez * m2 end
                     if d.pesoDia then peso = peso + d.pesoDia * m2 end
                     if d.paranoia and (st.usos[id] or 0) >= d.paranoia then paranoia = paranoia + 0.12 * d2 * (1 + 0.15 * ((st.usos[id] or 0) - d.paranoia)) end

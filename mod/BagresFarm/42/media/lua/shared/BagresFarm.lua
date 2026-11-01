@@ -42,8 +42,8 @@ end)
 BF.DROGAS = {
     Ozempic        = { item = "Base.BF_Ozempic",        inj = true, careca = true,  dur = 24, fome = -0.40, pesoDia = 0.60, fadiga = 0.35 },
     Monjaro        = { item = "Base.BF_Monjaro",        inj = true, careca = true,  dur = 24, fome = -0.60, pesoDia = 1.20, fadiga = 0.50 },
-    Trembolona     = { item = "Base.BF_Trembolona",     inj = true, careca = true,  dur = 36, forca = 0.10, fome = 0.60 },
-    Deca           = { item = "Base.BF_Deca",           inj = true, careca = true,  dur = 48, forca = 0.15, fome = 0.80 },
+    Trembolona     = { item = "Base.BF_Trembolona",     inj = true, grito = true, careca = true,  dur = 36, forca = 0.10, fome = 0.60 },
+    Deca           = { item = "Base.BF_Deca",           inj = true, grito = true, careca = true,  dur = 48, forca = 0.15, fome = 0.80 },
     Morfina        = { item = "Base.BF_Morfina",        inj = true,  dur = 8,  dor = 0.80, rigidez = 0.10, paranoia = 3, depressao = 6, vicio = { limiar = 4, horas = 24, limpar = 72 } },
     Adrenalina     = { item = "Base.BF_Adrenalina",     inj = true,  dur = 1,  folego = true, audicao = true, adrenalina = true, panico = -100, fadigaFim = 0.80, sangramento = 0.60, posDur = 2 },
     Rebite         = { item = "Base.BF_Rebite",         inj = false, drenavel = true, dur = 6,  fadiga = -0.90, recuperacao = 0.60, visao = true, vicio = { limiar = 5, horas = 36, limpar = 48 } },
@@ -55,7 +55,8 @@ BF.DROGAS = {
     VitaminaC      = { item = "Base.BF_VitaminaC",      inj = false, drenavel = true, dur = 6,  gripe = true, fadigaJa = -0.10 },
     Creatina       = { item = "Base.BF_Creatina",       inj = false, drenavel = true, dur = 6,  xpForca = 0.50, fomeJa = -0.05 },
     Whey           = { item = "Base.BF_Whey",           inj = false, dur = 6,  xpFitness = 0.50, fomeJa = -0.15, bebida = true, devolve = "Base.EmptyJar" },
-    Lolo           = { item = "Base.BF_Lolo",           inj = false, dur = 0,  drenavel = true, lolo = true },
+    Lolo           = { item = "Base.BF_Lolo",           inj = false, dur = 1,  drenavel = true, lolo = true, tosse = true },
+    Cafeina        = { item = "Base.BF_Cafeina",        inj = false, dur = 3,  fadiga = -0.30 },
 }
 BF.POR_ITEM = {}
 for id, d in pairs(BF.DROGAS) do BF.POR_ITEM[d.item] = id end
@@ -139,6 +140,8 @@ function BF.descricaoEfeito(id, m, dm)
     if d.tristezaFim then table.insert(maus, getText("IGUI_BF_L_depois") .. " " .. getText("IGUI_BF_L_tristeza") .. " " .. math.floor(math.min(100, d.tristezaFim * dm) + 0.5)) end
     if d.paranoia then table.insert(maus, getText("IGUI_BF_L_paranoia")) end
     if d.vicio then table.insert(maus, getText("IGUI_BF_L_vicio")) end
+    if d.tosse then table.insert(maus, getText("IGUI_BF_L_tosse")) end
+    if d.grito then table.insert(maus, getText("IGUI_BF_L_grito")) end
     if d.lolo then table.insert(bons, getText("IGUI_BF_L_fumo")); table.insert(maus, getText("IGUI_BF_L_enjoo") .. " +" .. math.floor(15 * dm + 0.5) .. ", " .. getText("IGUI_BF_L_bebado") .. " +" .. math.floor(25 * dm + 0.5)) end
     local txt = table.concat(bons, ", ")
     if #maus > 0 then txt = txt .. " | " .. table.concat(maus, ", ") end
@@ -260,6 +263,8 @@ function BF.agregados(st, t)
             for _, k in ipairs({ "folego", "audicao", "visao", "adrenalina", "gripe", "cura" }) do if d[k] then flags[k] = true end end
             if d.paranoia and (st.usos[id] or 0) >= d.paranoia then flags.paranoia = true end
             if d.vicio then flags.vicio = true end
+            if d.tosse then flags.tosse = true end
+            if d.grito then flags.grito = true end
             if d.fadigaFim then flags.fadigaFim = math.max(flags.fadigaFim or 0, d.fadigaFim * dm) end
             if d.tristezaFim then flags.tristezaFim = math.max(flags.tristezaFim or 0, d.tristezaFim * dm) end
             if d.recuperacao then flags.recuperacao = math.max(flags.recuperacao or 0, d.recuperacao * dm) end
@@ -287,6 +292,8 @@ function BF.agregados(st, t)
     if soma.sangra > 0 then table.insert(neg, getText("IGUI_BF_L_sangra") .. " +" .. pct(soma.sangra) .. "%") end
     if flags.paranoia then table.insert(neg, getText("IGUI_BF_L_paranoia")) end
     if flags.vicio then table.insert(neg, getText("IGUI_BF_L_vicio")) end
+    if flags.tosse then table.insert(neg, getText("IGUI_BF_L_tosse")) end
+    if flags.grito then table.insert(neg, getText("IGUI_BF_L_grito")) end
     if flags.fadigaFim then table.insert(neg, getText("IGUI_BF_L_depois") .. " " .. getText("IGUI_BF_L_cansaco") .. " +" .. pct(flags.fadigaFim) .. "%") end
     if flags.tristezaFim then table.insert(neg, getText("IGUI_BF_L_depois") .. " " .. getText("IGUI_BF_L_tristeza") .. " " .. math.floor(math.min(100, flags.tristezaFim) + 0.5)) end
     if flags.recuperacao then table.insert(neg, getText("IGUI_BF_L_depois") .. " " .. getText("IGUI_BF_L_sono") .. " -" .. pct(flags.recuperacao) .. "%") end

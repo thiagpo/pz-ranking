@@ -56,10 +56,11 @@ module Base
         inputs
         {
             item 1 [Base.BF_SeringaVazia;Base.BF_SeringaUsada],
-            item 2 [Base.Ginseng],
-            item 1 [Base.Pills],
             item 1 [*],
-            -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
+            -fluid 0.1 [RubbingAlcohol],
+            item 1 [Base.BF_Cafeina],
+            item 5 [Base.LemonGrass],
+            item 5 [Base.Ginseng],
         }
         outputs
         {
@@ -81,11 +82,11 @@ module Base
         inputs
         {
             item 1 [Base.BF_SeringaVazia;Base.BF_SeringaUsada],
-            item 3 [Base.Ginseng],
-            item 1 [Base.LemonGrass],
-            item 1 [Base.PillsVitamins],
             item 1 [*],
-            -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
+            -fluid 0.1 [RubbingAlcohol],
+            item 3 [Base.BF_Cafeina],
+            item 15 [Base.LemonGrass],
+            item 15 [Base.Ginseng],
         }
         outputs
         {
@@ -107,10 +108,12 @@ module Base
         inputs
         {
             item 1 [Base.BF_SeringaVazia;Base.BF_SeringaUsada],
-            item 2 [Base.Egg],
-            item 1 [Base.PillsVitamins],
             item 1 [*],
-            -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
+            -fluid 0.1 [RubbingAlcohol],
+            item 2 [Base.Pills],
+            item 2 [Base.BF_Cafeina],
+            item 1 [Base.PillsAntiDep],
+            item 1 [Base.PillsBeta],
         }
         outputs
         {
@@ -131,13 +134,14 @@ module Base
         OnTest = BagresFarm.pertoDoLab,
         inputs
         {
-            item 1 [Base.BF_Vidraria] mode:keep,
             item 1 [Base.BF_SeringaVazia;Base.BF_SeringaUsada],
-            item 3 [Base.Egg],
-            item 1 [Base.Ginseng],
-            item 1 [Base.PillsVitamins],
             item 1 [*],
-            -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
+            -fluid 0.1 [RubbingAlcohol],
+            item 1 [Base.BF_Vidraria] mode:keep,
+            item 5 [Base.Ginseng],
+            item 1 [Base.BF_Cafeina],
+            item 2 [Base.Pills],
+            item 1 [Base.PillsAntiDep],
         }
         outputs
         {
@@ -158,12 +162,14 @@ module Base
         OnTest = BagresFarm.pertoDoLab,
         inputs
         {
-            item 1 [Base.BF_Vidraria] mode:keep,
             item 1 [Base.BF_SeringaVazia;Base.BF_SeringaUsada],
-            item 3 [Base.PoppyPods;Base.PoppyPodsDried],
-            item 1 [Base.Pills],
             item 1 [*],
-            -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
+            -fluid 0.1 [RubbingAlcohol],
+            item 1 [Base.BF_Vidraria] mode:keep,
+            item 1 [Base.BF_Cafeina],
+            item 1 [Base.Pills],
+            item 1 [Base.PillsAntiDep],
+            item 5 [Base.PoppyPods;Base.PoppyPodsDried],
         }
         outputs
         {
@@ -336,7 +342,10 @@ module Base
             item 1 [Base.RippedSheets],
             item 1 [Base.Glue],
             item 1 [*],
-            -fluid 0.1 [RubbingAlcohol;Petrol;CleaningLiquid],
+            -fluid 0.5 [RubbingAlcohol],
+            item 1 [*],
+            -fluid 0.1 [Petrol],
+            item 1 [Base.EmptyJar],
         }
         outputs
         {
@@ -719,6 +728,32 @@ module Base
         outputs
         {
             item 1 Base.BF_AlcoolIsopropilico,
+        }
+    }
+
+    craftRecipe BF_MakeCafeina
+    {
+        timedAction = MixingBowl,
+        time = 150,
+        NeedToBeLearn = true,
+        AutoLearnAny = Pharmacy:2,
+        Tags = AnySurfaceCraft;Health,
+        category = Farmacia,
+        SkillRequired = Pharmacy:2,
+        xpAward = Pharmacy:15,
+        OnTest = BagresFarm.pertoDoFogo,
+        inputs
+        {
+            item 2 [Base.Tobacco;Base.TobaccoDried;Base.TobaccoLoose],
+            item 10 [Base.Ginseng],
+            item 1 [Base.Pot;Base.Saucepan] mode:keep,
+            item 1 [*],
+            -fluid 1.0 [Water],
+            item 1 [Base.EmptyJar],
+        }
+        outputs
+        {
+            item 5 Base.BF_Cafeina,
         }
     }
 }

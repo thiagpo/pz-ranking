@@ -68,4 +68,6 @@ module Base
             }
         }
     }
+
+    item BF_Cafeina { DisplayCategory = Farmacia, ItemType = base:normal, Weight = 0.01, Icon = PillsCaffeine, Tooltip = Tooltip_BF_Cafeina, WorldStaticModel = PillBottleGround, Tags = base:medical, }
 }

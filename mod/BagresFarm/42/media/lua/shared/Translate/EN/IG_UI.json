@@ -93,5 +93,7 @@
     "IGUI_BF_AbaDuracao": "Duration",
     "IGUI_BF_AbaPositivos": "Positive",
     "IGUI_BF_AbaNegativos": "Negative",
-    "IGUI_BF_L_curando": "curing the cold"
+    "IGUI_BF_L_curando": "curing the cold",
+    "IGUI_BF_L_tosse": "coughing",
+    "IGUI_BF_L_grito": "screams of pain"
 }

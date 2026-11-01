@@ -31,5 +31,6 @@
     "Base.BF_Laboratorio": "Lab Bench",
     "Base.BF_LivroHorta": "Medicinal Garden",
     "Base.BF_Resultado": "Anti-doping report",
-    "Base.BF_AlcoolIsopropilico": "Isopropyl Alcohol"
+    "Base.BF_AlcoolIsopropilico": "Isopropyl Alcohol",
+    "Base.BF_Cafeina": "Caffeine Pill"
 }
