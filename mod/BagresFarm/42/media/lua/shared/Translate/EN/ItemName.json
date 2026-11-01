@@ -21,5 +21,13 @@
     "Base.BF_RevistaAnalgesicos": "Painkillers Magazine",
     "Base.BF_RevistaEstimulantes": "Stimulants Magazine",
     "Base.BF_Benegripe": "Benegripe (Cold Remedy)",
-    "Base.BF_Lolo": "Lolo (Solvent Rag)"
+    "Base.BF_Lolo": "Lolo (Solvent Rag)",
+    "Base.BF_BenegripeForte": "Benegripe Forte",
+    "Base.BF_VitaminaC": "Homemade Vitamin C",
+    "Base.BF_Creatina": "Creatine",
+    "Base.BF_Whey": "Homemade Whey",
+    "Base.BF_KitAntidoping": "Anti-doping Kit",
+    "Base.BF_Vidraria": "Lab Glassware",
+    "Base.BF_Laboratorio": "Lab Bench",
+    "Base.BF_LivroHorta": "Medicinal Garden"
 }

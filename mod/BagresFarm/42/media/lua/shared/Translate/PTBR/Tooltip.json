@@ -12,5 +12,13 @@
     "Tooltip_BF_Metanfetamina": "6 h. Tira a distensão muscular rápido e cansa 50% menos. <LINE> Paranoia desde a 1ª dose. A partir da 3ª vicia: 24 h sem dose = abstinência (tristeza, estresse, cansaço). Limpa após 5 dias.",
     "Tooltip_BF_Tadala": "6 h. Alivia a distensão muscular. <LINE> Quando passa: tristeza extrema.",
     "Tooltip_BF_Benegripe": "Cura o resfriado na hora e impede pegar outro por 12 h.",
-    "Tooltip_BF_Lolo": "Pano com solvente, 5 cheiradas. Mata a vontade de fumar e alivia o estresse. <LINE> Causa enjoo e embriaguez."
+    "Tooltip_BF_Lolo": "Pano com solvente, 5 cheiradas. Mata a vontade de fumar e alivia o estresse. <LINE> Causa enjoo e embriaguez.",
+    "Tooltip_BF_BenegripeForte": "Cura o resfriado na hora e impede pegar outro por 36 h.",
+    "Tooltip_BF_VitaminaC": "6 h sem pegar resfriado e tira um pouco do cansaço. Mais fraca que a vitamina de farmácia.",
+    "Tooltip_BF_Creatina": "6 h. +50% de XP de Força ao treinar e lutar. Sem efeito colateral.",
+    "Tooltip_BF_Whey": "6 h. +50% de XP de Aptidão ao treinar e correr, e mata um pouco a fome. Sem efeito colateral.",
+    "Tooltip_BF_KitAntidoping": "Use em outro jogador (clique direito nele) para ver o que ele tomou nas últimas 48 h. Gasta o kit.",
+    "Tooltip_BF_Vidraria": "Frascos, mangueira e funil. Necessária para Morfina, Deca e Metanfetamina, e para montar a bancada.",
+    "Tooltip_BF_Laboratorio": "Bancada com microscópio. Morfina, Deca e Metanfetamina só podem ser preparadas a até 3 quadros dela.",
+    "Tooltip_BF_LivroHorta": "Ensina a época de plantio das ervas medicinais. Quem leu colhe uma erva a mais por planta e ganha XP de Farmácia."
 }

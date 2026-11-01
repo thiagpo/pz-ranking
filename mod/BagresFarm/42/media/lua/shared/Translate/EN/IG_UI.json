@@ -10,5 +10,22 @@
     "IGUI_BF_Abstinencia": "Withdrawal",
     "IGUI_BF_Arranhao": "Scratched your hand with the needle",
     "IGUI_BF_Corte": "Cut your hand with the needle",
-    "IGUI_BF_Laceracao": "Lacerated your arm with the needle"
+    "IGUI_BF_Laceracao": "Lacerated your arm with the needle",
+    "IGUI_BF_Overdose": "Overdose! Passed out",
+    "IGUI_BF_OverdoseAviso": "Warning: another dose within 2 h causes an overdose (faint)",
+    "IGUI_BF_Suja": "dirty",
+    "IGUI_BF_Vencido": "expired",
+    "IGUI_BF_ForaGeladeira": "Out of fridge",
+    "IGUI_BF_SeringaSujaAviso": "Made with a used syringe: infection risk",
+    "IGUI_BF_SeringaSujaZumbi": "The dirty syringe infected you...",
+    "IGUI_BF_SeringaSujaInfeccao": "The dirty syringe infected your arm",
+    "IGUI_BF_Ha": "ago:",
+    "IGUI_BF_TesteTitulo": "Anti-doping test: %1",
+    "IGUI_BF_TesteLimpo": "Clean in the last 48 h.",
+    "IGUI_BF_Painel": "Farms do Bagres: effects",
+    "IGUI_BF_Nada": "No active effect.",
+    "IGUI_BF_MoodDopado": "Dosed",
+    "IGUI_BF_MoodDopadoDesc": "%1 active drug effect(s). Click to view.",
+    "IGUI_BF_MoodRessacaDesc": "Drug after-effect. Click to view.",
+    "IGUI_BF_MoodAbstDesc": "Addiction kicking in: sadness, stress and tiredness until the next dose or until clean."
 }

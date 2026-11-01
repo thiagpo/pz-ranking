@@ -32,10 +32,14 @@ local LOOT = {
     MedicalOfficeBooks  = { { "BF_Livro1", 2 }, { "BF_Livro2", 1.5 }, { "BF_Livro3", 1 }, { "BF_Livro4", 0.7 }, { "BF_Livro5", 0.5 }, { "BF_RevistaAnalgesicos", 1 } },
     UniversityLibraryMedical = { { "BF_Livro1", 2 }, { "BF_Livro2", 1.5 }, { "BF_Livro3", 1 }, { "BF_Livro4", 0.7 }, { "BF_Livro5", 0.5 } },
     HospitalMagazineRack = { { "BF_RevistaEmagrecimento", 2 }, { "BF_RevistaAnalgesicos", 2 } },
-    GymSweatbands       = { { "BF_RevistaAnabolizantes", 1 } },
     DrugShackMisc       = { { "BF_RevistaEstimulantes", 2 } },
     BookstoreBooks      = { { "BF_Livro1", 0.5 }, { "BF_Livro2", 0.3 } },
     LibraryBooks        = { { "BF_Livro1", 0.5 }, { "BF_Livro2", 0.3 } },
+    PharmacyCosmetics   = { { "BF_VitaminaC", 2 }, { "BF_BenegripeForte", 1 }, { "BF_Creatina", 0.5 } },
+    GymSweatbands       = { { "BF_RevistaAnabolizantes", 1 }, { "BF_Whey", 1 }, { "BF_Creatina", 1 } },
+    MedicalOfficeDesk   = { { "BF_KitAntidoping", 1 }, { "BF_LivroHorta", 0.3 } },
+    LaboratoryLockers   = { { "BF_Vidraria", 1 }, { "BF_KitAntidoping", 1 } },
+    UniversityDesk_Medical = { { "BF_LivroHorta", 1 }, { "BF_KitAntidoping", 0.5 } },
     MagazineRackMixed   = { { "BF_RevistaEmagrecimento", 0.5 }, { "BF_RevistaAnabolizantes", 0.5 }, { "BF_RevistaEstimulantes", 0.5 } },
 }
 
@@ -53,6 +57,24 @@ local function loot()
     end
 end
 Events.OnPreDistributionMerge.Add(loot)
+
+-- horta medicinal: quem leu o livro colhe 1 erva a mais e ganha XP de Farmacia
+local ERVAS = { ["Base.PoppyPods"] = true, ["Base.Sage"] = true, ["Base.BlackSage"] = true, ["Base.Comfrey"] = true, ["Base.Plantain"] = true,
+                ["Base.WildGarlic2"] = true, ["Base.Chamomile"] = true, ["Base.Lavender"] = true, ["Base.Tobacco"] = true }
+Events.OnGameBoot.Add(function()
+    if not SFarmingSystem or BF.colheitaOk then return end
+    BF.colheitaOk = true
+    local orig = SFarmingSystem.harvest
+    SFarmingSystem.harvest = function(self, luaObject, player)
+        local props = farming_vegetableconf and farming_vegetableconf.props[luaObject.typeOfSeed]
+        orig(self, luaObject, player)
+        if props and player and ERVAS[props.vegetableName] and player:getKnownRecipes():contains("base:poppy growing season") then
+            local items = player:getInventory():AddItems(props.vegetableName, 1)
+            sendAddItemsToContainer(player:getInventory(), items)
+            if BF.PERK then player:getXp():AddXP(BF.PERK, 3) end
+        end
+    end
+end)
 
 -- uso de droga: registra no Bagres Stats quando ele estiver presente
 Events.OnClientCommand.Add(function(module, command, player, args)

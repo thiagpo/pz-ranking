@@ -21,5 +21,13 @@
     "Base.BF_RevistaAnalgesicos": "Revista Sem Dor: Analgésicos",
     "Base.BF_RevistaEstimulantes": "Revista Ligadão: Estimulantes",
     "Base.BF_Benegripe": "Benegripe",
-    "Base.BF_Lolo": "Loló"
+    "Base.BF_Lolo": "Loló",
+    "Base.BF_BenegripeForte": "Benegripe Forte",
+    "Base.BF_VitaminaC": "Vitamina C Caseira",
+    "Base.BF_Creatina": "Creatina",
+    "Base.BF_Whey": "Whey Caseiro",
+    "Base.BF_KitAntidoping": "Kit Antidoping",
+    "Base.BF_Vidraria": "Vidraria de Laboratório",
+    "Base.BF_Laboratorio": "Bancada de Laboratório",
+    "Base.BF_LivroHorta": "Horta Medicinal"
 }

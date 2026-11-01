@@ -581,7 +581,7 @@ const TITLES = [
   ['🐾','Rastreador','Tracking'],['🔫','Tá na Mira','Aiming'],['🏹','Arqueiro','Archery'],['🪓','Extrativista','Axe'],['🔱','Espartano','Spear'],['🔨','Martelo de Thor','SmallBlunt'],
   ['🏃','Bagre Corredor','Sprinting'],['🥷','Ninja','Sneak'],['💪','Mr. Olimpia','Strength'],['🎤','É hora do show porra!','@gainStr','níveis de força treinados'],['🏋️','Atleta virtual','Fitness'],['🛠️','Zelador','Maintenance'],
   ['👟','Andarilho','@km','km andados'],['💥','Quebra-tudo','@broken','armas quebradas'],['⏳','Sobrevivente','@bestHours','melhor vida'],['🌙','Massacre num dia','@daily','abates num dia'],['🧪','Cientista da base','@labN','receitas do laboratório'],
-  ['🐇','Zé Gordinho','@m.rabbits','coelhos abatidos'],['🥩','Carniceiro','@m.animals','animais abatidos'],['🐟','Pescador de verdade','@m.fish','peixes pescados'],['🌽','Colheita Feliz','@m.harvest','colheitas'],
+  ['🐇','Zé Gordinho','@m.rabbits','coelhos abatidos'],['🥩','Carniceiro','@m.animals','animais abatidos'],['💉','Bombado','@m.farmAnab','doses de anabolizante'],['⚗️','Farmacêutico','@m.farmCraft','remédios fabricados'],['🧪','Noia','@m.farmMeta','doses de metanfetamina'],['💊','Chapado','@m.farmTotal','doses no total'],['🐟','Pescador de verdade','@m.fish','peixes pescados'],['🌽','Colheita Feliz','@m.harvest','colheitas'],
   ['🔨','Artesão','@m.craft','itens fabricados'],['🪓','Lenhador de verdade','@m.trees','árvores derrubadas'],['📚','Nerdola','@m.books','livros lidos'],['🎒','Saqueador','@m.loot','itens saqueados'],
   ['🏚️','Explorador','@m.buildings','prédios visitados'],['🗺️','Viajante','@m.towns','cidades visitadas'],['🧭','Wilsommmm','@m.maxdist','quadros da base'],['🌧️','Molhadinho','@m.rain','na chuva e neve'],['🦉','Perigos Noturnos','@m.night','fora de casa à noite'],['🔥','Primitivo','@m.fire','fogueiras acesas']
 ];
@@ -608,7 +608,7 @@ function prep(d){
     // contadores do mod Bagres Stats (chave=valor); derivados usados por titulos e conquistas
     p.skStart=p.skillsStart||{}; p.gainStr=Math.max(0,(p.skCur.Strength||0)-(p.skStart.Strength!=null?p.skStart.Strength:(p.skCur.Strength||0)));
     const M=p.mod||{};
-    const derive=M=>({kills:M['kills']||0,rabbits:M['animals.killed.rabbit']||0,animals:M['animals.killed']||0,butcher:M['animals.butchered']||0,milk:M['animals.milked']||0,eggs:M['animals.eggs']||0,
+    const derive=M=>({farmAnab:(M['farm.Deca']||0)+(M['farm.Trembolona']||0),farmMeta:M['farm.Metanfetamina']||0,farmTotal:M['farm.total']||0,farmCraft:Object.entries(M).filter(([k])=>k.startsWith('craft.BF_')).reduce((a,[,v])=>a+v,0),kills:M['kills']||0,rabbits:M['animals.killed.rabbit']||0,animals:M['animals.killed']||0,butcher:M['animals.butchered']||0,milk:M['animals.milked']||0,eggs:M['animals.eggs']||0,
       fish:M['fish']||0,fishmax:M['fish.maxsize']||0,harvest:M['farming.harvest']||0,sow:M['farming.sow']||0,water:M['farming.water']||0,forage:M['forage']||0,craft:M['craft']||0,
       trees:M['trees.cut']||0,books:M['books']||0,loot:M['loot.items']||0,containers:M['loot.containers']||0,fire:M['fire.lit']||0,buried:M['corpses.buried']||0,
       vehicle:(M['vehicle.install']||0)+(M['vehicle.engine']||0)+(M['vehicle.fix']||0),repair:(M['repair.items']||0)+(M['repair.generator']||0),

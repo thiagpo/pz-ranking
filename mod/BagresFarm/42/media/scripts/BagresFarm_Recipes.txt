@@ -32,6 +32,7 @@ module Base
         inputs
         {
             item 1 [Base.BF_SeringaUsada],
+            item 1 [*],
             -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
         }
         outputs
@@ -52,9 +53,10 @@ module Base
         OnCreate = BagresFarm.aoCriar,
         inputs
         {
-            item 1 [Base.BF_SeringaVazia],
+            item 1 [Base.BF_SeringaVazia;Base.BF_SeringaUsada],
             item 2 [Base.Ginseng],
             item 1 [Base.Pills],
+            item 1 [*],
             -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
         }
         outputs
@@ -75,10 +77,11 @@ module Base
         OnCreate = BagresFarm.aoCriar,
         inputs
         {
-            item 1 [Base.BF_SeringaVazia],
+            item 1 [Base.BF_SeringaVazia;Base.BF_SeringaUsada],
             item 3 [Base.Ginseng],
             item 1 [Base.LemonGrass],
             item 1 [Base.PillsVitamins],
+            item 1 [*],
             -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
         }
         outputs
@@ -99,9 +102,10 @@ module Base
         OnCreate = BagresFarm.aoCriar,
         inputs
         {
-            item 1 [Base.BF_SeringaVazia],
+            item 1 [Base.BF_SeringaVazia;Base.BF_SeringaUsada],
             item 2 [Base.Egg],
             item 1 [Base.PillsVitamins],
+            item 1 [*],
             -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
         }
         outputs
@@ -120,12 +124,15 @@ module Base
         SkillRequired = Pharmacy:6,
         xpAward = Pharmacy:40,
         OnCreate = BagresFarm.aoCriar,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
-            item 1 [Base.BF_SeringaVazia],
+            item 1 [Base.BF_Vidraria] mode:keep,
+            item 1 [Base.BF_SeringaVazia;Base.BF_SeringaUsada],
             item 3 [Base.Egg],
             item 1 [Base.Ginseng],
             item 1 [Base.PillsVitamins],
+            item 1 [*],
             -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
         }
         outputs
@@ -144,11 +151,14 @@ module Base
         SkillRequired = Pharmacy:5,
         xpAward = Pharmacy:35,
         OnCreate = BagresFarm.aoCriar,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
-            item 1 [Base.BF_SeringaVazia],
+            item 1 [Base.BF_Vidraria] mode:keep,
+            item 1 [Base.BF_SeringaVazia;Base.BF_SeringaUsada],
             item 3 [Base.PoppyPods;Base.PoppyPodsDried],
             item 1 [Base.Pills],
+            item 1 [*],
             -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
         }
         outputs
@@ -169,10 +179,11 @@ module Base
         OnCreate = BagresFarm.aoCriar,
         inputs
         {
-            item 1 [Base.BF_SeringaVazia],
+            item 1 [Base.BF_SeringaVazia;Base.BF_SeringaUsada],
             item 2 [Base.Tobacco;Base.TobaccoDried;Base.TobaccoLoose],
             item 1 [Base.PillsBeta],
             item 1 [Base.LemonGrass],
+            item 1 [*],
             -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
         }
         outputs
@@ -237,12 +248,15 @@ module Base
         SkillRequired = Pharmacy:7,
         xpAward = Pharmacy:50,
         OnCreate = BagresFarm.aoCriar,
+        OnTest = BagresFarm.pertoDoLab,
         inputs
         {
+            item 1 [Base.BF_Vidraria] mode:keep,
             item 1 tags[base:mortarpestle] mode:keep,
             item 2 [Base.PillsBeta],
             item 1 [Base.Battery],
             item 1 [Base.Charcoal;Base.CharcoalCrafted],
+            item 1 [*],
             -fluid 0.1 [Bleach],
         }
         outputs
@@ -310,6 +324,7 @@ module Base
         {
             item 1 [Base.RippedSheets],
             item 1 [Base.Glue],
+            item 1 [*],
             -fluid 0.1 [RubbingAlcohol;Petrol;CleaningLiquid],
         }
         outputs
@@ -453,6 +468,214 @@ module Base
         outputs
         {
             item 1 Base.Antibiotics,
+        }
+    }
+
+
+    craftRecipe BF_EsterilizarSeringaAguaSanitaria
+    {
+        timedAction = ApplyAlcohol,
+        time = 40,
+        NeedToBeLearn = false,
+        Tags = InHandCraft;Health,
+        category = Medical,
+        xpAward = Pharmacy:3,
+        inputs
+        {
+            item 1 [Base.BF_SeringaUsada],
+            item 1 [*],
+            -fluid 0.05 [Bleach;CleaningLiquid],
+        }
+        outputs
+        {
+            item 1 Base.BF_SeringaVazia,
+        }
+    }
+
+    craftRecipe BF_EsterilizarSeringaFogo
+    {
+        timedAction = Making,
+        time = 60,
+        NeedToBeLearn = false,
+        Tags = InHandCraft;Health,
+        category = Medical,
+        xpAward = Pharmacy:3,
+        inputs
+        {
+            item 1 [Base.BF_SeringaUsada],
+            item 1 [Base.Lighter;Base.LighterDisposable;Base.Matches;Base.Matchbox],
+        }
+        outputs
+        {
+            item 1 Base.BF_SeringaVazia,
+        }
+    }
+
+    craftRecipe BF_MakeBenegripeForte
+    {
+        timedAction = MixingMortarPestle,
+        time = 120,
+        NeedToBeLearn = true,
+        AutoLearnAny = Pharmacy:4,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:4,
+        xpAward = Pharmacy:25,
+        OnCreate = BagresFarm.aoCriar,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep,
+            item 3 [Base.WildGarlic2;Base.Garlic],
+            item 2 [Base.Rosehips],
+            item 1 [Base.Ginseng],
+            item 1 [Base.Sugar;Base.SugarBrown],
+        }
+        outputs
+        {
+            item 4 Base.BF_BenegripeForte,
+        }
+    }
+
+    craftRecipe BF_MakeVitaminaC
+    {
+        timedAction = MixingMortarPestle,
+        time = 90,
+        NeedToBeLearn = true,
+        AutoLearnAny = Pharmacy:1,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:1,
+        xpAward = Pharmacy:10,
+        OnCreate = BagresFarm.aoCriar,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep,
+            item 3 [Base.Rosehips],
+            item 1 [Base.Violets;Base.Dandelions],
+            item 1 [Base.Sugar;Base.SugarBrown],
+        }
+        outputs
+        {
+            item 4 Base.BF_VitaminaC,
+        }
+    }
+
+    craftRecipe BF_MakeCreatina
+    {
+        timedAction = MixingMortarPestle,
+        time = 120,
+        NeedToBeLearn = true,
+        AutoLearnAny = Pharmacy:2,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:2,
+        xpAward = Pharmacy:15,
+        OnCreate = BagresFarm.aoCriar,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep,
+            item 2 [Base.Egg],
+            item 1 [Base.Salt],
+            item 1 [Base.Sugar;Base.SugarBrown],
+        }
+        outputs
+        {
+            item 4 Base.BF_Creatina,
+        }
+    }
+
+    craftRecipe BF_MakeWhey
+    {
+        timedAction = MixingBowl,
+        time = 90,
+        NeedToBeLearn = true,
+        AutoLearnAny = Pharmacy:1,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:1,
+        xpAward = Pharmacy:10,
+        OnCreate = BagresFarm.aoCriar,
+        inputs
+        {
+            item 1 [*],
+            -fluid 0.3 [CowMilk;AnimalMilk;SheepMilk],
+            item 1 [Base.Egg],
+            item 1 [Base.Sugar;Base.SugarBrown],
+        }
+        outputs
+        {
+            item 2 Base.BF_Whey,
+        }
+    }
+
+    craftRecipe BF_MakeKitAntidoping
+    {
+        timedAction = Making,
+        time = 120,
+        NeedToBeLearn = true,
+        AutoLearnAny = Pharmacy:3,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:3,
+        xpAward = Pharmacy:15,
+        inputs
+        {
+            item 1 [Base.BF_SeringaVazia],
+            item 1 [Base.CottonBalls],
+            item 1 [Base.SheetPaper2],
+            item 1 [Base.Tweezers] mode:keep,
+        }
+        outputs
+        {
+            item 1 Base.BF_KitAntidoping,
+        }
+    }
+
+    craftRecipe BF_MakeVidraria
+    {
+        timedAction = Making,
+        time = 150,
+        NeedToBeLearn = true,
+        AutoLearnAny = Pharmacy:3,
+        Tags = AnySurfaceCraft,
+        category = Medical,
+        SkillRequired = Pharmacy:3,
+        xpAward = Pharmacy:20,
+        inputs
+        {
+            item 1 [Base.Flask],
+            item 1 [Base.GlassJar;Base.EmptyJar],
+            item 1 [Base.RubberHose],
+            item 1 [Base.Funnel],
+        }
+        outputs
+        {
+            item 1 Base.BF_Vidraria,
+        }
+    }
+
+    craftRecipe BF_MakeLaboratorio
+    {
+        timedAction = Making,
+        time = 300,
+        NeedToBeLearn = true,
+        AutoLearnAny = Pharmacy:5,
+        Tags = AnySurfaceCraft,
+        category = Medical,
+        SkillRequired = Pharmacy:5,
+        xpAward = Pharmacy:50,
+        inputs
+        {
+            item 1 [Base.BF_Vidraria],
+            item 4 [Base.Plank],
+            item 4 [Base.Nails],
+            item 1 [Base.Hammer] mode:keep,
+            item 1 [Base.Scalpel],
+            item 1 [Base.Tweezers],
+        }
+        outputs
+        {
+            item 1 Base.BF_Laboratorio,
         }
     }
 }

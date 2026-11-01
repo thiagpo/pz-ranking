@@ -36,4 +36,15 @@ module Base
     /* novos */
     item BF_Benegripe { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.01, Icon = BF_Benegripe, Tooltip = Tooltip_BF_Benegripe, WorldStaticModel = PillBottleGround, Tags = base:medical, }
     item BF_Lolo { DisplayCategory = Junk, ItemType = base:drainable, Weight = 0.2, Icon = BF_Lolo, Tooltip = Tooltip_BF_Lolo, UseDelta = 0.2, UseWhileEquipped = false, WorldStaticModel = CorrectionFluid, Tags = base:consumable, }
+
+
+    /* 1.1 */
+    item BF_BenegripeForte { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.01, Icon = BF_BenegripeForte, Tooltip = Tooltip_BF_BenegripeForte, WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_VitaminaC { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.01, Icon = BF_VitaminaC, Tooltip = Tooltip_BF_VitaminaC, WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Creatina { DisplayCategory = Food, ItemType = base:normal, Weight = 0.05, Icon = BF_Creatina, Tooltip = Tooltip_BF_Creatina, WorldStaticModel = PillBottleGround, }
+    item BF_Whey { DisplayCategory = Food, ItemType = base:normal, Weight = 0.3, Icon = BF_Whey, Tooltip = Tooltip_BF_Whey, WorldStaticModel = PillBottleGround, }
+    item BF_KitAntidoping { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.2, Icon = BF_KitAntidoping, Tooltip = Tooltip_BF_KitAntidoping, WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Vidraria { DisplayCategory = Tool, ItemType = base:normal, Weight = 1.5, Icon = BF_Vidraria, Tooltip = Tooltip_BF_Vidraria, WorldStaticModel = PillBottleGround, }
+    item BF_Laboratorio { DisplayCategory = Furniture, ItemType = base:moveable, Weight = 12.0, Icon = BF_Laboratorio, Tooltip = Tooltip_BF_Laboratorio, WorldObjectSprite = location_community_medical_01_136, }
+    item BF_LivroHorta { DisplayCategory = RecipeResource, ItemType = base:literature, Weight = 0.8, Icon = BF_LivroHorta, BoredomChange = -30, StressChange = -20, LearnedRecipes = base:poppy growing season;base:sage growing season;base:black sage growing season;base:comfrey growing season;base:broadleaf plantain growing season;base:wild garlic growing season;base:chamomile growing season;base:lavender growing season;base:tobacco growing season, StaticModel = BookLightBlue, WorldStaticModel = BookLightBlue_Ground, }
 }

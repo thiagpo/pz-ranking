@@ -10,5 +10,22 @@
     "IGUI_BF_Abstinencia": "Abstinência",
     "IGUI_BF_Arranhao": "Arranhou a mão com a agulha",
     "IGUI_BF_Corte": "Cortou a mão com a agulha",
-    "IGUI_BF_Laceracao": "Lacerou o braço com a agulha"
+    "IGUI_BF_Laceracao": "Lacerou o braço com a agulha",
+    "IGUI_BF_Overdose": "Overdose! Desmaiou",
+    "IGUI_BF_OverdoseAviso": "Cuidado: outra dose em menos de 2 h causa overdose (desmaio)",
+    "IGUI_BF_Suja": "suja",
+    "IGUI_BF_Vencido": "vencido",
+    "IGUI_BF_ForaGeladeira": "Fora da geladeira",
+    "IGUI_BF_SeringaSujaAviso": "Preparado com seringa usada: risco de infecção",
+    "IGUI_BF_SeringaSujaZumbi": "A seringa suja te infectou...",
+    "IGUI_BF_SeringaSujaInfeccao": "A seringa suja infeccionou o braço",
+    "IGUI_BF_Ha": "há",
+    "IGUI_BF_TesteTitulo": "Teste antidoping: %1",
+    "IGUI_BF_TesteLimpo": "Limpo nas últimas 48 h.",
+    "IGUI_BF_Painel": "Farms do Bagres: efeitos",
+    "IGUI_BF_Nada": "Nenhum efeito ativo.",
+    "IGUI_BF_MoodDopado": "Dopado",
+    "IGUI_BF_MoodDopadoDesc": "%1 efeito(s) de remédio ativos. Clique para ver.",
+    "IGUI_BF_MoodRessacaDesc": "Efeito posterior de remédio. Clique para ver.",
+    "IGUI_BF_MoodAbstDesc": "Vício cobrando: tristeza, estresse e cansaço até a próxima dose ou até limpar."
 }

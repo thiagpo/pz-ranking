@@ -12,5 +12,13 @@
     "Tooltip_BF_Metanfetamina": "6 h. Removes muscle strain fast and tires 50% less. <LINE> Paranoia from the 1st dose. From the 3rd dose it is addictive: 24 h without a dose = withdrawal. Clean after 5 days.",
     "Tooltip_BF_Tadala": "6 h. Relieves muscle strain. <LINE> Afterwards: extreme sadness.",
     "Tooltip_BF_Benegripe": "Cures a cold instantly and prevents a new one for 12 h.",
-    "Tooltip_BF_Lolo": "Solvent-soaked rag, 5 sniffs. Kills nicotine craving and relieves stress. <LINE> Causes nausea and drunkenness."
+    "Tooltip_BF_Lolo": "Solvent-soaked rag, 5 sniffs. Kills nicotine craving and relieves stress. <LINE> Causes nausea and drunkenness.",
+    "Tooltip_BF_BenegripeForte": "Cures a cold instantly and prevents a new one for 36 h.",
+    "Tooltip_BF_VitaminaC": "6 h cold protection and a little less tiredness. Weaker than pharmacy vitamins.",
+    "Tooltip_BF_Creatina": "6 h. +50% Strength XP. No side effects.",
+    "Tooltip_BF_Whey": "6 h. +50% Fitness XP and reduces hunger a bit. No side effects.",
+    "Tooltip_BF_KitAntidoping": "Use on another player (right click them) to see what they took in the last 48 h. Consumes the kit.",
+    "Tooltip_BF_Vidraria": "Flasks, hose and funnel. Needed for Morphine, Deca and Meth, and to build the lab bench.",
+    "Tooltip_BF_Laboratorio": "Bench with microscope. Morphine, Deca and Meth can only be prepared within 3 tiles of it.",
+    "Tooltip_BF_LivroHorta": "Teaches the growing seasons of medicinal herbs. Readers harvest one extra herb per plant and earn Pharmacy XP."
 }
