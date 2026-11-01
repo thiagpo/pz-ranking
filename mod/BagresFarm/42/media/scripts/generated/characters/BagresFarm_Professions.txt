@@ -1,0 +1,13 @@
+module BagresFarm
+{
+    character_profession_definition bagresfarm:farmaceutico
+    {
+        CharacterProfession = bagresfarm:farmaceutico,
+        Cost = 0,
+        UIName = UI_prof_Farmaceutico,
+        UIDescription = UI_prof_FarmaceuticoDesc,
+        IconPathName = profession_farmaceutico,
+        XPBoosts = Pharmacy=3;Doctor=2,
+        GrantedRecipes = BF_MakeOzempic;BF_MakeDipirona;BF_MakeRebite;BF_MakeBenegripe;BF_MakePainkillers;BF_MakeVitamins,
+    }
+}

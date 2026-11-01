@@ -1,0 +1,14 @@
+module BagresFarm
+{
+    character_trait_definition bagresfarm:conhecimentosfarmaco
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = false,
+        CharacterTrait = bagresfarm:conhecimentosfarmaco,
+        Cost = 3,
+        UIName = UI_trait_ConhecimentosFarmaco,
+        UIDescription = UI_trait_ConhecimentosFarmacoDesc,
+        XPBoosts = Pharmacy=1,
+        GrantedRecipes = BF_MakeVitamins;BF_MakeDipirona,
+    }
+}

@@ -1,0 +1,16 @@
+{
+    "Tooltip_BF_SeringaVazia": "Clean syringe. Base for every injectable.",
+    "Tooltip_BF_SeringaUsada": "Must be sterilized with alcohol before reuse.",
+    "Tooltip_BF_Monjaro": "24 h. Faster weight loss, 30% less hunger. <LINE> Side effect: tires 25% faster.",
+    "Tooltip_BF_Ozempic": "24 h. Faster weight loss, 20% less hunger. <LINE> Side effect: tires 15% faster.",
+    "Tooltip_BF_Deca": "48 h. +15% strength (carry weight and melee damage). <LINE> Side effect: hunger 40% faster.",
+    "Tooltip_BF_Trembolona": "36 h. +10% strength (carry weight and melee damage). <LINE> Side effect: hunger 30% faster.",
+    "Tooltip_BF_Morfina": "8 h. Cuts 80% of pain and relieves muscle strain. <LINE> From the 3rd dose: paranoia (phantom zombie sounds) and growing depression.",
+    "Tooltip_BF_Adrenalina": "1 h. Near infinite stamina, keen hearing, cuts panic. <LINE> Afterwards: extreme tiredness and, for 2 h, cuts bleed 50% more.",
+    "Tooltip_BF_Rebite": "6 h. Tires 80% less. <LINE> Afterwards: for 6 h sleep recovers only half the tiredness.",
+    "Tooltip_BF_Dipirona": "4 h. Relieves muscle strain and 30% of pain.",
+    "Tooltip_BF_Metanfetamina": "6 h. Removes muscle strain fast and tires 50% less. <LINE> Paranoia from the 1st dose. From the 3rd dose it is addictive: 24 h without a dose = withdrawal. Clean after 5 days.",
+    "Tooltip_BF_Tadala": "6 h. Relieves muscle strain. <LINE> Afterwards: extreme sadness.",
+    "Tooltip_BF_Benegripe": "Cures a cold instantly and prevents a new one for 12 h.",
+    "Tooltip_BF_Lolo": "Solvent-soaked rag, 5 sniffs. Kills nicotine craving and relieves stress. <LINE> Causes nausea and drunkenness."
+}

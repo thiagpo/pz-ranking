@@ -1,0 +1,458 @@
+module Base
+{
+
+    craftRecipe BF_MakeSeringa
+    {
+        timedAction = Making,
+        time = 60,
+        NeedToBeLearn = false,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        xpAward = Pharmacy:5,
+        inputs
+        {
+            item 1 [Base.Pen;Base.BluePen;Base.RedPen;Base.GreenPen],
+            item 1 [Base.Needle;Base.SutureNeedle],
+            item 1 [Base.RubberBand],
+        }
+        outputs
+        {
+            item 1 Base.BF_SeringaVazia,
+        }
+    }
+
+    craftRecipe BF_EsterilizarSeringa
+    {
+        timedAction = ApplyAlcohol,
+        time = 40,
+        NeedToBeLearn = false,
+        Tags = InHandCraft;Health,
+        category = Medical,
+        xpAward = Pharmacy:3,
+        inputs
+        {
+            item 1 [Base.BF_SeringaUsada],
+            -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
+        }
+        outputs
+        {
+            item 1 Base.BF_SeringaVazia,
+        }
+    }
+
+    craftRecipe BF_MakeOzempic
+    {
+        timedAction = Making,
+        time = 120,
+        NeedToBeLearn = true,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:1,
+        xpAward = Pharmacy:15,
+        OnCreate = BagresFarm.aoCriar,
+        inputs
+        {
+            item 1 [Base.BF_SeringaVazia],
+            item 2 [Base.Ginseng],
+            item 1 [Base.Pills],
+            -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
+        }
+        outputs
+        {
+            item 1 Base.BF_Ozempic,
+        }
+    }
+
+    craftRecipe BF_MakeMonjaro
+    {
+        timedAction = Making,
+        time = 150,
+        NeedToBeLearn = true,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:4,
+        xpAward = Pharmacy:30,
+        OnCreate = BagresFarm.aoCriar,
+        inputs
+        {
+            item 1 [Base.BF_SeringaVazia],
+            item 3 [Base.Ginseng],
+            item 1 [Base.LemonGrass],
+            item 1 [Base.PillsVitamins],
+            -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
+        }
+        outputs
+        {
+            item 1 Base.BF_Monjaro,
+        }
+    }
+
+    craftRecipe BF_MakeTrembolona
+    {
+        timedAction = Making,
+        time = 150,
+        NeedToBeLearn = true,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:3,
+        xpAward = Pharmacy:25,
+        OnCreate = BagresFarm.aoCriar,
+        inputs
+        {
+            item 1 [Base.BF_SeringaVazia],
+            item 2 [Base.Egg],
+            item 1 [Base.PillsVitamins],
+            -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
+        }
+        outputs
+        {
+            item 1 Base.BF_Trembolona,
+        }
+    }
+
+    craftRecipe BF_MakeDeca
+    {
+        timedAction = Making,
+        time = 180,
+        NeedToBeLearn = true,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:6,
+        xpAward = Pharmacy:40,
+        OnCreate = BagresFarm.aoCriar,
+        inputs
+        {
+            item 1 [Base.BF_SeringaVazia],
+            item 3 [Base.Egg],
+            item 1 [Base.Ginseng],
+            item 1 [Base.PillsVitamins],
+            -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
+        }
+        outputs
+        {
+            item 1 Base.BF_Deca,
+        }
+    }
+
+    craftRecipe BF_MakeMorfina
+    {
+        timedAction = Making,
+        time = 180,
+        NeedToBeLearn = true,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:5,
+        xpAward = Pharmacy:35,
+        OnCreate = BagresFarm.aoCriar,
+        inputs
+        {
+            item 1 [Base.BF_SeringaVazia],
+            item 3 [Base.PoppyPods;Base.PoppyPodsDried],
+            item 1 [Base.Pills],
+            -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
+        }
+        outputs
+        {
+            item 1 Base.BF_Morfina,
+        }
+    }
+
+    craftRecipe BF_MakeAdrenalina
+    {
+        timedAction = Making,
+        time = 150,
+        NeedToBeLearn = true,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:4,
+        xpAward = Pharmacy:30,
+        OnCreate = BagresFarm.aoCriar,
+        inputs
+        {
+            item 1 [Base.BF_SeringaVazia],
+            item 2 [Base.Tobacco;Base.TobaccoDried;Base.TobaccoLoose],
+            item 1 [Base.PillsBeta],
+            item 1 [Base.LemonGrass],
+            -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
+        }
+        outputs
+        {
+            item 1 Base.BF_Adrenalina,
+        }
+    }
+
+    craftRecipe BF_MakeRebite
+    {
+        timedAction = MixingMortarPestle,
+        time = 120,
+        NeedToBeLearn = true,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:2,
+        xpAward = Pharmacy:20,
+        OnCreate = BagresFarm.aoCriar,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep,
+            item 2 [Base.Tobacco;Base.TobaccoDried;Base.TobaccoLoose],
+            item 1 [Base.Coffee2],
+            item 1 [Base.Sugar;Base.SugarBrown],
+        }
+        outputs
+        {
+            item 4 Base.BF_Rebite,
+        }
+    }
+
+    craftRecipe BF_MakeDipirona
+    {
+        timedAction = MixingMortarPestle,
+        time = 90,
+        NeedToBeLearn = true,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:1,
+        xpAward = Pharmacy:10,
+        OnCreate = BagresFarm.aoCriar,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep,
+            item 2 [Base.Plantain;Base.PlantainDried],
+            item 1 [Base.Pills],
+            item 1 [Base.Salt],
+        }
+        outputs
+        {
+            item 4 Base.BF_Dipirona,
+        }
+    }
+
+    craftRecipe BF_MakeMetanfetamina
+    {
+        timedAction = MixingMortarPestle,
+        time = 240,
+        NeedToBeLearn = true,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:7,
+        xpAward = Pharmacy:50,
+        OnCreate = BagresFarm.aoCriar,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep,
+            item 2 [Base.PillsBeta],
+            item 1 [Base.Battery],
+            item 1 [Base.Charcoal;Base.CharcoalCrafted],
+            -fluid 0.1 [Bleach],
+        }
+        outputs
+        {
+            item 4 Base.BF_Metanfetamina,
+        }
+    }
+
+    craftRecipe BF_MakeTadala
+    {
+        timedAction = MixingMortarPestle,
+        time = 120,
+        NeedToBeLearn = true,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:3,
+        xpAward = Pharmacy:20,
+        OnCreate = BagresFarm.aoCriar,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep,
+            item 2 [Base.Ginseng],
+            item 1 [Base.Sugar;Base.SugarBrown],
+            item 1 [Base.Pills],
+        }
+        outputs
+        {
+            item 4 Base.BF_Tadala,
+        }
+    }
+
+
+    craftRecipe BF_MakeBenegripe
+    {
+        timedAction = MixingMortarPestle,
+        time = 90,
+        NeedToBeLearn = true,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:2,
+        xpAward = Pharmacy:15,
+        OnCreate = BagresFarm.aoCriar,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep,
+            item 2 [Base.WildGarlic2;Base.Garlic],
+            item 1 [Base.Rosehips;Base.LemonGrass],
+            item 1 [Base.Sugar;Base.SugarBrown],
+        }
+        outputs
+        {
+            item 4 Base.BF_Benegripe,
+        }
+    }
+
+    craftRecipe BF_MakeLolo
+    {
+        timedAction = Making,
+        time = 60,
+        NeedToBeLearn = false,
+        Tags = AnySurfaceCraft,
+        category = Medical,
+        xpAward = Pharmacy:3,
+        inputs
+        {
+            item 1 [Base.RippedSheets],
+            item 1 [Base.Glue],
+            -fluid 0.1 [RubbingAlcohol;Petrol;CleaningLiquid],
+        }
+        outputs
+        {
+            item 1 Base.BF_Lolo,
+        }
+    }
+
+    craftRecipe BF_MakeVitamins
+    {
+        timedAction = MixingMortarPestle,
+        time = 90,
+        NeedToBeLearn = true,
+        AutoLearnAny = Pharmacy:1,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:1,
+        xpAward = Pharmacy:10,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep,
+            item 2 [Base.Rosehips],
+            item 1 [Base.Dandelions;Base.Nettles],
+            item 1 [Base.Sugar;Base.SugarBrown],
+        }
+        outputs
+        {
+            item 1 Base.PillsVitamins,
+        }
+    }
+
+    craftRecipe BF_MakePainkillers
+    {
+        timedAction = MixingMortarPestle,
+        time = 120,
+        NeedToBeLearn = true,
+        AutoLearnAny = Pharmacy:2,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:2,
+        xpAward = Pharmacy:15,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep,
+            item 2 [Base.PoppyPods;Base.PoppyPodsDried],
+            item 1 [Base.Plantain;Base.PlantainDried],
+            item 1 [Base.Sugar;Base.SugarBrown],
+        }
+        outputs
+        {
+            item 1 Base.Pills,
+        }
+    }
+
+    craftRecipe BF_MakeSleepingTablets
+    {
+        timedAction = MixingMortarPestle,
+        time = 120,
+        NeedToBeLearn = true,
+        AutoLearnAny = Pharmacy:3,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:3,
+        xpAward = Pharmacy:20,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep,
+            item 2 [Base.Chamomile;Base.Lavender],
+            item 1 [Base.PoppyPods;Base.PoppyPodsDried],
+            item 1 [Base.Sugar;Base.SugarBrown],
+        }
+        outputs
+        {
+            item 1 Base.PillsSleepingTablets,
+        }
+    }
+
+    craftRecipe BF_MakeBetaBlockers
+    {
+        timedAction = MixingMortarPestle,
+        time = 120,
+        NeedToBeLearn = true,
+        AutoLearnAny = Pharmacy:4,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:4,
+        xpAward = Pharmacy:25,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep,
+            item 2 [Base.Sage;Base.SageDried;Base.BlackSage;Base.BlackSageDried],
+            item 1 [Base.LemonGrass],
+            item 1 [Base.Sugar;Base.SugarBrown],
+        }
+        outputs
+        {
+            item 1 Base.PillsBeta,
+        }
+    }
+
+    craftRecipe BF_MakeAntidepressants
+    {
+        timedAction = MixingMortarPestle,
+        time = 150,
+        NeedToBeLearn = true,
+        AutoLearnAny = Pharmacy:5,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:5,
+        xpAward = Pharmacy:30,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep,
+            item 2 [Base.Ginseng],
+            item 1 [Base.Violets;Base.Lavender],
+            item 1 [Base.Sugar;Base.SugarBrown],
+        }
+        outputs
+        {
+            item 1 Base.PillsAntiDep,
+        }
+    }
+
+    craftRecipe BF_MakeAntibiotics
+    {
+        timedAction = MixingMortarPestle,
+        time = 180,
+        NeedToBeLearn = true,
+        AutoLearnAny = Pharmacy:6,
+        Tags = AnySurfaceCraft;Health,
+        category = Medical,
+        SkillRequired = Pharmacy:6,
+        xpAward = Pharmacy:40,
+        inputs
+        {
+            item 1 tags[base:mortarpestle] mode:keep,
+            item 2 [Base.WildGarlic2;Base.Garlic],
+            item 1 [Base.MushroomGeneric1;Base.MushroomGeneric2;Base.MushroomGeneric3;Base.MushroomGeneric4;Base.MushroomGeneric5;Base.MushroomGeneric6;Base.MushroomGeneric7],
+            item 1 [Base.Honey],
+        }
+        outputs
+        {
+            item 1 Base.Antibiotics,
+        }
+    }
+}

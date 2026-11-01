@@ -1,0 +1,16 @@
+{
+    "Tooltip_BF_SeringaVazia": "Seringa limpa. Base de todos os injetáveis da farmácia.",
+    "Tooltip_BF_SeringaUsada": "Precisa ser esterilizada com álcool antes de usar de novo.",
+    "Tooltip_BF_Monjaro": "24 h. Perde peso mais rápido e sente 30% menos fome. <LINE> Efeito colateral: cansa 25% mais rápido.",
+    "Tooltip_BF_Ozempic": "24 h. Perde peso mais rápido e sente 20% menos fome. <LINE> Efeito colateral: cansa 15% mais rápido.",
+    "Tooltip_BF_Deca": "48 h. +15% de força (carga e dano corpo a corpo). <LINE> Efeito colateral: comilão, fome 40% mais rápida.",
+    "Tooltip_BF_Trembolona": "36 h. +10% de força (carga e dano corpo a corpo). <LINE> Efeito colateral: comilão, fome 30% mais rápida.",
+    "Tooltip_BF_Morfina": "8 h. Corta 80% da dor e alivia a distensão muscular. <LINE> A partir da 3ª dose: paranoia (ouve zumbis que não existem) e depressão crescente.",
+    "Tooltip_BF_Adrenalina": "1 h. Fôlego quase infinito para correr, audição aguçada e corta o pânico. <LINE> Quando passa: cansaço extremo e, por 2 h, cortes sangram 50% mais.",
+    "Tooltip_BF_Rebite": "6 h. Cansa 80% menos. <LINE> Quando passa: pelas 6 h seguintes o sono recupera só metade do cansaço.",
+    "Tooltip_BF_Dipirona": "4 h. Alivia a distensão muscular e 30% da dor.",
+    "Tooltip_BF_Metanfetamina": "6 h. Tira a distensão muscular rápido e cansa 50% menos. <LINE> Paranoia desde a 1ª dose. A partir da 3ª vicia: 24 h sem dose = abstinência (tristeza, estresse, cansaço). Limpa após 5 dias.",
+    "Tooltip_BF_Tadala": "6 h. Alivia a distensão muscular. <LINE> Quando passa: tristeza extrema.",
+    "Tooltip_BF_Benegripe": "Cura o resfriado na hora e impede pegar outro por 12 h.",
+    "Tooltip_BF_Lolo": "Pano com solvente, 5 cheiradas. Mata a vontade de fumar e alivia o estresse. <LINE> Causa enjoo e embriaguez."
+}

@@ -1,0 +1,39 @@
+module Base
+{
+
+    /* seringas */
+    item BF_SeringaVazia { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_SeringaVazia, Tooltip = Tooltip_BF_SeringaVazia, WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_SeringaUsada { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_SeringaUsada, Tooltip = Tooltip_BF_SeringaUsada, WorldStaticModel = PillBottleGround, Tags = base:medical, }
+
+    /* injetaveis */
+    item BF_Monjaro    { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Monjaro,    Tooltip = Tooltip_BF_Monjaro,    WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Ozempic    { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Ozempic,    Tooltip = Tooltip_BF_Ozempic,    WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Deca       { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Deca,       Tooltip = Tooltip_BF_Deca,       WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Trembolona { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Trembolona, Tooltip = Tooltip_BF_Trembolona, WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Morfina    { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Morfina,    Tooltip = Tooltip_BF_Morfina,    WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Adrenalina { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Adrenalina, Tooltip = Tooltip_BF_Adrenalina, WorldStaticModel = PillBottleGround, Tags = base:medical, }
+
+    /* comprimidos (1 dose cada) */
+    item BF_Rebite        { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.01, Icon = BF_Rebite,        Tooltip = Tooltip_BF_Rebite,        WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Dipirona      { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.01, Icon = BF_Dipirona,      Tooltip = Tooltip_BF_Dipirona,      WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Metanfetamina { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.01, Icon = BF_Metanfetamina, Tooltip = Tooltip_BF_Metanfetamina, WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Tadala        { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.01, Icon = BF_Tadala,        Tooltip = Tooltip_BF_Tadala,        WorldStaticModel = PillBottleGround, Tags = base:medical, }
+
+    /* livros de Farmacia */
+    item BF_Livro1 { DisplayCategory = SkillBook, ItemType = base:literature, Weight = 1.0, Icon = BF_Livro1, LvlSkillTrained = 1, NumLevelsTrained = 2, NumberOfPages = 220, SkillTrained = Pharmacy, StaticModel = BookLightBlue, WorldStaticModel = BookLightBlue_Ground, }
+    item BF_Livro2 { DisplayCategory = SkillBook, ItemType = base:literature, Weight = 1.0, Icon = BF_Livro2, LvlSkillTrained = 3, NumLevelsTrained = 2, NumberOfPages = 260, SkillTrained = Pharmacy, StaticModel = BookLightBlue, WorldStaticModel = BookLightBlue_Ground, }
+    item BF_Livro3 { DisplayCategory = SkillBook, ItemType = base:literature, Weight = 1.0, Icon = BF_Livro3, LvlSkillTrained = 5, NumLevelsTrained = 2, NumberOfPages = 300, SkillTrained = Pharmacy, StaticModel = BookLightBlue, WorldStaticModel = BookLightBlue_Ground, }
+    item BF_Livro4 { DisplayCategory = SkillBook, ItemType = base:literature, Weight = 1.0, Icon = BF_Livro4, LvlSkillTrained = 7, NumLevelsTrained = 2, NumberOfPages = 340, SkillTrained = Pharmacy, StaticModel = BookLightBlue, WorldStaticModel = BookLightBlue_Ground, }
+    item BF_Livro5 { DisplayCategory = SkillBook, ItemType = base:literature, Weight = 1.0, Icon = BF_Livro5, LvlSkillTrained = 9, NumLevelsTrained = 2, NumberOfPages = 380, SkillTrained = Pharmacy, StaticModel = BookLightBlue, WorldStaticModel = BookLightBlue_Ground, }
+
+    /* revistas de receita */
+    item BF_RevistaEmagrecimento { DisplayCategory = RecipeResource, ItemType = base:literature, Weight = 0.5, Icon = BF_RevistaEmagrecimento, BoredomChange = -20, StressChange = -15, LearnedRecipes = BF_MakeOzempic;BF_MakeMonjaro, StaticModel = Magazine, WorldStaticModel = MagazineHunter1Ground, Tags = base:magazine, }
+    item BF_RevistaAnabolizantes { DisplayCategory = RecipeResource, ItemType = base:literature, Weight = 0.5, Icon = BF_RevistaAnabolizantes, BoredomChange = -20, StressChange = -15, LearnedRecipes = BF_MakeTrembolona;BF_MakeDeca, StaticModel = Magazine, WorldStaticModel = MagazineHunter1Ground, Tags = base:magazine, }
+    item BF_RevistaAnalgesicos   { DisplayCategory = RecipeResource, ItemType = base:literature, Weight = 0.5, Icon = BF_RevistaAnalgesicos,   BoredomChange = -20, StressChange = -15, LearnedRecipes = BF_MakeDipirona;BF_MakeMorfina;BF_MakeTadala, StaticModel = Magazine, WorldStaticModel = MagazineHunter1Ground, Tags = base:magazine, }
+    item BF_RevistaEstimulantes  { DisplayCategory = RecipeResource, ItemType = base:literature, Weight = 0.5, Icon = BF_RevistaEstimulantes,  BoredomChange = -20, StressChange = -15, LearnedRecipes = BF_MakeRebite;BF_MakeAdrenalina;BF_MakeMetanfetamina, StaticModel = Magazine, WorldStaticModel = MagazineHunter1Ground, Tags = base:magazine, }
+
+
+    /* novos */
+    item BF_Benegripe { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.01, Icon = BF_Benegripe, Tooltip = Tooltip_BF_Benegripe, WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Lolo { DisplayCategory = Junk, ItemType = base:drainable, Weight = 0.2, Icon = BF_Lolo, Tooltip = Tooltip_BF_Lolo, UseDelta = 0.2, UseWhileEquipped = false, WorldStaticModel = CorrectionFluid, Tags = base:consumable, }
+}
