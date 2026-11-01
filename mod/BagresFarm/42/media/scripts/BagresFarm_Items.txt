@@ -2,16 +2,16 @@ module Base
 {
 
     /* seringas */
-    item BF_SeringaVazia { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_SeringaVazia, Tooltip = Tooltip_BF_SeringaVazia, WorldStaticModel = PillBottleGround, Tags = base:medical, }
-    item BF_SeringaUsada { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_SeringaUsada, Tooltip = Tooltip_BF_SeringaUsada, WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_SeringaVazia { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_SeringaVazia, Tooltip = Tooltip_BF_SeringaVazia, WorldStaticModel = PenFancyWorld, Tags = base:medical, }
+    item BF_SeringaUsada { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_SeringaUsada, Tooltip = Tooltip_BF_SeringaUsada, WorldStaticModel = PenFancyWorld, Tags = base:medical, }
 
     /* injetaveis */
-    item BF_Monjaro    { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Monjaro,    Tooltip = Tooltip_BF_Monjaro,    WorldStaticModel = PillBottleGround, Tags = base:medical, }
-    item BF_Ozempic    { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Ozempic,    Tooltip = Tooltip_BF_Ozempic,    WorldStaticModel = PillBottleGround, Tags = base:medical, }
-    item BF_Deca       { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Deca,       Tooltip = Tooltip_BF_Deca,       WorldStaticModel = PillBottleGround, Tags = base:medical, }
-    item BF_Trembolona { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Trembolona, Tooltip = Tooltip_BF_Trembolona, WorldStaticModel = PillBottleGround, Tags = base:medical, }
-    item BF_Morfina    { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Morfina,    Tooltip = Tooltip_BF_Morfina,    WorldStaticModel = PillBottleGround, Tags = base:medical, }
-    item BF_Adrenalina { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Adrenalina, Tooltip = Tooltip_BF_Adrenalina, WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Monjaro    { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Monjaro,    Tooltip = Tooltip_BF_Monjaro,    WorldStaticModel = PenFancyWorld, Tags = base:medical, }
+    item BF_Ozempic    { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Ozempic,    Tooltip = Tooltip_BF_Ozempic,    WorldStaticModel = PenFancyWorld, Tags = base:medical, }
+    item BF_Deca       { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Deca,       Tooltip = Tooltip_BF_Deca,       WorldStaticModel = PenFancyWorld, Tags = base:medical, }
+    item BF_Trembolona { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Trembolona, Tooltip = Tooltip_BF_Trembolona, WorldStaticModel = PenFancyWorld, Tags = base:medical, }
+    item BF_Morfina    { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Morfina,    Tooltip = Tooltip_BF_Morfina,    WorldStaticModel = PenFancyWorld, Tags = base:medical, }
+    item BF_Adrenalina { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Adrenalina, Tooltip = Tooltip_BF_Adrenalina, WorldStaticModel = PenFancyWorld, Tags = base:medical, }
 
     /* comprimidos (1 dose cada) */
     item BF_Rebite        { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.01, Icon = BF_Rebite,        Tooltip = Tooltip_BF_Rebite,        WorldStaticModel = PillBottleGround, Tags = base:medical, }

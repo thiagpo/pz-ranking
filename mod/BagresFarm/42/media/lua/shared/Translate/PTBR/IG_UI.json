@@ -28,7 +28,6 @@
     "IGUI_BF_MoodDopadoDesc": "%1 efeito(s) de remédio ativos. Clique para ver.",
     "IGUI_BF_MoodRessacaDesc": "Efeito posterior de remédio. Clique para ver.",
     "IGUI_BF_MoodAbstDesc": "Vício cobrando: tristeza, estresse e cansaço até a próxima dose ou até limpar.",
-    "IGUI_CraftCategory_Farmacia": "Farmácia",
     "IGUI_BF_TolInfo": "%1% de efeito, +%2% de colateral",
     "IGUI_BF_Desmaio": "Desmaiou. Acorda em 2 minutos",
     "IGUI_BF_Acordou": "Acordou",
@@ -80,5 +79,6 @@
     "IGUI_BF_L_enjoo": "enjoo",
     "IGUI_BF_L_bebado": "embriaguez",
     "IGUI_BF_Desnutrido": "Seu corpo cedeu: Desnutrido (permanente)",
-    "IGUI_BF_Coracao": "Seu coração cedeu: Coração Cansado (permanente)"
+    "IGUI_BF_Coracao": "Seu coração cedeu: Coração Cansado (permanente)",
+    "IGUI_CraftingCategories_Farmacia": "Farmácia"
 }

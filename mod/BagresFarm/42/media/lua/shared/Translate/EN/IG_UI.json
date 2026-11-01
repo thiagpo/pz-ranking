@@ -28,7 +28,6 @@
     "IGUI_BF_MoodDopadoDesc": "%1 active drug effect(s). Click to view.",
     "IGUI_BF_MoodRessacaDesc": "Drug after-effect. Click to view.",
     "IGUI_BF_MoodAbstDesc": "Addiction kicking in: sadness, stress and tiredness until the next dose or until clean.",
-    "IGUI_CraftCategory_Farmacia": "Pharmacy",
     "IGUI_BF_TolInfo": "%1% effect, +%2% side effects",
     "IGUI_BF_Desmaio": "Passed out. Wakes up in 2 minutes",
     "IGUI_BF_Acordou": "Woke up",
@@ -80,5 +79,6 @@
     "IGUI_BF_L_enjoo": "nausea",
     "IGUI_BF_L_bebado": "drunkenness",
     "IGUI_BF_Desnutrido": "Your body gave in: Malnourished (permanent)",
-    "IGUI_BF_Coracao": "Your heart gave in: Tired Heart (permanent)"
+    "IGUI_BF_Coracao": "Your heart gave in: Tired Heart (permanent)",
+    "IGUI_CraftingCategories_Farmacia": "Pharmacy"
 }
