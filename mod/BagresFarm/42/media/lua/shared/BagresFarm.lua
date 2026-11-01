@@ -78,10 +78,54 @@ function BF.nomeItem(item)
     local md = item:getModData()
     local extra = {}
     if md.bf_nivel and md.bf_nivel > 0 then table.insert(extra, "F" .. md.bf_nivel) end
+    table.insert(extra, math.floor(BF.potencia(item) * 100 + 0.5) .. "%")
     if md.bf_suja then table.insert(extra, getText("IGUI_BF_Suja")) end
     if md.bf_fora and md.bf_fora >= BF.VALIDADE_H then table.insert(extra, getText("IGUI_BF_Vencido")) end
-    if #extra == 0 then return base end
     return base .. " (" .. table.concat(extra, ", ") .. ")"
+end
+
+-- item achado no mapa ganha potencia aleatoria (80% a 120%) na primeira vez que o mod o ve
+function BF.garantirPotencia(item)
+    if not item or not BF.droga(item) then return end
+    local md = item:getModData()
+    if md.bf_pot == nil then
+        md.bf_pot = 0.8 + ZombRandFloat(0, 0.4)
+        md.bf_fora = md.bf_fora or 0
+        item:setName(BF.nomeItem(item))
+    end
+end
+
+-- texto com os numeros reais da dose (m = multiplicador do beneficio, dm = do colateral)
+function BF.descricaoEfeito(id, m, dm)
+    local d = BF.DROGAS[id]; if not d then return "" end
+    local bons, maus = {}, {}
+    local function pct(v) return math.floor(math.abs(v) * 100 + 0.5) end
+    if d.fome and d.fome < 0 then table.insert(bons, getText("IGUI_BF_L_fome") .. " -" .. pct(d.fome * m) .. "%") end
+    if d.fome and d.fome > 0 then table.insert(maus, getText("IGUI_BF_L_fome") .. " +" .. pct(d.fome * dm) .. "%") end
+    if d.pesoDia then table.insert(bons, "-" .. string.format("%.2f", d.pesoDia * m) .. " kg/" .. getText("IGUI_BF_L_dia")) end
+    if d.fadiga and d.fadiga < 0 then table.insert(bons, getText("IGUI_BF_L_cansaco") .. " -" .. pct(d.fadiga * m) .. "%") end
+    if d.fadiga and d.fadiga > 0 then table.insert(maus, getText("IGUI_BF_L_cansaco") .. " +" .. pct(d.fadiga * dm) .. "%") end
+    if d.forca then table.insert(bons, getText("IGUI_BF_L_forca") .. " +" .. pct(d.forca * m) .. "%") end
+    if d.dor then table.insert(bons, getText("IGUI_BF_L_dor") .. " -" .. pct(d.dor * m) .. "%") end
+    if d.rigidez then table.insert(bons, getText("IGUI_BF_L_rigidez") .. " -" .. pct(d.rigidez * m) .. "%/min") end
+    if d.xpForca then table.insert(bons, "+" .. pct(d.xpForca * m) .. "% XP " .. getText("IGUI_BF_L_xpforca")) end
+    if d.xpFitness then table.insert(bons, "+" .. pct(d.xpFitness * m) .. "% XP " .. getText("IGUI_BF_L_xpfitness")) end
+    if d.folego then table.insert(bons, getText("IGUI_BF_L_folego")) end
+    if d.audicao then table.insert(bons, getText("IGUI_BF_L_audicao")) end
+    if d.visao then table.insert(bons, getText("IGUI_BF_L_visao")) end
+    if d.cura then table.insert(bons, getText("IGUI_BF_L_cura", string.format("%.1f", d.cura / m))) end
+    if d.gripe and not d.cura then table.insert(bons, getText("IGUI_BF_L_gripe")) end
+    if d.panico and d.panico < 0 then table.insert(bons, getText("IGUI_BF_L_panico")) end
+    if d.fadigaFim then table.insert(maus, getText("IGUI_BF_L_depois") .. " " .. getText("IGUI_BF_L_cansaco") .. " +" .. pct(d.fadigaFim * dm) .. "%") end
+    if d.sangramento then table.insert(maus, getText("IGUI_BF_L_sangra") .. " +" .. pct(d.sangramento * dm) .. "%") end
+    if d.recuperacao then table.insert(maus, getText("IGUI_BF_L_depois") .. " " .. getText("IGUI_BF_L_sono") .. " -" .. pct(d.recuperacao * dm) .. "%") end
+    if d.tristezaFim then table.insert(maus, getText("IGUI_BF_L_depois") .. " " .. getText("IGUI_BF_L_tristeza") .. " " .. math.floor(math.min(100, d.tristezaFim * dm) + 0.5)) end
+    if d.paranoia then table.insert(maus, getText("IGUI_BF_L_paranoia")) end
+    if d.vicio then table.insert(maus, getText("IGUI_BF_L_vicio")) end
+    if d.lolo then table.insert(bons, getText("IGUI_BF_L_fumo")); table.insert(maus, getText("IGUI_BF_L_enjoo") .. " +" .. math.floor(15 * dm + 0.5) .. ", " .. getText("IGUI_BF_L_bebado") .. " +" .. math.floor(25 * dm + 0.5)) end
+    local txt = table.concat(bons, ", ")
+    if #maus > 0 then txt = txt .. " | " .. table.concat(maus, ", ") end
+    return txt
 end
 
 function BF.aoCriar(data, character)

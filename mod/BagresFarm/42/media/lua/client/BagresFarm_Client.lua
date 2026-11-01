@@ -198,7 +198,7 @@ end
 local function listaAtivos(p)
     local st = estado(p); local t = agora(); local linhas = {}
     for id, e in pairs(st.ef) do
-        local desc = getTextOrNull("IGUI_BF_Ef_" .. id) or ""
+        local desc = BF.descricaoEfeito(id, e.m, e.d)
         if e.peso0 then desc = desc .. " " .. getText("IGUI_BF_Peso", string.format("%.1f", p:getNutrition():getWeight()), string.format("%.2f", e.peso0 - p:getNutrition():getWeight())) end
         table.insert(linhas, { txt = nome(id), resta = e.fim - t, total = e.fim - e.ini, m = e.m, bom = true, desc = desc })
     end
@@ -225,10 +225,13 @@ local function menu(playerNum, context, items)
                 if not noInv then ISTimedActionQueue.add(ISInventoryTransferAction:new(pl, item, item:getContainer(), pl:getInventory())) end
                 ISTimedActionQueue.add(BF_UsarAction:new(pl, item, id))
             end)
+            local st = estado(p)
             local tip = ISInventoryPaneContextMenu.addToolTip()
             tip:setName(item:getDisplayName())
-            local st = estado(p)
+            BF.garantirPotencia(item)
+            local tolProx = BF.tolerancia((st.usos[id] or 0) + 1)
             local desc = getText("Tooltip_" .. item:getType()) .. " <LINE> <LINE> "
+                .. getText("IGUI_BF_ComEstaDose") .. ": " .. BF.descricaoEfeito(id, BF.potencia(item) * (1 - tolProx) * (d.inj and (1 + 0.03 * p:getPerkLevel(Perks.Doctor)) or 1), 1 + tolProx) .. " <LINE> <LINE> "
                 .. getText("IGUI_BF_Potencia") .. ": x" .. string.format("%.2f", BF.potencia(item))
             if d.inj then desc = desc .. " <LINE> " .. getText("IGUI_BF_ForaGeladeira") .. ": " .. string.format("%.1f", BF.horasFora(item) / 24) .. " d" end
             if BF.suja(item) then desc = desc .. " <LINE> " .. getText("IGUI_BF_SeringaSujaAviso") end
@@ -504,10 +507,12 @@ Events.EveryHours.Add(function()
             for j = 0, itens:size() - 1 do
                 local it = itens:get(j)
                 local c = it:getContainer(); local tipo = c and c:getType() or ""
+                BF.garantirPotencia(it)
                 if tipo ~= "fridge" and tipo ~= "freezer" then
                     local md = it:getModData()
                     md.bf_fora = (md.bf_fora or 0) + 1
-                    if md.bf_fora >= BF.VALIDADE_H and not md.bf_vencido then md.bf_vencido = true; it:setName(BF.nomeItem(it)) end
+                    if md.bf_fora >= BF.VALIDADE_H and not md.bf_vencido then md.bf_vencido = true end
+                    if md.bf_fora % 24 == 0 or md.bf_fora >= BF.VALIDADE_H then it:setName(BF.nomeItem(it)) end
                 end
             end
         end
