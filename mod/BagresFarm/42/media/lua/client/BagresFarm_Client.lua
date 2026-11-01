@@ -64,6 +64,17 @@ local function audicao(p, st, ligar)
     end)
 end
 
+-- traco temporario generico (adrenalina = Viciado em Adrenalina enquanto durar)
+local function tracoTemp(p, st, trait, flag, ligar)
+    pcall(function()
+        if ligar then
+            if not p:hasTrait(trait) then p:getCharacterTraits():add(trait); st[flag] = true end
+        elseif st[flag] then
+            p:getCharacterTraits():remove(trait); st[flag] = nil
+        end
+    end)
+end
+
 -- visao noturna: quem nao tem Olhos de Gato ganha o traco temporario; quem ja tem ganha o efeito dos oculos de visao noturna
 local function visao(p, st, ligar)
     pcall(function()
@@ -136,6 +147,7 @@ local function terminar(p, st, id)
     if d.posDur then st.pos[id] = { fim = t + d.posDur, d = e.d } end
     if d.audicao then audicao(p, st, false) end
     if d.visao then visao(p, st, false) end
+    if d.adrenalina then tracoTemp(p, st, CharacterTrait.ADRENALINE_JUNKIE, "adrTemp", false) end
     if d.forca then aplicarForca(p, st) end
     HaloTextHelper.addBadText(p, nome(id) .. " " .. getText("IGUI_BF_Passou"))
 end
@@ -181,7 +193,14 @@ function BF.usar(p, id, pot, suja)
     st.ultDose[id] = t
     if d.audicao then audicao(p, st, true) end
     if d.visao then visao(p, st, true) end
+    if d.adrenalina then tracoTemp(p, st, CharacterTrait.ADRENALINE_JUNKIE, "adrTemp", true) end
     if d.forca then aplicarForca(p, st) end
+    -- anabolizante e emagrecedor: a partir da 3a dose o cabelo cai
+    if d.careca and not st.careca and (st.usos.Trembolona or 0) + (st.usos.Deca or 0) + (st.usos.Ozempic or 0) + (st.usos.Monjaro or 0) >= 3 then
+        st.careca = true
+        pcall(function() p:getHumanVisual():setHairModel(""); p:resetModelNextFrame(); if isClient() then sendVisual(p) end end)
+        HaloTextHelper.addBadText(p, getText("IGUI_BF_Careca"))
+    end
     if suja then
         local bp = p:getBodyDamage():getBodyPart(BodyPartType[PARTES_SERINGA[ZombRand(1, #PARTES_SERINGA + 1)]])
         local r = ZombRandFloat(0, 1)
@@ -422,6 +441,8 @@ local function tick(p)
         end
     end
     if trDes then fomeM = fomeM + 0.3 end
+    BF.visual[n] = BF.visual[n] or {}
+    BF.visual[n].fomeM = fomeM; BF.visual[n].fadM = fadM; BF.visual[n].dor = dor
     local recup = 0
     for id, e in pairs(st.pos) do
         if e.fim > t then
@@ -671,6 +692,12 @@ function BF_Painel:prerender()
         y = y + 31
     end
     if #linhas == 0 then self:drawText(getText("IGUI_BF_Nada"), 12, 24, 0.7, 0.7, 0.7, 1, UIFont.Small) end
+    local v = BF.visual[self.pn]
+    if p and v and v.fomeM then
+        local diag = getText("IGUI_BF_Diag", string.format("%.2f", v.fomeM), string.format("%.2f", v.fadM or 1), math.floor(stat(p, CharacterStat.HUNGER) * 100 + 0.5), math.floor(stat(p, CharacterStat.FATIGUE) * 100 + 0.5))
+        self:setHeight(self.height + 16)
+        self:drawText(diag, 12, self.height - 18, 0.6, 0.8, 0.6, 1, UIFont.Small)
+    end
 end
 
 -- botao pequeno que abre e fecha o painel
@@ -792,6 +819,9 @@ Events.OnCreatePlayer.Add(function(i, p)
         if BF.DROGAS[id] and BF.DROGAS[id].visao then temVis = true end
     end
     if st.audicaoTemp and not temAud then audicao(p, st, false) end
+    local temAdr = false
+    for id in pairs(st.ef) do if BF.DROGAS[id] and BF.DROGAS[id].adrenalina then temAdr = true end end
+    if st.adrTemp and not temAdr then tracoTemp(p, st, CharacterTrait.ADRENALINE_JUNKIE, "adrTemp", false) end
     if (st.visaoTemp or st.visaoNV) and not temVis then visao(p, st, false) end
     if temVis and not st.visaoTemp and not st.visaoNV then visao(p, st, true) end
 end)

@@ -82,5 +82,8 @@
     "IGUI_BF_Coracao": "Seu coração cedeu: Coração Cansado (permanente)",
     "IGUI_CraftingCategories_Farmacia": "Farmácia",
     "IGUI_BF_LaudoVazio": "Laudo em branco.",
-    "IGUI_BF_LaudoData": "Teste feito há %1 h de jogo."
+    "IGUI_BF_LaudoData": "Teste feito há %1 h de jogo.",
+    "IGUI_BF_Careca": "Seu cabelo caiu",
+    "IGUI_BF_Diag": "fome x%1 · cansaço x%2 | fome atual %3%, cansaço atual %4%",
+    "IGUI_BF_L_adrenalina": "viciado em adrenalina"
 }

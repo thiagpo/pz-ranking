@@ -82,5 +82,8 @@
     "IGUI_BF_Coracao": "Your heart gave in: Tired Heart (permanent)",
     "IGUI_CraftingCategories_Farmacia": "Pharmacy",
     "IGUI_BF_LaudoVazio": "Blank report.",
-    "IGUI_BF_LaudoData": "Test done %1 game hours ago."
+    "IGUI_BF_LaudoData": "Test done %1 game hours ago.",
+    "IGUI_BF_Careca": "Your hair fell out",
+    "IGUI_BF_Diag": "hunger x%1 · tiredness x%2 | hunger now %3%, tiredness now %4%",
+    "IGUI_BF_L_adrenalina": "adrenaline junkie"
 }

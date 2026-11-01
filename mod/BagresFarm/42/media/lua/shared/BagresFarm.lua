@@ -40,20 +40,20 @@ end)
 -- fome/fadiga: negativo = buff (x potencia), positivo = debuff (x tolerancia)
 -- vicio = { limiar = doses por nivel de vicio, horas = sem dose ate abstinencia, limpar = horas limpo por nivel }
 BF.DROGAS = {
-    Ozempic        = { item = "Base.BF_Ozempic",        inj = true,  dur = 24, fome = -0.40, pesoDia = 0.60, fadiga = 0.35 },
-    Monjaro        = { item = "Base.BF_Monjaro",        inj = true,  dur = 24, fome = -0.60, pesoDia = 1.20, fadiga = 0.50 },
-    Trembolona     = { item = "Base.BF_Trembolona",     inj = true,  dur = 36, forca = 0.10, fome = 0.60 },
-    Deca           = { item = "Base.BF_Deca",           inj = true,  dur = 48, forca = 0.15, fome = 0.80 },
+    Ozempic        = { item = "Base.BF_Ozempic",        inj = true, careca = true,  dur = 24, fome = -0.40, pesoDia = 0.60, fadiga = 0.35 },
+    Monjaro        = { item = "Base.BF_Monjaro",        inj = true, careca = true,  dur = 24, fome = -0.60, pesoDia = 1.20, fadiga = 0.50 },
+    Trembolona     = { item = "Base.BF_Trembolona",     inj = true, careca = true,  dur = 36, forca = 0.10, fome = 0.60 },
+    Deca           = { item = "Base.BF_Deca",           inj = true, careca = true,  dur = 48, forca = 0.15, fome = 0.80 },
     Morfina        = { item = "Base.BF_Morfina",        inj = true,  dur = 8,  dor = 0.80, rigidez = 0.10, paranoia = 3, depressao = 6, vicio = { limiar = 4, horas = 24, limpar = 72 } },
-    Adrenalina     = { item = "Base.BF_Adrenalina",     inj = true,  dur = 1,  folego = true, audicao = true, panico = -100, fadigaFim = 0.80, sangramento = 0.60, posDur = 2 },
-    Rebite         = { item = "Base.BF_Rebite",         inj = false, dur = 6,  fadiga = -0.90, recuperacao = 0.60, visao = true, vicio = { limiar = 5, horas = 36, limpar = 48 } },
-    Dipirona       = { item = "Base.BF_Dipirona",       inj = false, dur = 4,  rigidez = 0.05, dor = 0.30 },
-    Metanfetamina  = { item = "Base.BF_Metanfetamina",  inj = false, dur = 6,  rigidez = 0.12, fadiga = -0.70, paranoia = 1, vicio = { limiar = 3, horas = 24, limpar = 96 } },
-    Tadala         = { item = "Base.BF_Tadala",         inj = false, dur = 6,  rigidez = 0.08, tristezaFim = 90 },
-    Benegripe      = { item = "Base.BF_Benegripe",      inj = false, dur = 12, gripe = true, cura = 8 },
-    BenegripeForte = { item = "Base.BF_BenegripeForte", inj = false, dur = 36, gripe = true, cura = 4 },
-    VitaminaC      = { item = "Base.BF_VitaminaC",      inj = false, dur = 6,  gripe = true, fadigaJa = -0.10 },
-    Creatina       = { item = "Base.BF_Creatina",       inj = false, dur = 6,  xpForca = 0.50, fomeJa = -0.05 },
+    Adrenalina     = { item = "Base.BF_Adrenalina",     inj = true,  dur = 1,  folego = true, audicao = true, adrenalina = true, panico = -100, fadigaFim = 0.80, sangramento = 0.60, posDur = 2 },
+    Rebite         = { item = "Base.BF_Rebite",         inj = false, drenavel = true, dur = 6,  fadiga = -0.90, recuperacao = 0.60, visao = true, vicio = { limiar = 5, horas = 36, limpar = 48 } },
+    Dipirona       = { item = "Base.BF_Dipirona",       inj = false, drenavel = true, dur = 4,  rigidez = 0.05, dor = 0.30 },
+    Metanfetamina  = { item = "Base.BF_Metanfetamina",  inj = false, drenavel = true, dur = 6,  rigidez = 0.12, fadiga = -0.70, paranoia = 1, vicio = { limiar = 3, horas = 24, limpar = 96 } },
+    Tadala         = { item = "Base.BF_Tadala",         inj = false, drenavel = true, dur = 6,  rigidez = 0.08, tristezaFim = 90 },
+    Benegripe      = { item = "Base.BF_Benegripe",      inj = false, drenavel = true, dur = 12, gripe = true, cura = 8 },
+    BenegripeForte = { item = "Base.BF_BenegripeForte", inj = false, drenavel = true, dur = 36, gripe = true, cura = 4 },
+    VitaminaC      = { item = "Base.BF_VitaminaC",      inj = false, drenavel = true, dur = 6,  gripe = true, fadigaJa = -0.10 },
+    Creatina       = { item = "Base.BF_Creatina",       inj = false, drenavel = true, dur = 6,  xpForca = 0.50, fomeJa = -0.05 },
     Whey           = { item = "Base.BF_Whey",           inj = false, dur = 6,  xpFitness = 0.50, fomeJa = -0.15, bebida = true },
     Lolo           = { item = "Base.BF_Lolo",           inj = false, dur = 0,  drenavel = true, lolo = true },
 }
@@ -132,6 +132,7 @@ function BF.descricaoEfeito(id, m, dm)
     if d.cura then table.insert(bons, getText("IGUI_BF_L_cura", string.format("%.1f", d.cura / m))) end
     if d.gripe and not d.cura then table.insert(bons, getText("IGUI_BF_L_gripe")) end
     if d.panico and d.panico < 0 then table.insert(bons, getText("IGUI_BF_L_panico")) end
+    if d.adrenalina then table.insert(bons, getText("IGUI_BF_L_adrenalina")) end
     if d.fadigaFim then table.insert(maus, getText("IGUI_BF_L_depois") .. " " .. getText("IGUI_BF_L_cansaco") .. " +" .. pct(d.fadigaFim * dm) .. "%") end
     if d.sangramento then table.insert(maus, getText("IGUI_BF_L_sangra") .. " +" .. pct(d.sangramento * dm) .. "%") end
     if d.recuperacao then table.insert(maus, getText("IGUI_BF_L_depois") .. " " .. getText("IGUI_BF_L_sono") .. " -" .. pct(d.recuperacao * dm) .. "%") end

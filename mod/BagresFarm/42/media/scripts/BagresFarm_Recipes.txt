@@ -211,7 +211,7 @@ module Base
         }
         outputs
         {
-            item 4 Base.BF_Rebite,
+            item 1 Base.BF_Rebite,
         }
     }
 
@@ -234,7 +234,7 @@ module Base
         }
         outputs
         {
-            item 4 Base.BF_Dipirona,
+            item 1 Base.BF_Dipirona,
         }
     }
 
@@ -261,7 +261,7 @@ module Base
         }
         outputs
         {
-            item 4 Base.BF_Metanfetamina,
+            item 1 Base.BF_Metanfetamina,
         }
     }
 
@@ -284,7 +284,7 @@ module Base
         }
         outputs
         {
-            item 4 Base.BF_Tadala,
+            item 1 Base.BF_Tadala,
         }
     }
 
@@ -308,7 +308,7 @@ module Base
         }
         outputs
         {
-            item 4 Base.BF_Benegripe,
+            item 1 Base.BF_Benegripe,
         }
     }
 
@@ -532,7 +532,7 @@ module Base
         }
         outputs
         {
-            item 4 Base.BF_BenegripeForte,
+            item 1 Base.BF_BenegripeForte,
         }
     }
 
@@ -556,7 +556,7 @@ module Base
         }
         outputs
         {
-            item 4 Base.BF_VitaminaC,
+            item 1 Base.BF_VitaminaC,
         }
     }
 
@@ -580,7 +580,7 @@ module Base
         }
         outputs
         {
-            item 4 Base.BF_Creatina,
+            item 1 Base.BF_Creatina,
         }
     }
 
