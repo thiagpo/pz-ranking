@@ -40,15 +40,15 @@ end)
 -- fome/fadiga: negativo = buff (x potencia), positivo = debuff (x tolerancia)
 -- vicio = { limiar = doses por nivel de vicio, horas = sem dose ate abstinencia, limpar = horas limpo por nivel }
 BF.DROGAS = {
-    Ozempic        = { item = "Base.BF_Ozempic",        inj = true, careca = true,  dur = 24, fome = -0.40, pesoDia = 0.60, fadiga = 0.35 },
-    Monjaro        = { item = "Base.BF_Monjaro",        inj = true, careca = true,  dur = 24, fome = -0.60, pesoDia = 1.20, fadiga = 0.50 },
+    Ozempic        = { item = "Base.BF_Ozempic",        inj = true, fomeJa = -0.15, careca = true,  dur = 24, fome = -0.40, pesoDia = 0.60, fadiga = 0.35 },
+    Monjaro        = { item = "Base.BF_Monjaro",        inj = true, fomeJa = -0.25, careca = true,  dur = 24, fome = -0.60, pesoDia = 1.20, fadiga = 0.50 },
     Trembolona     = { item = "Base.BF_Trembolona",     inj = true, grito = true, careca = true,  dur = 36, forca = 0.10, fome = 0.60 },
     Deca           = { item = "Base.BF_Deca",           inj = true, grito = true, careca = true,  dur = 48, forca = 0.15, fome = 0.80 },
     Morfina        = { item = "Base.BF_Morfina",        inj = true,  dur = 8,  dor = 0.80, rigidez = 0.10, paranoia = 3, depressao = 6, vicio = { limiar = 4, horas = 24, limpar = 72 } },
     Adrenalina     = { item = "Base.BF_Adrenalina",     inj = true,  dur = 1,  folego = true, audicao = true, adrenalina = true, panico = -100, fadigaFim = 0.80, sangramento = 0.60, posDur = 2, fadigaPos = 1.0, escuroPos = true },
-    Rebite         = { item = "Base.BF_Rebite",         inj = false, drenavel = true, dur = 6,  fadiga = -0.90, recuperacao = 0.60, escuroPos = true, visao = true, vicio = { limiar = 5, horas = 36, limpar = 48 } },
+    Rebite         = { item = "Base.BF_Rebite",         inj = false, fadigaJa = -0.35, drenavel = true, dur = 6,  fadiga = -0.90, recuperacao = 0.60, escuroPos = true, visao = true, vicio = { limiar = 5, horas = 36, limpar = 48 } },
     Dipirona       = { item = "Base.BF_Dipirona",       inj = false, drenavel = true, dur = 4,  rigidez = 0.05, dor = 0.30 },
-    Metanfetamina  = { item = "Base.BF_Metanfetamina",  inj = false, drenavel = true, dur = 6,  rigidez = 0.12, fadiga = -0.70, paranoia = 1, vicio = { limiar = 3, horas = 24, limpar = 96 } },
+    Metanfetamina  = { item = "Base.BF_Metanfetamina",  inj = false, fadigaJa = -0.30, drenavel = true, dur = 6,  rigidez = 0.12, fadiga = -0.70, paranoia = 1, vicio = { limiar = 3, horas = 24, limpar = 96 } },
     Tadala         = { item = "Base.BF_Tadala",         inj = false, drenavel = true, dur = 6,  rigidez = 0.08, tristezaFim = 90 },
     Benegripe      = { item = "Base.BF_Benegripe",      inj = false, drenavel = true, dur = 12, gripe = true, cura = 8 },
     BenegripeForte = { item = "Base.BF_BenegripeForte", inj = false, drenavel = true, dur = 36, gripe = true, cura = 4 },
