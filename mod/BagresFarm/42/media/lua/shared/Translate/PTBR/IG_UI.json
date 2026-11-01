@@ -86,5 +86,6 @@
     "IGUI_BF_Careca": "Seu cabelo caiu",
     "IGUI_BF_Diag": "fome x%1 · cansaço x%2 | fome atual %3%, cansaço atual %4%",
     "IGUI_BF_L_adrenalina": "viciado em adrenalina",
-    "IGUI_BF_RessacaDesc": "efeito posterior ainda ativo"
+    "IGUI_BF_RessacaDesc": "efeito posterior ainda ativo",
+    "IGUI_ItemCat_Farmacia": "Farmácia"
 }

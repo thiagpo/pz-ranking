@@ -86,5 +86,6 @@
     "IGUI_BF_Careca": "Your hair fell out",
     "IGUI_BF_Diag": "hunger x%1 · tiredness x%2 | hunger now %3%, tiredness now %4%",
     "IGUI_BF_L_adrenalina": "adrenaline junkie",
-    "IGUI_BF_RessacaDesc": "after-effect still active"
+    "IGUI_BF_RessacaDesc": "after-effect still active",
+    "IGUI_ItemCat_Farmacia": "Pharmacy"
 }

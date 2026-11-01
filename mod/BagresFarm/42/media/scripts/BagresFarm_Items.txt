@@ -2,22 +2,22 @@ module Base
 {
 
     /* seringas */
-    item BF_SeringaVazia { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_SeringaVazia, Tooltip = Tooltip_BF_SeringaVazia, WorldStaticModel = PenFancyWorld, Tags = base:medical, }
-    item BF_SeringaUsada { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_SeringaUsada, Tooltip = Tooltip_BF_SeringaUsada, WorldStaticModel = PenFancyWorld, Tags = base:medical, }
+    item BF_SeringaVazia { DisplayCategory = Farmacia, ItemType = base:normal, Weight = 0.05, Icon = BF_SeringaVazia, Tooltip = Tooltip_BF_SeringaVazia, WorldStaticModel = PenFancyWorld, Tags = base:medical, }
+    item BF_SeringaUsada { DisplayCategory = Farmacia, ItemType = base:normal, Weight = 0.05, Icon = BF_SeringaUsada, Tooltip = Tooltip_BF_SeringaUsada, WorldStaticModel = PenFancyWorld, Tags = base:medical, }
 
     /* injetaveis */
-    item BF_Monjaro    { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Monjaro,    Tooltip = Tooltip_BF_Monjaro,    WorldStaticModel = PenFancyWorld, Tags = base:medical, }
-    item BF_Ozempic    { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Ozempic,    Tooltip = Tooltip_BF_Ozempic,    WorldStaticModel = PenFancyWorld, Tags = base:medical, }
-    item BF_Deca       { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Deca,       Tooltip = Tooltip_BF_Deca,       WorldStaticModel = PenFancyWorld, Tags = base:medical, }
-    item BF_Trembolona { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Trembolona, Tooltip = Tooltip_BF_Trembolona, WorldStaticModel = PenFancyWorld, Tags = base:medical, }
-    item BF_Morfina    { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Morfina,    Tooltip = Tooltip_BF_Morfina,    WorldStaticModel = PenFancyWorld, Tags = base:medical, }
-    item BF_Adrenalina { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.05, Icon = BF_Adrenalina, Tooltip = Tooltip_BF_Adrenalina, WorldStaticModel = PenFancyWorld, Tags = base:medical, }
+    item BF_Monjaro    { DisplayCategory = Farmacia, ItemType = base:normal, Weight = 0.05, Icon = BF_Monjaro,    Tooltip = Tooltip_BF_Monjaro,    WorldStaticModel = PenFancyWorld, Tags = base:medical, }
+    item BF_Ozempic    { DisplayCategory = Farmacia, ItemType = base:normal, Weight = 0.05, Icon = BF_Ozempic,    Tooltip = Tooltip_BF_Ozempic,    WorldStaticModel = PenFancyWorld, Tags = base:medical, }
+    item BF_Deca       { DisplayCategory = Farmacia, ItemType = base:normal, Weight = 0.05, Icon = BF_Deca,       Tooltip = Tooltip_BF_Deca,       WorldStaticModel = PenFancyWorld, Tags = base:medical, }
+    item BF_Trembolona { DisplayCategory = Farmacia, ItemType = base:normal, Weight = 0.05, Icon = BF_Trembolona, Tooltip = Tooltip_BF_Trembolona, WorldStaticModel = PenFancyWorld, Tags = base:medical, }
+    item BF_Morfina    { DisplayCategory = Farmacia, ItemType = base:normal, Weight = 0.05, Icon = BF_Morfina,    Tooltip = Tooltip_BF_Morfina,    WorldStaticModel = PenFancyWorld, Tags = base:medical, }
+    item BF_Adrenalina { DisplayCategory = Farmacia, ItemType = base:normal, Weight = 0.05, Icon = BF_Adrenalina, Tooltip = Tooltip_BF_Adrenalina, WorldStaticModel = PenFancyWorld, Tags = base:medical, }
 
     /* comprimidos (1 dose cada) */
-    item BF_Rebite        { DisplayCategory = FirstAid, ItemType = base:drainable, Weight = 0.1, UseDelta = 0.1, UseWhileEquipped = false, Icon = BF_Rebite,        Tooltip = Tooltip_BF_Rebite,        WorldStaticModel = PillBottleGround, Tags = base:medical, }
-    item BF_Dipirona      { DisplayCategory = FirstAid, ItemType = base:drainable, Weight = 0.1, UseDelta = 0.1, UseWhileEquipped = false, Icon = BF_Dipirona,      Tooltip = Tooltip_BF_Dipirona,      WorldStaticModel = PillBottleGround, Tags = base:medical, }
-    item BF_Metanfetamina { DisplayCategory = FirstAid, ItemType = base:drainable, Weight = 0.1, UseDelta = 0.1, UseWhileEquipped = false, Icon = BF_Metanfetamina, Tooltip = Tooltip_BF_Metanfetamina, WorldStaticModel = PillBottleGround, Tags = base:medical, }
-    item BF_Tadala        { DisplayCategory = FirstAid, ItemType = base:drainable, Weight = 0.1, UseDelta = 0.1, UseWhileEquipped = false, Icon = BF_Tadala,        Tooltip = Tooltip_BF_Tadala,        WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Rebite        { DisplayCategory = Farmacia, ItemType = base:drainable, Weight = 0.1, UseDelta = 0.1, UseWhileEquipped = false, Icon = BF_Rebite,        Tooltip = Tooltip_BF_Rebite,        WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Dipirona      { DisplayCategory = Farmacia, ItemType = base:drainable, Weight = 0.1, UseDelta = 0.1, UseWhileEquipped = false, Icon = BF_Dipirona,      Tooltip = Tooltip_BF_Dipirona,      WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Metanfetamina { DisplayCategory = Farmacia, ItemType = base:drainable, Weight = 0.1, UseDelta = 0.1, UseWhileEquipped = false, Icon = BF_Metanfetamina, Tooltip = Tooltip_BF_Metanfetamina, WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Tadala        { DisplayCategory = Farmacia, ItemType = base:drainable, Weight = 0.1, UseDelta = 0.1, UseWhileEquipped = false, Icon = BF_Tadala,        Tooltip = Tooltip_BF_Tadala,        WorldStaticModel = PillBottleGround, Tags = base:medical, }
 
     /* livros de Farmacia */
     item BF_Livro1 { DisplayCategory = SkillBook, ItemType = base:literature, Weight = 1.0, Icon = BF_Livro1, LvlSkillTrained = 1, NumLevelsTrained = 2, NumberOfPages = 220, SkillTrained = Pharmacy, StaticModel = BookLightBlue, WorldStaticModel = BookLightBlue_Ground, }
@@ -34,19 +34,19 @@ module Base
 
 
     /* novos */
-    item BF_Benegripe { DisplayCategory = FirstAid, ItemType = base:drainable, Weight = 0.1, UseDelta = 0.1, UseWhileEquipped = false, Icon = BF_Benegripe, Tooltip = Tooltip_BF_Benegripe, WorldStaticModel = PillBottleGround, Tags = base:medical, }
-    item BF_Lolo { DisplayCategory = Junk, ItemType = base:drainable, Weight = 0.2, Icon = BF_Lolo, Tooltip = Tooltip_BF_Lolo, UseDelta = 0.2, UseWhileEquipped = false, WorldStaticModel = CorrectionFluid, Tags = base:consumable, }
+    item BF_Benegripe { DisplayCategory = Farmacia, ItemType = base:drainable, Weight = 0.1, UseDelta = 0.1, UseWhileEquipped = false, Icon = BF_Benegripe, Tooltip = Tooltip_BF_Benegripe, WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Lolo { DisplayCategory = Farmacia, ItemType = base:drainable, Weight = 0.2, Icon = BF_Lolo, Tooltip = Tooltip_BF_Lolo, UseDelta = 0.2, UseWhileEquipped = false, WorldStaticModel = CorrectionFluid, Tags = base:consumable, }
 
 
     /* 1.1 */
-    item BF_BenegripeForte { DisplayCategory = FirstAid, ItemType = base:drainable, Weight = 0.1, UseDelta = 0.1, UseWhileEquipped = false, Icon = BF_BenegripeForte, Tooltip = Tooltip_BF_BenegripeForte, WorldStaticModel = PillBottleGround, Tags = base:medical, }
-    item BF_VitaminaC { DisplayCategory = FirstAid, ItemType = base:drainable, Weight = 0.1, UseDelta = 0.1, UseWhileEquipped = false, Icon = BF_VitaminaC, Tooltip = Tooltip_BF_VitaminaC, WorldStaticModel = PillBottleGround, Tags = base:medical, }
-    item BF_Creatina { DisplayCategory = Food, ItemType = base:drainable, Weight = 0.1, UseDelta = 0.1, UseWhileEquipped = false, Icon = BF_Creatina, Tooltip = Tooltip_BF_Creatina, WorldStaticModel = PillBottleGround, }
-    item BF_Whey { DisplayCategory = Food, ItemType = base:normal, Weight = 0.3, Icon = BF_Whey, Tooltip = Tooltip_BF_Whey, WorldStaticModel = PillBottleGround, }
-    item BF_KitAntidoping { DisplayCategory = FirstAid, ItemType = base:normal, Weight = 0.2, Icon = BF_KitAntidoping, Tooltip = Tooltip_BF_KitAntidoping, WorldStaticModel = PillBottleGround, Tags = base:medical, }
-    item BF_Vidraria { DisplayCategory = Tool, ItemType = base:normal, Weight = 1.5, Icon = BF_Vidraria, Tooltip = Tooltip_BF_Vidraria, WorldStaticModel = PillBottleGround, }
+    item BF_BenegripeForte { DisplayCategory = Farmacia, ItemType = base:drainable, Weight = 0.1, UseDelta = 0.1, UseWhileEquipped = false, Icon = BF_BenegripeForte, Tooltip = Tooltip_BF_BenegripeForte, WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_VitaminaC { DisplayCategory = Farmacia, ItemType = base:drainable, Weight = 0.1, UseDelta = 0.1, UseWhileEquipped = false, Icon = BF_VitaminaC, Tooltip = Tooltip_BF_VitaminaC, WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Creatina { DisplayCategory = Farmacia, ItemType = base:drainable, Weight = 0.1, UseDelta = 0.1, UseWhileEquipped = false, Icon = BF_Creatina, Tooltip = Tooltip_BF_Creatina, WorldStaticModel = PillBottleGround, }
+    item BF_Whey { DisplayCategory = Farmacia, ItemType = base:normal, Weight = 0.3, Icon = BF_Whey, Tooltip = Tooltip_BF_Whey, WorldStaticModel = PillBottleGround, }
+    item BF_KitAntidoping { DisplayCategory = Farmacia, ItemType = base:normal, Weight = 0.2, Icon = BF_KitAntidoping, Tooltip = Tooltip_BF_KitAntidoping, WorldStaticModel = PillBottleGround, Tags = base:medical, }
+    item BF_Vidraria { DisplayCategory = Farmacia, ItemType = base:normal, Weight = 1.5, Icon = BF_Vidraria, Tooltip = Tooltip_BF_Vidraria, WorldStaticModel = PillBottleGround, }
     item BF_Laboratorio { DisplayCategory = Furniture, ItemType = base:moveable, Weight = 12.0, Icon = BF_Laboratorio, Tooltip = Tooltip_BF_Laboratorio, WorldObjectSprite = location_community_medical_01_65, }
     item BF_LivroHorta { DisplayCategory = RecipeResource, ItemType = base:literature, Weight = 0.8, Icon = BF_LivroHorta, BoredomChange = -30, StressChange = -20, LearnedRecipes = base:poppy growing season;base:sage growing season;base:black sage growing season;base:comfrey growing season;base:broadleaf plantain growing season;base:wild garlic growing season;base:chamomile growing season;base:lavender growing season;base:tobacco growing season, StaticModel = BookLightBlue, WorldStaticModel = BookLightBlue_Ground, }
 
-    item BF_Resultado { DisplayCategory = Literature, ItemType = base:normal, Weight = 0.05, Icon = BF_Resultado, Tooltip = Tooltip_BF_Resultado, WorldStaticModel = SheetOfPaper, }
+    item BF_Resultado { DisplayCategory = Farmacia, ItemType = base:normal, Weight = 0.05, Icon = BF_Resultado, Tooltip = Tooltip_BF_Resultado, WorldStaticModel = SheetOfPaper, }
 }
