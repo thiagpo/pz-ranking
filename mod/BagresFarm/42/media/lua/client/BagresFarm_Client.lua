@@ -25,6 +25,7 @@ end
 local function stat(p, k) return p:getStats():get(k) end
 local function setStat(p, k, v) p:getStats():set(k, v) end
 local function clamp(v, a, b) if v < a then return a elseif v > b then return b end return v end
+local function vazio(t) if not t then return true end for _ in pairs(t) do return false end return true end
 
 local function horas(h)
     if h < 1 then return math.max(1, math.floor(h * 60 + 0.5)) .. " min" end
@@ -321,7 +322,7 @@ end)
 local function tick(p)
     if not p or p:isDead() or not p:isLocalPlayer() then return end
     local md = p:getModData().BF
-    if not md or (next(md.ef or {}) == nil and next(md.pos or {}) == nil and not md.abst) then return end
+    if not md or (vazio(md.ef) and vazio(md.pos) and not md.abst) then return end
     local st = estado(p); local t = agora()
     local n = p:getPlayerNum()
     local u = ult[n]; if not u then u = { sang = {} }; ult[n] = u end
