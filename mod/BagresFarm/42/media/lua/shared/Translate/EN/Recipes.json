@@ -56,5 +56,7 @@
     "Recipe_BF_MakeWhey": "Mix Whey",
     "Recipe_BF_MakeKitAntidoping": "Assemble Anti-doping Kit",
     "Recipe_BF_MakeVidraria": "Assemble Glassware",
-    "Recipe_BF_MakeLaboratorio": "Build Lab Bench"
+    "Recipe_BF_MakeLaboratorio": "Build Lab Bench",
+    "BF_MakeAlcool": "Make Isopropyl Alcohol",
+    "Recipe_BF_MakeAlcool": "Make Isopropyl Alcohol"
 }

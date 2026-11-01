@@ -6,7 +6,7 @@
     "Tooltip_BF_Deca": "48 h. +15% strength (carry weight and melee damage). <LINE> Side effect: hunger 80% faster. From the 3rd anabolic or slimming dose your hair falls out.",
     "Tooltip_BF_Trembolona": "36 h. +10% strength (carry weight and melee damage). <LINE> Side effect: hunger 60% faster. From the 3rd anabolic or slimming dose your hair falls out.",
     "Tooltip_BF_Morfina": "8 h. Cuts 80% of pain and relieves muscle strain. <LINE> From the 3rd dose: paranoia (phantom zombie sounds) and growing depression.",
-    "Tooltip_BF_Adrenalina": "1 h. Near infinite stamina, keen hearing, cuts panic and acts as Adrenaline Junkie. <LINE> Afterwards: extreme tiredness and, for 2 h, cuts bleed more.",
+    "Tooltip_BF_Adrenalina": "1 h. Near infinite stamina, keen hearing, cuts panic and acts as Adrenaline Junkie. <LINE> Afterwards: extreme tiredness and, for 2 h, cuts bleed more. <LINE> Recipe: alcohol, black sage, tobacco, sedative, poppy and comfrey.",
     "Tooltip_BF_Rebite": "6 h. Tires 90% less and sees in the dark like Cat's Eyes (trait owners see even better). <LINE> Afterwards: for 6 h sleep recovers only 40% of tiredness.",
     "Tooltip_BF_Dipirona": "4 h. Relieves muscle strain and 30% of pain.",
     "Tooltip_BF_Metanfetamina": "Bottle with 10 doses. 6 h: removes muscle strain fast and tires 70% less. <LINE> Paranoia from the 1st dose, addictive from the 3rd. Cooked at the lab bench, next to a lit fire, with glassware and a mortar.",
@@ -21,5 +21,6 @@
     "Tooltip_BF_Vidraria": "Flasks, hose and funnel. Needed for Meth and to build the lab bench.",
     "Tooltip_BF_Laboratorio": "Lab bench. Every medicine and injectable can only be prepared within 3 tiles of it. Meth also needs a lit fire nearby. Building it requires Carpentry 2 and Pharmacy 1.",
     "Tooltip_BF_LivroHorta": "Teaches the growing seasons of medicinal herbs. Readers harvest one extra herb per plant and earn Pharmacy XP.",
-    "Tooltip_BF_Resultado": "Result of an anti-doping test. Right click to read."
+    "Tooltip_BF_Resultado": "Result of an anti-doping test. Right click to read.",
+    "Tooltip_BF_AlcoolIsopropilico": "Bottle with 1 L of alcohol. Sterilizes syringes and goes into injectables. Made from 1 L of bleach and 10 L of clean water."
 }

@@ -185,11 +185,13 @@ module Base
         inputs
         {
             item 1 [Base.BF_SeringaVazia;Base.BF_SeringaUsada],
-            item 2 [Base.Tobacco;Base.TobaccoDried;Base.TobaccoLoose],
-            item 1 [Base.PillsBeta],
-            item 1 [Base.LemonGrass],
             item 1 [*],
-            -fluid 0.05 [RubbingAlcohol;Vodka;Whiskey],
+            -fluid 0.1 [RubbingAlcohol],
+            item 1 [Base.BlackSage;Base.BlackSageDried],
+            item 1 [Base.Tobacco;Base.TobaccoDried;Base.TobaccoLoose],
+            item 1 [Base.PillsBeta;Base.PillsSleepingTablets],
+            item 1 [Base.PoppyPods;Base.PoppyPodsDried],
+            item 1 [Base.Comfrey;Base.ComfreyDried],
         }
         outputs
         {
@@ -693,6 +695,30 @@ module Base
         outputs
         {
             item 1 Base.BF_Laboratorio,
+        }
+    }
+
+    craftRecipe BF_MakeAlcool
+    {
+        timedAction = MixingBowl,
+        time = 150,
+        NeedToBeLearn = true,
+        AutoLearnAny = Pharmacy:2,
+        Tags = AnySurfaceCraft;Health,
+        category = Farmacia,
+        SkillRequired = Pharmacy:2,
+        xpAward = Pharmacy:15,
+        inputs
+        {
+            item 1 [*],
+            -fluid 1.0 [Bleach],
+            item 1 [*],
+            -fluid 10.0 [Water],
+            item 1 [Base.WaterBottle;Base.PopBottle;Base.EmptyJar],
+        }
+        outputs
+        {
+            item 1 Base.BF_AlcoolIsopropilico,
         }
     }
 }
