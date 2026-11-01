@@ -51,5 +51,8 @@
     "IGUI_BF_Ef_VitaminaC": "protegido contra resfriado",
     "IGUI_BF_Ef_Creatina": "+50% XP de Força",
     "IGUI_BF_Ef_Whey": "+50% XP de Aptidão",
-    "IGUI_BF_Resfriado": "resfriado"
+    "IGUI_BF_Resfriado": "resfriado",
+    "IGUI_BF_Injetado": "%1 te aplicou %2",
+    "IGUI_BF_AplicouMal": "%1 te machucou com a agulha",
+    "IGUI_BF_AplicarInfo": "Seus Primeiros Socorros: nível %1. Risco de machucar o outro: %2%. Potência: +%3%."
 }

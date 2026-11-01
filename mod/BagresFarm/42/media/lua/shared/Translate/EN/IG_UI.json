@@ -51,5 +51,8 @@
     "IGUI_BF_Ef_VitaminaC": "protected against colds",
     "IGUI_BF_Ef_Creatina": "+50% Strength XP",
     "IGUI_BF_Ef_Whey": "+50% Fitness XP",
-    "IGUI_BF_Resfriado": "cold"
+    "IGUI_BF_Resfriado": "cold",
+    "IGUI_BF_Injetado": "%1 injected you with %2",
+    "IGUI_BF_AplicouMal": "%1 hurt you with the needle",
+    "IGUI_BF_AplicarInfo": "Your First Aid: level %1. Risk of hurting them: %2%. Potency: +%3%."
 }

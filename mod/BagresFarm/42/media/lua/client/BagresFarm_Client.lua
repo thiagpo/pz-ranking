@@ -243,14 +243,52 @@ local function menu(playerNum, context, items)
             end
             tip.description = desc
             op.toolTip = tip
+            if d.inj and noInv then
+                for _, alvo in ipairs(BF.jogadoresPerto(p)) do
+                    local quem = alvo:getDescriptor() and alvo:getDescriptor():getForename() or tostring(alvo:getUsername())
+                    local op2 = context:addOption(getText("ContextMenu_BF_InjetarEm") .. " " .. quem .. ": " .. item:getDisplayName(), p, function(pl)
+                        ISTimedActionQueue.add(BF_AplicarAction:new(pl, alvo, item, id))
+                    end)
+                    local tip2 = ISInventoryPaneContextMenu.addToolTip()
+                    tip2.description = getText("IGUI_BF_AplicarInfo", p:getPerkLevel(Perks.Doctor), math.floor(math.max(0, 5 - p:getPerkLevel(Perks.Doctor)) * 4 + 0.5), 3 * p:getPerkLevel(Perks.Doctor))
+                    op2.toolTip = tip2
+                end
+            end
             return
         end
     end
 end
 Events.OnFillInventoryObjectContextMenu.Add(menu)
 
+-- aplicacao em outro jogador: o efeito roda no cliente do alvo
+local function receberAplicacao(p, args, quem)
+    if args.ferida then
+        local bp = p:getBodyDamage():getBodyPart(BodyPartType[PARTES_SERINGA[ZombRand(1, #PARTES_SERINGA + 1)]])
+        local r = ZombRandFloat(0, 1)
+        if r < 0.6 then bp:setScratched(true, true) elseif r < 0.9 then bp:setCut(true) else bp:generateDeepWound() end
+        HaloTextHelper.addBadText(p, getText("IGUI_BF_AplicouMal", quem))
+    end
+    HaloTextHelper.addGoodText(p, getText("IGUI_BF_Injetado", quem, nome(args.id)))
+    BF.usar(p, args.id, args.pot, args.suja)
+end
+
+function BF.aplicarEm(p, alvo, id, pot, suja, ferida)
+    local quem = p:getDescriptor() and p:getDescriptor():getForename() or tostring(p:getUsername())
+    local args = { alvo = alvo:getUsername(), id = id, pot = pot, suja = suja, ferida = ferida, quem = quem }
+    if alvo:isLocalPlayer() then receberAplicacao(alvo, args, quem); return end
+    if isClient() then sendClientCommand(p, "BagresFarm", "aplicar", args) end
+end
+
+Events.OnServerCommand.Add(function(module, command, args)
+    if module ~= "BagresFarm" or command ~= "aplicado" or not args then return end
+    for i = 0, getNumActivePlayers() - 1 do
+        local p = getSpecificPlayer(i)
+        if p and not p:isDead() and p:getUsername() == args.alvo then receberAplicacao(p, args, args.quem or "?") end
+    end
+end)
+
 -- kit antidoping: botao direito no kit lista os jogadores a ate 3 quadros
-local function jogadoresPerto(p)
+function BF.jogadoresPerto(p)
     local lista = {}
     local function add(o)
         if o and o ~= p and not o:isDead() and math.abs(o:getX() - p:getX()) <= 3 and math.abs(o:getY() - p:getY()) <= 3 then table.insert(lista, o) end
@@ -289,7 +327,7 @@ local function menuKit(playerNum, context, items)
         local item = entry
         if not instanceof(entry, "InventoryItem") then item = entry.items and entry.items[1] end
         if item and item:getFullType() == "Base.BF_KitAntidoping" and p:getInventory():containsRecursive(item) then
-            local perto = jogadoresPerto(p)
+            local perto = BF.jogadoresPerto(p)
             if #perto == 0 then
                 local op = context:addOption(getText("ContextMenu_BF_Teste") .. "...", nil, nil); op.notAvailable = true
                 local tip = ISInventoryPaneContextMenu.addToolTip(); tip.description = getText("IGUI_BF_Ninguem"); op.toolTip = tip

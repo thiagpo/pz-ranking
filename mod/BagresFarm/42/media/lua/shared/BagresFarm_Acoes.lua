@@ -117,3 +117,60 @@ function BF_TesteAction:new(character, alvo, kit)
     if character:isTimedActionInstant() then o.maxTime = 1 end
     return o
 end
+
+-- aplicar injecao em outro jogador: potencia e risco vem dos Primeiros Socorros de quem aplica
+BF_AplicarAction = ISBaseTimedAction:derive("BF_AplicarAction")
+
+function BF_AplicarAction:isValid()
+    if not self.item or not self.alvo or self.alvo:isDead() then return false end
+    if isClient() then return self.character:getInventory():containsID(self.item:getID()) end
+    return self.character:getInventory():containsRecursive(self.item)
+end
+
+function BF_AplicarAction:update()
+    self.item:setJobDelta(self:getJobDelta())
+    self.character:faceThisObject(self.alvo)
+    self:setAnimVariable("BandageType", "LeftArm"); self:setActionAnim(CharacterActionAnims.Bandage)
+end
+
+function BF_AplicarAction:start()
+    if isClient() and self.item then self.item = self.character:getInventory():getItemById(self.item:getID()) end
+    self.item:setJobType(getText("ContextMenu_BF_Injetar"))
+    self.item:setJobDelta(0.0)
+    self:setOverrideHandModels(nil, nil)
+end
+
+function BF_AplicarAction:stop()
+    ISBaseTimedAction.stop(self)
+    if self.item then self.item:setJobDelta(0.0) end
+end
+
+function BF_AplicarAction:perform()
+    self.item:setJobDelta(0.0)
+    ISBaseTimedAction.perform(self)
+end
+
+function BF_AplicarAction:complete()
+    local p = self.character; local inv = p:getInventory()
+    local pot = BF.potencia(self.item); local suja = BF.suja(self.item)
+    inv:Remove(self.item)
+    if isServer() then sendRemoveItemFromContainer(inv, self.item) end
+    local s = inv:AddItem("Base.BF_SeringaUsada")
+    if isServer() and s then sendAddItemToContainer(inv, s) end
+    local doutor = p:getPerkLevel(Perks.Doctor)
+    if not isClient() and BF.PERK then p:getXp():AddXP(BF.PERK, 2); p:getXp():AddXP(Perks.Doctor, 3) end
+    if not isServer() and BF.aplicarEm then
+        local ferida = ZombRandFloat(0, 1) < math.max(0, 5 - doutor) * 0.04
+        BF.aplicarEm(p, self.alvo, self.id, pot * (1 + 0.03 * doutor), suja, ferida)
+    end
+    return true
+end
+
+function BF_AplicarAction:new(character, alvo, item, id)
+    local o = ISBaseTimedAction.new(self, character)
+    o.alvo = alvo; o.item = item; o.id = id
+    o.stopOnWalk = true; o.stopOnRun = true; o.stopOnAim = false
+    o.maxTime = 140
+    if character:isTimedActionInstant() then o.maxTime = 1 end
+    return o
+end
