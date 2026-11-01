@@ -1,0 +1,13 @@
+{
+    "Sandbox_BagresFarm": "Farms do Bagres",
+    "Sandbox_BF_Efeito": "Multiplicador dos efeitos bons",
+    "Sandbox_BF_Efeito_tooltip": "1 = padrão. Multiplica fome, cansaço, força, dor e demais benefícios dos remédios.",
+    "Sandbox_BF_Colateral": "Multiplicador dos efeitos colaterais",
+    "Sandbox_BF_Colateral_tooltip": "1 = padrão, 0 desliga os colaterais.",
+    "Sandbox_BF_ValidadeDias": "Validade fora da geladeira (dias)",
+    "Sandbox_BF_ValidadeDias_tooltip": "Injetáveis chegam a 40% de potência ao fim desse prazo.",
+    "Sandbox_BF_RiscoAgulha": "Risco de acidente com a agulha por nível faltante (%)",
+    "Sandbox_BF_RiscoAgulha_tooltip": "Multiplicado por (5 − Primeiros Socorros). Padrão 4: nível 0 = 20%.",
+    "Sandbox_BF_Overdose": "Overdose (desmaio) ao repetir injeção em 2 h",
+    "Sandbox_BF_Overlays": "Efeitos visuais na tela"
+}

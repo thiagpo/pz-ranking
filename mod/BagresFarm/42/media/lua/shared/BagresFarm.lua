@@ -8,6 +8,22 @@ BF.OVERDOSE_H = 2
 BF.VALIDADE_H = 336
 BF.LAB_SPRITE = "location_community_medical_01_136"
 BF.HIST_H = 48
+BF.SUBIDA_H = 10 / 60
+
+-- opcoes de sandbox (menu do servidor), com padrao se o mod for novo no save
+function BF.sb(k, padrao)
+    local ok, v = pcall(function() return SandboxVars.BagresFarm[k] end)
+    if ok and v ~= nil then return v end
+    return padrao
+end
+function BF.validadeH() return BF.sb("ValidadeDias", 14) * 24 end
+
+-- multiplicadores reais de um efeito ativo: sobem nos primeiros 10 min (come-up) e respeitam o sandbox
+function BF.mult(e, t)
+    local r = 1
+    if e.ini and t then r = math.min(1, math.max(0.15, (t - e.ini) / BF.SUBIDA_H)) end
+    return e.m * r * BF.sb("Efeito", 1), e.d * r * BF.sb("Colateral", 1)
+end
 
 -- skill Farmacia (definida em media/perks.txt)
 BF.PERK = Perks.Pharmacy or Perks.FromString("Pharmacy")
@@ -62,7 +78,7 @@ end
 function BF.fatorValidade(item)
     local id = BF.droga(item)
     if not id or not BF.DROGAS[id].inj then return 1 end
-    return math.max(0.4, 1 - BF.horasFora(item) / BF.VALIDADE_H)
+    return math.max(0.4, 1 - BF.horasFora(item) / BF.validadeH())
 end
 
 function BF.potencia(item)
@@ -80,7 +96,7 @@ function BF.nomeItem(item)
     if md.bf_nivel and md.bf_nivel > 0 then table.insert(extra, "F" .. md.bf_nivel) end
     table.insert(extra, math.floor(BF.potencia(item) * 100 + 0.5) .. "%")
     if md.bf_suja then table.insert(extra, getText("IGUI_BF_Suja")) end
-    if md.bf_fora and md.bf_fora >= BF.VALIDADE_H then table.insert(extra, getText("IGUI_BF_Vencido")) end
+    if md.bf_fora and md.bf_fora >= BF.validadeH() then table.insert(extra, getText("IGUI_BF_Vencido")) end
     return base .. " (" .. table.concat(extra, ", ") .. ")"
 end
 
@@ -180,6 +196,8 @@ function BF.fatorTolerancia(usos) return 1 + BF.tolerancia(usos) end
 -- profissao e traco (registrados em media/registries.lua)
 pcall(function() BF.PROF = BF.PROF or CharacterProfession.get(ResourceLocation.of("bagresfarm:farmaceutico")) end)
 pcall(function() BF.TRAIT = BF.TRAIT or CharacterTrait.get(ResourceLocation.of("bagresfarm:conhecimentosfarmaco")) end)
+pcall(function() BF.TRAIT_DESNUTRIDO = BF.TRAIT_DESNUTRIDO or CharacterTrait.get(ResourceLocation.of("bagresfarm:desnutrido")) end)
+pcall(function() BF.TRAIT_CORACAO = BF.TRAIT_CORACAO or CharacterTrait.get(ResourceLocation.of("bagresfarm:coracaocansado")) end)
 
 -- bonus de XP: Farmacia vem dos niveis iniciais do jogo (3 niveis = +125%, traco 1 nivel = +75%);
 -- a profissao soma +75% em Primeiros Socorros e +100% em Laminas Curtas; creatina/whey +50% em Forca / Aptidao enquanto ativos

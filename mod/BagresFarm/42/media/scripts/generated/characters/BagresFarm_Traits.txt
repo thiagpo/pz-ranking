@@ -11,4 +11,24 @@ module BagresFarm
         XPBoosts = Pharmacy=1,
         GrantedRecipes = BF_MakeVitamins;BF_MakeDipirona,
     }
+
+    character_trait_definition bagresfarm:desnutrido
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = false,
+        CharacterTrait = bagresfarm:desnutrido,
+        Cost = -4,
+        UIName = UI_trait_Desnutrido,
+        UIDescription = UI_trait_DesnutridoDesc,
+    }
+
+    character_trait_definition bagresfarm:coracaocansado
+    {
+        IsProfessionTrait = false,
+        DisabledInMultiplayer = false,
+        CharacterTrait = bagresfarm:coracaocansado,
+        Cost = -4,
+        UIName = UI_trait_CoracaoCansado,
+        UIDescription = UI_trait_CoracaoCansadoDesc,
+    }
 }

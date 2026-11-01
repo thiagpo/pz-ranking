@@ -78,5 +78,7 @@
     "IGUI_BF_L_vicio": "vicia",
     "IGUI_BF_L_fumo": "mata a vontade de fumar",
     "IGUI_BF_L_enjoo": "enjoo",
-    "IGUI_BF_L_bebado": "embriaguez"
+    "IGUI_BF_L_bebado": "embriaguez",
+    "IGUI_BF_Desnutrido": "Seu corpo cedeu: Desnutrido (permanente)",
+    "IGUI_BF_Coracao": "Seu coração cedeu: Coração Cansado (permanente)"
 }

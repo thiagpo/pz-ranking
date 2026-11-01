@@ -1,0 +1,13 @@
+{
+    "Sandbox_BagresFarm": "Farms do Bagres",
+    "Sandbox_BF_Efeito": "Good effects multiplier",
+    "Sandbox_BF_Efeito_tooltip": "1 = default. Multiplies hunger, tiredness, strength, pain and other benefits.",
+    "Sandbox_BF_Colateral": "Side effects multiplier",
+    "Sandbox_BF_Colateral_tooltip": "1 = default, 0 disables side effects.",
+    "Sandbox_BF_ValidadeDias": "Shelf life out of fridge (days)",
+    "Sandbox_BF_ValidadeDias_tooltip": "Injectables reach 40% potency at the end of this period.",
+    "Sandbox_BF_RiscoAgulha": "Needle accident risk per missing level (%)",
+    "Sandbox_BF_RiscoAgulha_tooltip": "Multiplied by (5 − First Aid). Default 4: level 0 = 20%.",
+    "Sandbox_BF_Overdose": "Overdose (faint) when repeating an injection within 2 h",
+    "Sandbox_BF_Overlays": "Screen visual effects"
+}

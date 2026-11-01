@@ -113,6 +113,18 @@ Events.OnPlayerUpdate.Add(function(p)
     if agoraMs >= e.prox then e.prox = agoraMs + 9000; cair(p) end
 end)
 
+BF.visual = BF.visual or {}
+
+function BF.tracoPermanente(p, trait, chave)
+    if not trait then return end
+    pcall(function()
+        if not p:hasTrait(trait) then
+            p:getCharacterTraits():add(trait)
+            HaloTextHelper.addBadText(p, getText(chave))
+        end
+    end)
+end
+
 local function terminar(p, st, id)
     local e = st.ef[id]; local d = BF.DROGAS[id]
     st.ef[id] = nil
@@ -150,11 +162,14 @@ function BF.usar(p, id, pot, suja)
         setStat(p, CharacterStat.UNHAPPINESS, clamp(stat(p, CharacterStat.UNHAPPINESS) - 5, 0, 100))
         setStat(p, CharacterStat.SICKNESS, clamp(stat(p, CharacterStat.SICKNESS) + 15 * fator, 0, 100))
         setStat(p, CharacterStat.INTOXICATION, clamp(stat(p, CharacterStat.INTOXICATION) + 25 * fator, 0, 100))
+        BF.visual[p:getPlayerNum()] = BF.visual[p:getPlayerNum()] or {}; BF.visual[p:getPlayerNum()].loloAte = getTimestampMs() + 90000
         HaloTextHelper.addGoodText(p, nome(id))
         registrar(p, st, id, t)
         return
     end
     local overdose = d.inj and st.ultDose[id] and (t - st.ultDose[id]) < BF.OVERDOSE_H
+    if (st.usos.Ozempic or 0) + (st.usos.Monjaro or 0) >= 8 then BF.tracoPermanente(p, BF.TRAIT_DESNUTRIDO, "IGUI_BF_Desnutrido") end
+    if (st.usos.Deca or 0) + (st.usos.Trembolona or 0) >= 10 then BF.tracoPermanente(p, BF.TRAIT_CORACAO, "IGUI_BF_Coracao") end
     if d.cura then p:getBodyDamage():setCatchACold(0) end
     if d.fadigaJa then setStat(p, CharacterStat.FATIGUE, clamp(stat(p, CharacterStat.FATIGUE) + d.fadigaJa * (pot or 1), 0, 1)) end
     if d.fomeJa then setStat(p, CharacterStat.HUNGER, clamp(stat(p, CharacterStat.HUNGER) + d.fomeJa, 0, 1)) end
@@ -180,13 +195,13 @@ function BF.usar(p, id, pot, suja)
     end
     HaloTextHelper.addGoodText(p, nome(id))
     registrar(p, st, id, t)
-    if overdose then desmaiar(p) end
+    if overdose and BF.sb("Overdose", true) then desmaiar(p) end
 end
 
 -- pouca pratica em Primeiros Socorros: chance de se machucar com a agulha
 function BF.acidenteSeringa(p)
     local doutor = p:getPerkLevel(Perks.Doctor)
-    local risco = math.max(0, 5 - doutor) * 0.04
+    local risco = math.max(0, 5 - doutor) * (BF.sb("RiscoAgulha", 4) / 100)
     if ZombRandFloat(0, 1) >= risco then return end
     local bp = p:getBodyDamage():getBodyPart(BodyPartType[PARTES_SERINGA[ZombRand(1, #PARTES_SERINGA + 1)]])
     local r = ZombRandFloat(0, 1)
@@ -351,7 +366,10 @@ Events.OnFillInventoryObjectContextMenu.Add(menuKit)
 local function tick(p)
     if not p or p:isDead() or not p:isLocalPlayer() then return end
     local md = p:getModData().BF
-    if not md or (vazio(md.ef) and vazio(md.pos) and not md.abst) then return end
+    local n0 = p:getPlayerNum()
+    local vis = BF.visual[n0]
+    local trDes = vis and vis.trDes; local trCor = vis and vis.trCor
+    if not md or (vazio(md.ef) and vazio(md.pos) and not md.abst and not trDes and not trCor) then return end
     local st = estado(p); local t = agora()
     local n = p:getPlayerNum()
     local u = ult[n]; if not u then u = { sang = {} }; ult[n] = u end
@@ -361,13 +379,15 @@ local function tick(p)
     for id, e in pairs(st.ef) do
         local d = BF.DROGAS[id]
         if d then
-            if d.fome then fomeM = fomeM + d.fome * (d.fome < 0 and e.m or e.d) end
-            if d.fadiga then fadM = fadM + d.fadiga * (d.fadiga < 0 and e.m or e.d) end
-            if d.dor then dor = dor + d.dor * e.m end
+            local m2, d2 = BF.mult(e, t)
+            if d.fome then fomeM = fomeM + d.fome * (d.fome < 0 and m2 or d2) end
+            if d.fadiga then fadM = fadM + d.fadiga * (d.fadiga < 0 and m2 or d2) end
+            if d.dor then dor = dor + d.dor * m2 end
             if d.folego then folego = true end
-            if d.sangramento then sangra = math.max(sangra, d.sangramento * e.d) end
+            if d.sangramento then sangra = math.max(sangra, d.sangramento * d2) end
         end
     end
+    if trDes then fomeM = fomeM + 0.3 end
     local recup = 0
     for id, e in pairs(st.pos) do
         if e.fim > t then
@@ -392,6 +412,9 @@ local function tick(p)
     end
     u.fad = fad
 
+    local endu = stat(p, CharacterStat.ENDURANCE)
+    if trCor and u.endu and endu > u.endu then endu = u.endu + (endu - u.endu) * 0.7; setStat(p, CharacterStat.ENDURANCE, endu) end
+    u.endu = endu
     if folego and stat(p, CharacterStat.ENDURANCE) < 0.85 then setStat(p, CharacterStat.ENDURANCE, 0.85) end
     if dor > 0 then
         local pain = stat(p, CharacterStat.PAIN)
@@ -455,19 +478,20 @@ local function minuto()
             for id, e in pairs(st.ef) do
                 local d = BF.DROGAS[id]
                 if d then
+                    local m2, d2 = BF.mult(e, t)
                     if d.gripe then local bd = p:getBodyDamage(); if bd:getCatchACold() > 0 then bd:setCatchACold(0) end end
                     if d.cura then
                         local bd = p:getBodyDamage(); local cs = bd:getColdStrength()
                         if cs > 0 then
-                            cs = cs - (100 / (d.cura * 60)) * e.m
+                            cs = cs - (100 / (d.cura * 60)) * m2
                             if cs <= 0 then cs = 0; bd:setHasACold(false); HaloTextHelper.addGoodText(p, getText("IGUI_BF_Curado") .. ": " .. getText("IGUI_BF_Resfriado")) end
                             bd:setColdStrength(cs)
                         end
                     end
-                    if d.rigidez then rig = rig + d.rigidez * e.m end
-                    if d.pesoDia then peso = peso + d.pesoDia * e.m end
-                    if d.paranoia and (st.usos[id] or 0) >= d.paranoia then paranoia = paranoia + 0.12 * e.d * (1 + 0.15 * ((st.usos[id] or 0) - d.paranoia)) end
-                    if d.depressao and (st.usos[id] or 0) >= d.depressao then depress = depress + 0.01 * (st.usos[id] or 0) * e.d end
+                    if d.rigidez then rig = rig + d.rigidez * m2 end
+                    if d.pesoDia then peso = peso + d.pesoDia * m2 end
+                    if d.paranoia and (st.usos[id] or 0) >= d.paranoia then paranoia = paranoia + 0.12 * d2 * (1 + 0.15 * ((st.usos[id] or 0) - d.paranoia)) end
+                    if d.depressao and (st.usos[id] or 0) >= d.depressao then depress = depress + 0.01 * (st.usos[id] or 0) * d2 end
                 end
             end
             if rig > 0 then
@@ -485,14 +509,71 @@ local function minuto()
                 p:getEmitter():playSound(VOZES[ZombRand(1, #VOZES + 1)])
                 setStat(p, CharacterStat.PANIC, 100)
                 setStat(p, CharacterStat.STRESS, clamp(stat(p, CharacterStat.STRESS) + 0.15, 0, 1))
+                BF.visual[i] = BF.visual[i] or {}; BF.visual[i].flash = getTimestampMs()
                 HaloTextHelper.addBadText(p, getText("IGUI_BF_Paranoia"))
             end
             if depress > 0 then setStat(p, CharacterStat.UNHAPPINESS, clamp(stat(p, CharacterStat.UNHAPPINESS) + depress, 0, 100)) end
             abstinencia(p, st, t)
+            BF.visual[i] = BF.visual[i] or {}
+            local v = BF.visual[i]
+            pcall(function()
+                v.trDes = BF.TRAIT_DESNUTRIDO ~= nil and p:hasTrait(BF.TRAIT_DESNUTRIDO)
+                v.trCor = BF.TRAIT_CORACAO ~= nil and p:hasTrait(BF.TRAIT_CORACAO)
+            end)
+            -- tremor de abstinencia (animacao do jogo via AnimSet), so parado e desarmado
+            if st.abst and ZombRandFloat(0, 1) < 0.5 and not p:getPrimaryHandItem() and not p:isPlayerMoving() then
+                p:setVariable("BF_Pose", "tremor"); v.tremorAte = getTimestampMs() + 2500
+            end
         end
     end
 end
 Events.EveryOneMinute.Add(minuto)
+
+Events.OnPlayerUpdate.Add(function(p)
+    if not p or not p:isLocalPlayer() then return end
+    local v = BF.visual[p:getPlayerNum()]
+    if v and v.tremorAte and getTimestampMs() >= v.tremorAte then v.tremorAte = nil; p:clearVariable("BF_Pose") end
+end)
+
+-- overlays de tela: sedado (verde), paranoia (vermelho), loló (quente), desmaio e ressaca (escuro)
+local OV = {}
+local function tex(nome)
+    if OV[nome] == nil then OV[nome] = getTexture("media/ui/" .. nome .. ".png") or false end
+    return OV[nome] or nil
+end
+local function camada(nome, a, w, h)
+    if a <= 0.01 then return end
+    local tx = tex(nome); if not tx then return end
+    UIManager.DrawTexture(tx, 0, 0, w, h, math.min(1, a))
+end
+Events.OnPostUIDraw.Add(function()
+    if not BF.sb("Overlays", true) then return end
+    local p = getSpecificPlayer(0)
+    if not p or p:isDead() then return end
+    local md = p:getModData().BF
+    local v = BF.visual[0] or {}
+    local ms = getTimestampMs()
+    local w, h = getCore():getScreenWidth(), getCore():getScreenHeight()
+    local pulso = 0.5 + 0.5 * math.sin(ms / 900)
+    local verde, vermelho, escuro, quente, roxo = 0, 0, 0, 0, 0
+    if md and md.ef then
+        local t = agora()
+        for id, e in pairs(md.ef) do
+            local m2 = BF.mult(e, t)
+            if id == "Morfina" then verde = math.max(verde, 0.45 * math.min(1, m2)) end
+            if id == "Metanfetamina" then vermelho = math.max(vermelho, 0.12 + 0.12 * pulso) end
+            if id == "Rebite" then roxo = math.max(roxo, 0.18 + 0.08 * pulso) end
+            if id == "Tadala" or id == "Dipirona" then verde = math.max(verde, 0.12) end
+        end
+        if md.abst then escuro = math.max(escuro, 0.15 + 0.1 * pulso) end
+        for id, e in pairs(md.pos or {}) do if e.fim > agora() and id == "Rebite" then escuro = math.max(escuro, 0.3) end end
+    end
+    if v.flash then local dt = (ms - v.flash) / 1500; if dt < 1 then vermelho = math.max(vermelho, 0.7 * (1 - dt)) else v.flash = nil end end
+    if v.loloAte then if ms < v.loloAte then quente = 0.35 * math.min(1, (v.loloAte - ms) / 90000) + 0.05 * pulso else v.loloAte = nil end end
+    if BF.desmaio[0] then escuro = 0.9 end
+    camada("BF_ov_verde", verde, w, h); camada("BF_ov_roxo", roxo, w, h); camada("BF_ov_quente", quente, w, h)
+    camada("BF_ov_vermelho", vermelho, w, h); camada("BF_ov_escuro", escuro, w, h)
+end)
 
 -- validade: injetaveis fora de geladeira perdem potencia (ate 40% em 14 dias)
 local function ehInjetavel(it)
@@ -511,8 +592,8 @@ Events.EveryHours.Add(function()
                 if tipo ~= "fridge" and tipo ~= "freezer" then
                     local md = it:getModData()
                     md.bf_fora = (md.bf_fora or 0) + 1
-                    if md.bf_fora >= BF.VALIDADE_H and not md.bf_vencido then md.bf_vencido = true end
-                    if md.bf_fora % 24 == 0 or md.bf_fora >= BF.VALIDADE_H then it:setName(BF.nomeItem(it)) end
+                    if md.bf_fora >= BF.validadeH() and not md.bf_vencido then md.bf_vencido = true end
+                    if md.bf_fora % 24 == 0 or md.bf_fora >= BF.validadeH() then it:setName(BF.nomeItem(it)) end
                 end
             end
         end

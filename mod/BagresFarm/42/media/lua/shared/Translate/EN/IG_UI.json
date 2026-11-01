@@ -78,5 +78,7 @@
     "IGUI_BF_L_vicio": "addictive",
     "IGUI_BF_L_fumo": "kills nicotine craving",
     "IGUI_BF_L_enjoo": "nausea",
-    "IGUI_BF_L_bebado": "drunkenness"
+    "IGUI_BF_L_bebado": "drunkenness",
+    "IGUI_BF_Desnutrido": "Your body gave in: Malnourished (permanent)",
+    "IGUI_BF_Coracao": "Your heart gave in: Tired Heart (permanent)"
 }

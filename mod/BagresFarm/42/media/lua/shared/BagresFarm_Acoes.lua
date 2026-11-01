@@ -160,7 +160,7 @@ function BF_AplicarAction:complete()
     local doutor = p:getPerkLevel(Perks.Doctor)
     if not isClient() and BF.PERK then p:getXp():AddXP(BF.PERK, 2); p:getXp():AddXP(Perks.Doctor, 3) end
     if not isServer() and BF.aplicarEm then
-        local ferida = ZombRandFloat(0, 1) < math.max(0, 5 - doutor) * 0.04
+        local ferida = ZombRandFloat(0, 1) < math.max(0, 5 - doutor) * (BF.sb("RiscoAgulha", 4) / 100)
         BF.aplicarEm(p, self.alvo, self.id, pot * (1 + 0.03 * doutor), suja, ferida)
     end
     return true

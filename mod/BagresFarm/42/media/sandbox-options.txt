@@ -1,0 +1,57 @@
+VERSION = 1,
+
+option BagresFarm.Efeito
+{
+    type = double,
+    min = 0.25,
+    max = 3.0,
+    default = 1.0,
+    page = BagresFarm,
+    translation = BF_Efeito,
+}
+
+option BagresFarm.Colateral
+{
+    type = double,
+    min = 0.0,
+    max = 3.0,
+    default = 1.0,
+    page = BagresFarm,
+    translation = BF_Colateral,
+}
+
+option BagresFarm.ValidadeDias
+{
+    type = integer,
+    min = 1,
+    max = 90,
+    default = 14,
+    page = BagresFarm,
+    translation = BF_ValidadeDias,
+}
+
+option BagresFarm.RiscoAgulha
+{
+    type = integer,
+    min = 0,
+    max = 20,
+    default = 4,
+    page = BagresFarm,
+    translation = BF_RiscoAgulha,
+}
+
+option BagresFarm.Overdose
+{
+    type = boolean,
+    default = true,
+    page = BagresFarm,
+    translation = BF_Overdose,
+}
+
+option BagresFarm.Overlays
+{
+    type = boolean,
+    default = true,
+    page = BagresFarm,
+    translation = BF_Overlays,
+}
