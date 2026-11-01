@@ -8,6 +8,6 @@
     "Sandbox_BF_ValidadeDias_tooltip": "Injetáveis chegam a 40% de potência ao fim desse prazo.",
     "Sandbox_BF_RiscoAgulha": "Risco de acidente com a agulha por nível faltante (%)",
     "Sandbox_BF_RiscoAgulha_tooltip": "Multiplicado por (5 − Primeiros Socorros). Padrão 4: nível 0 = 20%.",
-    "Sandbox_BF_Overdose": "Overdose (desmaio) ao repetir injeção em 2 h",
+    "Sandbox_BF_Overdose": "Overdose ao repetir injeção em 2 h (desmaio de 30 s, zera os efeitos)",
     "Sandbox_BF_Overlays": "Efeitos visuais na tela"
 }

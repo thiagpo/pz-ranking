@@ -91,12 +91,24 @@ end
 
 -- desmaio: cai no chao (animacao que os outros veem) e fica 2 minutos sem conseguir se mover
 BF.desmaio = BF.desmaio or {}
-local DESMAIO_MS = 120000
+local DESMAIO_MS = 30000
+BF.acordando = BF.acordando or {}
 
 local function cair(p)
     pcall(function()
         p:setBumpType("pushed"); p:setBumpDone(false); p:setBumpFall(true); p:setBumpFallType("pushed")
     end)
+end
+
+-- zera todos os efeitos, ressacas e tracos emprestados (usado ao acordar da overdose)
+local function limparEfeitos(p)
+    local st = estado(p)
+    for id in pairs(st.ef) do st.ef[id] = nil end
+    for id in pairs(st.pos) do st.pos[id] = nil end
+    st.abst = nil
+    audicao(p, st, false); visao(p, st, false); tracoTemp(p, st, CharacterTrait.ADRENALINE_JUNKIE, "adrTemp", false)
+    aplicarForca(p, st)
+    pcall(function() p:transmitModData() end)
 end
 
 local function desmaiar(p)
@@ -113,15 +125,24 @@ end
 Events.OnPlayerUpdate.Add(function(p)
     if not p or not p:isLocalPlayer() then return end
     local n = p:getPlayerNum(); local e = BF.desmaio[n]
-    if not e then return end
+    if not e then
+        local ac = BF.acordando[n]
+        if ac then
+            if getTimestampMs() >= ac then BF.acordando[n] = nil
+            else pcall(function() p:setBlockMovement(false); if p:isSitOnGround() or p:isSitting() then p:setVariable("forceGetUp", true) end end) end
+        end
+        return
+    end
     local agoraMs = getTimestampMs()
     if p:isDead() or agoraMs >= e.fim then
         BF.desmaio[n] = nil
+        BF.acordando[n] = agoraMs + 4000
         pcall(function()
+            p:StopAllActionQueue()
             p:setBlockMovement(false); p:setBumpFall(false); p:setBumpDone(true)
-            if p:isSitOnGround() or p:isSitting() then p:setVariable("forceGetUp", true) end
+            p:setVariable("forceGetUp", true)
         end)
-        if not p:isDead() then HaloTextHelper.addGoodText(p, getText("IGUI_BF_Acordou")) end
+        if not p:isDead() then limparEfeitos(p); HaloTextHelper.addGoodText(p, getText("IGUI_BF_Acordou")) end
         return
     end
     pcall(function() p:setBlockMovement(true) end)

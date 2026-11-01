@@ -8,6 +8,6 @@
     "Sandbox_BF_ValidadeDias_tooltip": "Injectables reach 40% potency at the end of this period.",
     "Sandbox_BF_RiscoAgulha": "Needle accident risk per missing level (%)",
     "Sandbox_BF_RiscoAgulha_tooltip": "Multiplied by (5 − First Aid). Default 4: level 0 = 20%.",
-    "Sandbox_BF_Overdose": "Overdose (faint) when repeating an injection within 2 h",
+    "Sandbox_BF_Overdose": "Overdose when repeating an injection within 2 h (30 s faint, clears effects)",
     "Sandbox_BF_Overlays": "Screen visual effects"
 }
