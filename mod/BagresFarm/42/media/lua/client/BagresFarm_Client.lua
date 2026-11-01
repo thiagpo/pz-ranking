@@ -595,7 +595,10 @@ local function minuto()
                         end
                     end
                     if d.tosse and ZombRandFloat(0, 1) < 0.3 then pcall(function() p:playerVoiceSound("Cough") end) end
-                    if d.grito and ZombRandFloat(0, 1) < 0.08 then pcall(function() p:playerVoiceSound("PainFromScratch") end) end
+                    if d.grito and ZombRandFloat(0, 1) < 0.08 then
+                        pcall(function() p:playerVoiceSound("PainFromScratch") end)
+                        pcall(function() p:Say(getText("IGUI_BF_Grito")) end)
+                    end
                     if d.rigidez then rig = rig + d.rigidez * m2 end
                     if d.pesoDia then peso = peso + d.pesoDia * m2 end
                     if d.paranoia and (st.usos[id] or 0) >= d.paranoia then paranoia = paranoia + 0.12 * d2 * (1 + 0.15 * ((st.usos[id] or 0) - d.paranoia)) end
