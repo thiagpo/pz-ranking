@@ -68,9 +68,11 @@ function BF_UsarAction:complete()
         pot = pot * (1 + 0.03 * p:getPerkLevel(Perks.Doctor))
         if not isClient() and BF.PERK then p:getXp():AddXP(BF.PERK, 2) end
     end
-    if not isServer() then
-        if d.inj and BF.acidenteSeringa then BF.acidenteSeringa(p) end
-        if BF.usar then BF.usar(p, self.id, pot, suja) end
+    local args = { alvo = p:getUsername(), id = self.id, pot = pot, suja = suja, inj = d.inj }
+    if isServer() then
+        sendServerCommand(p, "BagresFarm", "usar", args)
+    elseif not isClient() and BF.receberUso then
+        BF.receberUso(p, args)
     end
     return true
 end
@@ -107,7 +109,16 @@ function BF_TesteAction:complete()
     inv:Remove(self.kit)
     if isServer() then sendRemoveItemFromContainer(inv, self.kit) end
     if not isClient() and BF.PERK then self.character:getXp():AddXP(BF.PERK, 5) end
-    if not isServer() and BF.mostrarTeste then BF.mostrarTeste(self.character, self.alvo) end
+    local md = self.alvo:getModData().BF
+    local hist = {}
+    if md and md.hist then for i, h in ipairs(md.hist) do hist[i] = { id = h.id, t = h.t } end end
+    local quem = self.alvo:getDescriptor() and self.alvo:getDescriptor():getForename() or tostring(self.alvo:getUsername())
+    local args = { alvo = self.character:getUsername(), quem = quem, hist = hist }
+    if isServer() then
+        sendServerCommand(self.character, "BagresFarm", "teste", args)
+    elseif not isClient() and BF.mostrarTeste then
+        BF.mostrarTeste(self.character, args)
+    end
     return true
 end
 
@@ -159,9 +170,13 @@ function BF_AplicarAction:complete()
     if isServer() and s then sendAddItemToContainer(inv, s) end
     local doutor = p:getPerkLevel(Perks.Doctor)
     if not isClient() and BF.PERK then p:getXp():AddXP(BF.PERK, 2); p:getXp():AddXP(Perks.Doctor, 3) end
-    if not isServer() and BF.aplicarEm then
-        local ferida = ZombRandFloat(0, 1) < math.max(0, 5 - doutor) * (BF.sb("RiscoAgulha", 4) / 100)
-        BF.aplicarEm(p, self.alvo, self.id, pot * (1 + 0.03 * doutor), suja, ferida)
+    local ferida = ZombRandFloat(0, 1) < math.max(0, 5 - doutor) * (BF.sb("RiscoAgulha", 4) / 100)
+    local quem = p:getDescriptor() and p:getDescriptor():getForename() or tostring(p:getUsername())
+    local args = { alvo = self.alvo:getUsername(), id = self.id, pot = pot * (1 + 0.03 * doutor), suja = suja, ferida = ferida, quem = quem }
+    if isServer() then
+        sendServerCommand(self.alvo, "BagresFarm", "aplicado", args)
+    elseif not isClient() and BF.receberAplicacao then
+        BF.receberAplicacao(self.alvo, args, quem)
     end
     return true
 end

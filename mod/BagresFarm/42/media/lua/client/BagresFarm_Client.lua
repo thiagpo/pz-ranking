@@ -278,8 +278,15 @@ local function menu(playerNum, context, items)
 end
 Events.OnFillInventoryObjectContextMenu.Add(menu)
 
+-- uso proprio confirmado pelo servidor (a acao termina la): aplica o efeito no cliente
+function BF.receberUso(p, args)
+    if not p or not args or not BF.DROGAS[args.id] then return end
+    if args.inj then BF.acidenteSeringa(p) end
+    BF.usar(p, args.id, args.pot, args.suja)
+end
+
 -- aplicacao em outro jogador: o efeito roda no cliente do alvo
-local function receberAplicacao(p, args, quem)
+function BF.receberAplicacao(p, args, quem)
     if args.ferida then
         local bp = p:getBodyDamage():getBodyPart(BodyPartType[PARTES_SERINGA[ZombRand(1, #PARTES_SERINGA + 1)]])
         local r = ZombRandFloat(0, 1)
@@ -289,6 +296,7 @@ local function receberAplicacao(p, args, quem)
     HaloTextHelper.addGoodText(p, getText("IGUI_BF_Injetado", quem, nome(args.id)))
     BF.usar(p, args.id, args.pot, args.suja)
 end
+local receberAplicacao = BF.receberAplicacao
 
 function BF.aplicarEm(p, alvo, id, pot, suja, ferida)
     local quem = p:getDescriptor() and p:getDescriptor():getForename() or tostring(p:getUsername())
@@ -298,10 +306,14 @@ function BF.aplicarEm(p, alvo, id, pot, suja, ferida)
 end
 
 Events.OnServerCommand.Add(function(module, command, args)
-    if module ~= "BagresFarm" or command ~= "aplicado" or not args then return end
+    if module ~= "BagresFarm" or not args then return end
     for i = 0, getNumActivePlayers() - 1 do
         local p = getSpecificPlayer(i)
-        if p and not p:isDead() and p:getUsername() == args.alvo then receberAplicacao(p, args, args.quem or "?") end
+        if p and not p:isDead() and p:getUsername() == args.alvo then
+            if command == "aplicado" then receberAplicacao(p, args, args.quem or "?")
+            elseif command == "usar" then BF.receberUso(p, args)
+            elseif command == "teste" then BF.mostrarTeste(p, args) end
+        end
     end
 end)
 
@@ -319,15 +331,12 @@ function BF.jogadoresPerto(p)
     return lista
 end
 
-function BF.mostrarTeste(p, alvo)
-    local md = alvo:getModData().BF
+function BF.mostrarTeste(p, args)
     local t = agora(); local linhas = {}
-    if md and md.hist then
-        for _, h in ipairs(md.hist) do
-            if t - h.t <= BF.HIST_H and BF.DROGAS[h.id] then table.insert(linhas, nome(h.id) .. " - " .. getText("IGUI_BF_Ha") .. " " .. horas(t - h.t)) end
-        end
+    for _, h in ipairs(args.hist or {}) do
+        if t - h.t <= BF.HIST_H and BF.DROGAS[h.id] then table.insert(linhas, nome(h.id) .. " - " .. getText("IGUI_BF_Ha") .. " " .. horas(t - h.t)) end
     end
-    local quem = alvo:getDescriptor() and alvo:getDescriptor():getForename() or tostring(alvo:getUsername())
+    local quem = args.quem or "?"
     local texto = getText("IGUI_BF_TesteTitulo", quem) .. " <LINE> <LINE> "
     if #linhas == 0 then texto = texto .. getText("IGUI_BF_TesteLimpo") else texto = texto .. table.concat(linhas, " <LINE> ") end
     if ISModalRichText then
@@ -665,6 +674,8 @@ function BF_Botao:onMouseDown(x, y)
     return true
 end
 
+local TIPOS_MOODLE = { "ANGRY", "BLEEDING", "BORED", "CANT_SPRINT", "DEAD", "DRUNK", "ENDURANCE", "FOOD_EATEN", "HAS_A_COLD", "HEAVY_LOAD", "HUNGRY",
+    "HYPERTHERMIA", "HYPOTHERMIA", "INJURED", "NOXIOUS_SMELL", "PAIN", "PANIC", "SICK", "STRESS", "THIRST", "TIRED", "UNCOMFORTABLE", "UNHAPPY", "WINDCHILL", "ZOMBIE" }
 BF_Moodles = ISUIElement:derive("BF_Moodles")
 function BF_Moodles:new(pn)
     local o = ISUIElement.new(self, 0, 0, 36, 160)
@@ -686,11 +697,21 @@ function BF_Moodles:calcular()
 end
 function BF_Moodles:render()
     self:calcular()
-    local mui = MoodlesUI.getInstance()
-    local bx, by = getCore():getScreenWidth() - 80, 40
-    if mui then bx = mui:getX() - 44; by = mui:getY() end
-    self:setX(bx); self:setY(by + 30)
-    if BF.botao[self.pn] then BF.botao[self.pn]:setX(bx + 5); BF.botao[self.pn]:setY(by) end
+    local p = getSpecificPlayer(self.pn)
+    local tam = ({ 32, 48, 64, 80, 96, 128 })[(getCore():getOptionMoodleSize() or 1)] or 32
+    local passo = tam + 13
+    local n = 0
+    if p then
+        local mo = p:getMoodles()
+        for _, k in ipairs(TIPOS_MOODLE) do
+            local ok, lv = pcall(function() return mo:getMoodleLevel(MoodleType[k]) end)
+            if ok and lv and lv > 0 then n = n + 1 end
+        end
+    end
+    local bx = getCore():getScreenWidth() - 10 - tam
+    local by = 118 + n * passo
+    self:setX(bx + (tam - 36) / 2); self:setY(by + 30)
+    if BF.botao[self.pn] then BF.botao[self.pn]:setX(bx + (tam - 26) / 2); BF.botao[self.pn]:setY(by) end
     self:setHeight(#self.itens * 36 + 1)
     local mx, my = self:getMouseX(), self:getMouseY()
     for i, it in ipairs(self.itens) do
