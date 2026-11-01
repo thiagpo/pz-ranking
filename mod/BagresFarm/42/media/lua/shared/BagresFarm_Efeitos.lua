@@ -373,7 +373,15 @@ local function minuto()
                 local partes = p:getBodyDamage():getBodyParts()
                 for j = 0, partes:size() - 1 do
                     local bp = partes:get(j); local s = bp:getStiffness()
-                    if s > 0 then bp:setStiffness(math.max(0, s - s * math.min(0.9, rig))) end
+                    if s > 0 then
+                        local novo = s - s * math.min(0.9, rig)
+                        if novo < 3 then
+                            bp:setStiffness(0)
+                            pcall(function() p:getFitness():removeStiffnessValue(BodyPartType.ToString(bp:getType())) end)
+                        else
+                            bp:setStiffness(novo)
+                        end
+                    end
                 end
             end
             if peso > 0 then
