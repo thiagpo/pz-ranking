@@ -676,11 +676,11 @@ module Base
         timedAction = Making,
         time = 300,
         NeedToBeLearn = true,
-        AutoLearnAny = Pharmacy:6,
+        AutoLearnAny = Pharmacy:1,
         Tags = AnySurfaceCraft,
         category = Farmacia,
-        SkillRequired = Pharmacy:6,
-        xpAward = Pharmacy:50,
+        SkillRequired = Woodwork:2;Pharmacy:1,
+        xpAward = Pharmacy:20;Woodwork:15,
         inputs
         {
             item 1 [Base.BF_Vidraria],

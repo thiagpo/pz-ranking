@@ -19,7 +19,7 @@
     "Tooltip_BF_Whey": "Frasco com 10 doses. 6 h por dose: +50% de XP de Aptidão e mata um pouco a fome. Feito com 10 L de leite, açúcar e sal numa panela; devolve o pote quando acaba.",
     "Tooltip_BF_KitAntidoping": "Botão direito no kit com outro jogador a até 3 quadros: testa o que ele tomou nas últimas 48 h e gera um laudo. Gasta o kit.",
     "Tooltip_BF_Vidraria": "Frascos, mangueira e funil. Necessária para a Metanfetamina e para montar a bancada.",
-    "Tooltip_BF_Laboratorio": "Bancada de laboratório. Todos os remédios e injetáveis só podem ser preparados a até 3 quadros dela. Metanfetamina exige também fogo aceso por perto.",
+    "Tooltip_BF_Laboratorio": "Bancada de laboratório. Todos os remédios e injetáveis só podem ser preparados a até 3 quadros dela. Metanfetamina exige também fogo aceso por perto. Montar exige Carpintaria 2 e Farmácia 1.",
     "Tooltip_BF_LivroHorta": "Ensina a época de plantio das ervas medicinais. Quem leu colhe uma erva a mais por planta e ganha XP de Farmácia.",
     "Tooltip_BF_Resultado": "Resultado de um teste antidoping. Botão direito para ler."
 }
