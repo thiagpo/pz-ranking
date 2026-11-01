@@ -253,7 +253,13 @@ local function listaAtivos(p)
         table.insert(linhas, { id = id, txt = nome(id), resta = e.fim - t, total = e.fim - e.ini, m = e.m, bom = true, desc = desc })
     end
     for id, e in pairs(st.pos) do
-        if e.fim > t then table.insert(linhas, { id = id, txt = nome(id) .. " (" .. getText("IGUI_BF_Ressaca") .. ")", resta = e.fim - t, total = e.fim - (e.ini or (e.fim - 2)), bom = false, desc = getText("IGUI_BF_RessacaDesc") }) end
+        if e.fim > t then
+            local d = BF.DROGAS[id]; local partes = {}
+            if d and d.fadigaPos then table.insert(partes, getText("IGUI_BF_L_cansaco") .. " +" .. math.floor(d.fadigaPos * e.d * 100 + 0.5) .. "%") end
+            if d and d.recuperacao then table.insert(partes, getText("IGUI_BF_L_sono") .. " -" .. math.floor(d.recuperacao * e.d * 100 + 0.5) .. "%") end
+            if d and d.sangramento then table.insert(partes, getText("IGUI_BF_L_sangra") .. " +" .. math.floor(d.sangramento * e.d * 100 + 0.5) .. "%") end
+            table.insert(linhas, { id = id, txt = nome(id) .. " (" .. getText("IGUI_BF_Ressaca") .. ")", resta = e.fim - t, total = e.fim - (e.ini or (e.fim - 2)), bom = false, desc = (#partes > 0) and table.concat(partes, ", ") or getText("IGUI_BF_RessacaDesc") })
+        end
     end
     if st.abst then table.insert(linhas, { txt = getText("IGUI_BF_Abstinencia") .. " x" .. st.abst, resta = 0, total = 0, bom = false }) end
     table.sort(linhas, function(a, b) return a.txt < b.txt end)
@@ -500,6 +506,7 @@ local function tick(p)
             local d = BF.DROGAS[id]
             if d and d.recuperacao then recup = math.max(recup, d.recuperacao * e.d) end
             if d and d.sangramento then sangra = math.max(sangra, d.sangramento * e.d) end
+            if d and d.fadigaPos then fadM = fadM + d.fadigaPos * e.d end
         end
     end
     if st.abst then fadM = fadM + 0.3 * st.abst end
@@ -595,9 +602,13 @@ local function minuto()
                         end
                     end
                     if d.tosse and ZombRandFloat(0, 1) < 0.3 then pcall(function() p:playerVoiceSound("Cough") end) end
-                    if d.grito and ZombRandFloat(0, 1) < 0.08 then
-                        pcall(function() p:playerVoiceSound("PainFromScratch") end)
-                        pcall(function() p:Say(getText("IGUI_BF_Grito")) end)
+                    if d.grito then
+                        if not e.proxGrito then e.proxGrito = t + 1 + ZombRandFloat(0, 2) end
+                        if t >= e.proxGrito then
+                            e.proxGrito = t + 3
+                            pcall(function() p:Callout(false) end)
+                            pcall(function() processShoutMessage(getText("IGUI_BF_Grito")) end)
+                        end
                     end
                     if d.rigidez then rig = rig + d.rigidez * m2 end
                     if d.pesoDia then peso = peso + d.pesoDia * m2 end
@@ -617,11 +628,12 @@ local function minuto()
                 if w > 50 then nut:setWeight(w - peso / 1440) end
             end
             if paranoia > 0 and ZombRandFloat(0, 1) < paranoia then
-                p:getEmitter():playSound(VOZES[ZombRand(1, #VOZES + 1)])
+                local voz = VOZES[ZombRand(1, #VOZES + 1)]
+                local ok = pcall(function() getSoundManager():PlaySound(voz, false, 1) end)
+                if not ok then pcall(function() p:getEmitter():playSound(voz) end) end
                 setStat(p, CharacterStat.PANIC, 100)
                 setStat(p, CharacterStat.STRESS, clamp(stat(p, CharacterStat.STRESS) + 0.15, 0, 1))
                 BF.visual[i] = BF.visual[i] or {}; BF.visual[i].flash = getTimestampMs()
-                HaloTextHelper.addBadText(p, getText("IGUI_BF_Paranoia"))
             end
             if depress > 0 then setStat(p, CharacterStat.UNHAPPINESS, clamp(stat(p, CharacterStat.UNHAPPINESS) + depress, 0, 100)) end
             abstinencia(p, st, t)
@@ -677,7 +689,10 @@ Events.OnPostUIDraw.Add(function()
             if id == "Tadala" or id == "Dipirona" then verde = math.max(verde, 0.12) end
         end
         if md.abst then escuro = math.max(escuro, 0.15 + 0.1 * pulso) end
-        for id, e in pairs(md.pos or {}) do if e.fim > agora() and id == "Rebite" then escuro = math.max(escuro, 0.3) end end
+        for id, e in pairs(md.pos or {}) do
+            local d = BF.DROGAS[id]
+            if d and d.escuroPos and e.fim > agora() then escuro = math.max(escuro, 0.62 + 0.1 * pulso) end
+        end
     end
     if v.flash then local dt = (ms - v.flash) / 1500; if dt < 1 then vermelho = math.max(vermelho, 0.7 * (1 - dt)) else v.flash = nil end end
     if v.loloAte then if ms < v.loloAte then quente = 0.35 * math.min(1, (v.loloAte - ms) / 90000) + 0.05 * pulso else v.loloAte = nil end end
@@ -851,8 +866,7 @@ end
 function BF_Moodles:calcular()
     local p = getSpecificPlayer(self.pn); self.itens = {}
     if not p or p:isDead() then return end
-    local md = p:getModData().BF
-    if not md then return end
+    local md = p:getModData().BF or {}
     local nEf, nPos = 0, 0
     for _ in pairs(md.ef or {}) do nEf = nEf + 1 end
     local t = agora()
@@ -860,32 +874,27 @@ function BF_Moodles:calcular()
     if nEf > 0 then table.insert(self.itens, { tex = "media/ui/BF_mood_dopado.png", bom = true, lvl = math.min(4, nEf), titulo = getText("IGUI_BF_MoodDopado"), desc = getText("IGUI_BF_MoodDopadoDesc", nEf) }) end
     if nPos > 0 then table.insert(self.itens, { tex = "media/ui/BF_mood_ressaca.png", bom = false, lvl = math.min(4, nPos), titulo = getText("IGUI_BF_Ressaca"), desc = getText("IGUI_BF_MoodRessacaDesc") }) end
     if md.abst then table.insert(self.itens, { tex = "media/ui/BF_mood_abst.png", bom = false, lvl = math.min(4, md.abst), titulo = getText("IGUI_BF_Abstinencia"), desc = getText("IGUI_BF_MoodAbstDesc") }) end
+    if BF.desmaio[self.pn] then table.insert(self.itens, 1, { tex = "media/ui/BF_mood_overdose.png", bom = false, lvl = 4, titulo = getText("IGUI_BF_MoodOverdose"), desc = getText("IGUI_BF_MoodOverdoseDesc", math.max(0, math.ceil((BF.desmaio[self.pn].fim - getTimestampMs()) / 1000))) }) end
 end
 function BF_Moodles:render()
     self:calcular()
-    local p = getSpecificPlayer(self.pn)
-    local tam = ({ 32, 48, 64, 80, 96, 128 })[(getCore():getOptionMoodleSize() or 1)] or 32
+    local opc = getCore():getOptionMoodleSize() or 1
+    local tam = ({ 32, 48, 64, 80, 96, 128 })[opc] or ({ 32, 48, 64, 80, 96, 128 })[opc + 1] or 32
     local passo = tam + 13
-    local n = 0
-    if p then
-        local mo = p:getMoodles()
-        for _, k in ipairs(TIPOS_MOODLE) do
-            local ok, lv = pcall(function() return mo:getMoodleLevel(MoodleType[k]) end)
-            if ok and lv and lv > 0 then n = n + 1 end
-        end
-    end
-    local bx = getCore():getScreenWidth() - 10 - tam
-    local by = 118 + n * passo
-    self:setX(bx + (tam - 36) / 2); self:setY(by)
-    self:setHeight(#self.itens * 36 + 1)
+    self.tam = tam
+    local bx = getCore():getScreenWidth() - 10 - tam - 8 - tam
+    local by = 118
+    self:setX(bx); self:setY(by); self:setWidth(tam)
+    self:setHeight(#self.itens * passo + 1)
     local mx, my = self:getMouseX(), self:getMouseY()
     for i, it in ipairs(self.itens) do
-        local y = (i - 1) * 36
+        local y = (i - 1) * passo
         local bg = getTexture((it.bom and "Moodle_Bkg_Good_" or "Moodle_Bkg_Bad_") .. it.lvl)
-        if bg then self:drawTexture(bg, 2, y, 1, 1, 1, 1) end
+        if bg then self:drawTextureScaled(bg, 0, y, tam, tam, 1, 1, 1, 1) end
         local ic = getTexture(it.tex)
-        if ic then self:drawTextureScaled(ic, 7, y + 4, 22, 22, 1, 1, 1, 1) end
-        if mx >= 0 and mx <= 36 and my >= y and my < y + 36 then
+        local ti = math.floor(tam * 0.62); local off = math.floor((tam - ti) / 2)
+        if ic then self:drawTextureScaled(ic, off, y + off, ti, ti, 1, 1, 1, 1) end
+        if mx >= 0 and mx <= tam and my >= y and my < y + passo then
             local w = math.max(getTextManager():MeasureStringX(UIFont.Small, it.desc), getTextManager():MeasureStringX(UIFont.Medium, it.titulo)) + 16
             self:drawRect(-w - 8, y, w, 50, 0.85, 0, 0, 0)
             self:drawRectBorder(-w - 8, y, w, 50, 0.6, 0.5, 0.5, 0.5)

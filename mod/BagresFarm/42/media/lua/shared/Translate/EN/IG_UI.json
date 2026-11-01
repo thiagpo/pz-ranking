@@ -96,5 +96,7 @@
     "IGUI_BF_L_curando": "curing the cold",
     "IGUI_BF_L_tosse": "coughing",
     "IGUI_BF_L_grito": "screams of pain",
-    "IGUI_BF_Grito": "É HORA DO SHOW PORRA!"
+    "IGUI_BF_Grito": "É HORA DO SHOW PORRA!",
+    "IGUI_BF_MoodOverdose": "Overdose",
+    "IGUI_BF_MoodOverdoseDesc": "Passed out. Wakes up in %1 s."
 }

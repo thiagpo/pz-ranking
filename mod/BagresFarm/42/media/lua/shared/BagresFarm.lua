@@ -45,8 +45,8 @@ BF.DROGAS = {
     Trembolona     = { item = "Base.BF_Trembolona",     inj = true, grito = true, careca = true,  dur = 36, forca = 0.10, fome = 0.60 },
     Deca           = { item = "Base.BF_Deca",           inj = true, grito = true, careca = true,  dur = 48, forca = 0.15, fome = 0.80 },
     Morfina        = { item = "Base.BF_Morfina",        inj = true,  dur = 8,  dor = 0.80, rigidez = 0.10, paranoia = 3, depressao = 6, vicio = { limiar = 4, horas = 24, limpar = 72 } },
-    Adrenalina     = { item = "Base.BF_Adrenalina",     inj = true,  dur = 1,  folego = true, audicao = true, adrenalina = true, panico = -100, fadigaFim = 0.80, sangramento = 0.60, posDur = 2 },
-    Rebite         = { item = "Base.BF_Rebite",         inj = false, drenavel = true, dur = 6,  fadiga = -0.90, recuperacao = 0.60, visao = true, vicio = { limiar = 5, horas = 36, limpar = 48 } },
+    Adrenalina     = { item = "Base.BF_Adrenalina",     inj = true,  dur = 1,  folego = true, audicao = true, adrenalina = true, panico = -100, fadigaFim = 0.80, sangramento = 0.60, posDur = 2, fadigaPos = 1.0, escuroPos = true },
+    Rebite         = { item = "Base.BF_Rebite",         inj = false, drenavel = true, dur = 6,  fadiga = -0.90, recuperacao = 0.60, escuroPos = true, visao = true, vicio = { limiar = 5, horas = 36, limpar = 48 } },
     Dipirona       = { item = "Base.BF_Dipirona",       inj = false, drenavel = true, dur = 4,  rigidez = 0.05, dor = 0.30 },
     Metanfetamina  = { item = "Base.BF_Metanfetamina",  inj = false, drenavel = true, dur = 6,  rigidez = 0.12, fadiga = -0.70, paranoia = 1, vicio = { limiar = 3, horas = 24, limpar = 96 } },
     Tadala         = { item = "Base.BF_Tadala",         inj = false, drenavel = true, dur = 6,  rigidez = 0.08, tristezaFim = 90 },
@@ -137,6 +137,7 @@ function BF.descricaoEfeito(id, m, dm)
     if d.fadigaFim then table.insert(maus, getText("IGUI_BF_L_depois") .. " " .. getText("IGUI_BF_L_cansaco") .. " +" .. pct(d.fadigaFim * dm) .. "%") end
     if d.sangramento then table.insert(maus, getText("IGUI_BF_L_sangra") .. " +" .. pct(d.sangramento * dm) .. "%") end
     if d.recuperacao then table.insert(maus, getText("IGUI_BF_L_depois") .. " " .. getText("IGUI_BF_L_sono") .. " -" .. pct(d.recuperacao * dm) .. "%") end
+    if d.fadigaPos then table.insert(maus, getText("IGUI_BF_L_depois") .. " " .. getText("IGUI_BF_L_cansaco") .. " x" .. string.format("%.1f", 1 + d.fadigaPos * dm) .. " (" .. d.posDur .. " h)") end
     if d.tristezaFim then table.insert(maus, getText("IGUI_BF_L_depois") .. " " .. getText("IGUI_BF_L_tristeza") .. " " .. math.floor(math.min(100, d.tristezaFim * dm) + 0.5)) end
     if d.paranoia then table.insert(maus, getText("IGUI_BF_L_paranoia")) end
     if d.vicio then table.insert(maus, getText("IGUI_BF_L_vicio")) end
@@ -274,6 +275,7 @@ function BF.agregados(st, t)
         local d = BF.DROGAS[id]
         if d and e.fim > t then
             if d.recuperacao then table.insert(neg, getText("IGUI_BF_L_sono") .. " -" .. pct(d.recuperacao * e.d) .. "% (" .. BF.horasTxt(e.fim - t) .. ")") end
+            if d.fadigaPos then table.insert(neg, getText("IGUI_BF_L_cansaco") .. " +" .. pct(d.fadigaPos * e.d) .. "% (" .. BF.horasTxt(e.fim - t) .. ")") end
             if d.sangramento then soma.sangra = math.max(soma.sangra, d.sangramento * e.d) end
         end
     end
