@@ -46,7 +46,7 @@ BF.DROGAS = {
     Deca           = { item = "Base.BF_Deca",           inj = true, grito = true, careca = true,  dur = 48, forca = 0.15, fome = 0.80 },
     Morfina        = { item = "Base.BF_Morfina",        inj = true,  dur = 8,  dor = 0.80, rigidez = 0.10, paranoia = 3, depressao = 6, vicio = { limiar = 4, horas = 24, limpar = 72 } },
     Adrenalina     = { item = "Base.BF_Adrenalina",     inj = true,  dur = 1,  folego = true, audicao = true, adrenalina = true, panico = -100, fadigaFim = 0.80, sangramento = 0.60, posDur = 2, fadigaPos = 1.0, escuroPos = true },
-    Rebite         = { item = "Base.BF_Rebite",         inj = false, fadigaJa = -0.35, drenavel = true, dur = 6,  fadiga = -0.90, recuperacao = 0.60, escuroPos = true, visao = true, vicio = { limiar = 5, horas = 36, limpar = 48 } },
+    Rebite         = { item = "Base.BF_Rebite",         inj = false, fadigaJa = -0.35, drenavel = true, dur = 6,  fadiga = -0.90, sede = 2.0, sedeJa = 0.30, recuperacao = 0.60, escuroPos = true, visao = true, vicio = { limiar = 5, horas = 36, limpar = 48 } },
     Dipirona       = { item = "Base.BF_Dipirona",       inj = false, drenavel = true, dur = 4,  rigidez = 0.05, dor = 0.30 },
     Metanfetamina  = { item = "Base.BF_Metanfetamina",  inj = false, fadigaJa = -0.30, drenavel = true, dur = 6,  rigidez = 0.12, fadiga = -0.70, paranoia = 1, vicio = { limiar = 3, horas = 24, limpar = 96 } },
     Tadala         = { item = "Base.BF_Tadala",         inj = false, drenavel = true, dur = 6,  rigidez = 0.08, tristezaFim = 90 },
@@ -122,6 +122,8 @@ function BF.descricaoEfeito(id, m, dm)
     if d.pesoDia then table.insert(bons, "-" .. string.format("%.2f", d.pesoDia * m) .. " kg/" .. getText("IGUI_BF_L_dia")) end
     if d.fadiga and d.fadiga < 0 then table.insert(bons, getText("IGUI_BF_L_cansaco") .. " -" .. pct(d.fadiga * m) .. "%") end
     if d.fadiga and d.fadiga > 0 then table.insert(maus, getText("IGUI_BF_L_cansaco") .. " +" .. pct(d.fadiga * dm) .. "%") end
+    if d.sede then table.insert(maus, getText("IGUI_BF_L_sede") .. " +" .. pct(d.sede * dm) .. "%") end
+    if d.sedeJa then table.insert(maus, getText("IGUI_BF_L_sede") .. " +" .. pct(d.sedeJa * dm) .. "% " .. getText("IGUI_BF_L_nahora")) end
     if d.forca then table.insert(bons, getText("IGUI_BF_L_forca") .. " +" .. pct(d.forca * m) .. "%") end
     if d.dor then table.insert(bons, getText("IGUI_BF_L_dor") .. " -" .. pct(d.dor * m) .. "%") end
     if d.rigidez then table.insert(bons, getText("IGUI_BF_L_rigidez") .. " -" .. pct(d.rigidez * m) .. "%/min") end
@@ -243,7 +245,7 @@ end
 -- soma dos efeitos ativos: retorna duas listas de texto (positivos, negativos)
 function BF.agregados(st, t)
     local pos, neg = {}, {}
-    local soma = { fomeB = 0, fomeM = 0, peso = 0, fadB = 0, fadM = 0, forca = 0, dor = 0, rig = 0, xpF = 0, xpA = 0, sangra = 0 }
+    local soma = { fomeB = 0, fomeM = 0, sedeM = 0, peso = 0, fadB = 0, fadM = 0, forca = 0, dor = 0, rig = 0, xpF = 0, xpA = 0, sangra = 0 }
     local flags = {}
     local function pct(v) return math.floor(math.abs(v) * 100 + 0.5) end
     for id, e in pairs(st.ef or {}) do
@@ -255,6 +257,7 @@ function BF.agregados(st, t)
             if d.pesoDia then soma.peso = soma.peso + d.pesoDia * m end
             if d.fadiga and d.fadiga < 0 then soma.fadB = soma.fadB + d.fadiga * m end
             if d.fadiga and d.fadiga > 0 then soma.fadM = soma.fadM + d.fadiga * dm end
+            if d.sede then soma.sedeM = soma.sedeM + d.sede * dm end
             if d.forca then soma.forca = math.max(soma.forca, d.forca * m) end
             if d.dor then soma.dor = soma.dor + d.dor * m end
             if d.rigidez then soma.rig = soma.rig + d.rigidez * m end
@@ -291,6 +294,7 @@ function BF.agregados(st, t)
     if flags.cura then table.insert(pos, getText("IGUI_BF_L_curando")) elseif flags.gripe then table.insert(pos, getText("IGUI_BF_L_gripe")) end
     if soma.fomeM > 0 then table.insert(neg, getText("IGUI_BF_L_fome") .. " +" .. pct(soma.fomeM) .. "%") end
     if soma.fadM > 0 then table.insert(neg, getText("IGUI_BF_L_cansaco") .. " +" .. pct(soma.fadM) .. "%") end
+    if soma.sedeM > 0 then table.insert(neg, getText("IGUI_BF_L_sede") .. " +" .. pct(soma.sedeM) .. "%") end
     if soma.sangra > 0 then table.insert(neg, getText("IGUI_BF_L_sangra") .. " +" .. pct(soma.sangra) .. "%") end
     if flags.paranoia then table.insert(neg, getText("IGUI_BF_L_paranoia")) end
     if flags.vicio then table.insert(neg, getText("IGUI_BF_L_vicio")) end

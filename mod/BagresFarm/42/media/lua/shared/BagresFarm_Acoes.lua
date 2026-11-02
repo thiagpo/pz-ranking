@@ -16,7 +16,7 @@ function BF_UsarAction:animar()
     local d = BF.DROGAS[self.id]
     if not d then return end
     if d.lolo then
-        self:setAnimVariable("FoodType", "Sniff"); self:setActionAnim(CharacterActionAnims.Eat)
+        self:setAnimVariable("FoodType", "sniff"); self:setActionAnim(CharacterActionAnims.Eat)
     elseif d.bebida then
         self:setActionAnim(CharacterActionAnims.Drink)
     elseif d.inj then
@@ -38,7 +38,7 @@ function BF_UsarAction:start()
     self.item:setJobType(getText(BF.DROGAS[self.id].inj and "ContextMenu_BF_Injetar" or "ContextMenu_BF_Tomar"))
     self.item:setJobDelta(0.0)
     self:animar()
-    self:setOverrideHandModels(nil, nil)
+    if BF.DROGAS[self.id].lolo then self:setOverrideHandModels(self.item, nil) else self:setOverrideHandModels(nil, nil) end
 end
 
 function BF_UsarAction:stop()

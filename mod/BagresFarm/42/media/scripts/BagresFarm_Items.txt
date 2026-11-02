@@ -35,7 +35,7 @@ module Base
 
     /* novos */
     item BF_Benegripe { DisplayCategory = Farmacia, ItemType = base:drainable, Weight = 0.1, UseDelta = 0.1, UseWhileEquipped = false, Icon = BF_Benegripe, Tooltip = Tooltip_BF_Benegripe, WorldStaticModel = PillBottleGround, Tags = base:medical, }
-    item BF_Lolo { DisplayCategory = Farmacia, ItemType = base:drainable, Weight = 0.2, Icon = BF_Lolo, Tooltip = Tooltip_BF_Lolo, UseDelta = 0.2, UseWhileEquipped = false, WorldStaticModel = CorrectionFluid, Tags = base:consumable, }
+    item BF_Lolo { DisplayCategory = Farmacia, ItemType = base:drainable, Weight = 0.2, Icon = BF_Lolo, Tooltip = Tooltip_BF_Lolo, UseDelta = 0.2, UseWhileEquipped = false, StaticModel = CorrectionFluid, WorldStaticModel = CorrectionFluid, Tags = base:consumable, }
 
 
     /* 1.1 */

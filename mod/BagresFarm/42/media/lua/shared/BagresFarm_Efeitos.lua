@@ -180,6 +180,7 @@ function BF.usar(p, id, pot, suja)
     if d.cura then p:getBodyDamage():setCatchACold(0) end
     if d.fadigaJa then setStat(p, CharacterStat.FATIGUE, clamp(stat(p, CharacterStat.FATIGUE) + d.fadigaJa * (pot or 1), 0, 1)) end
     if d.fomeJa then setStat(p, CharacterStat.HUNGER, clamp(stat(p, CharacterStat.HUNGER) + d.fomeJa, 0, 1)) end
+    if d.sedeJa then setStat(p, CharacterStat.THIRST, clamp(stat(p, CharacterStat.THIRST) + d.sedeJa * fator, 0, 1)) end
     if d.panico then setStat(p, CharacterStat.PANIC, clamp(stat(p, CharacterStat.PANIC) + d.panico, 0, 100)) end
     if d.depressao and st.usos[id] >= d.depressao then
         setStat(p, CharacterStat.UNHAPPINESS, clamp(stat(p, CharacterStat.UNHAPPINESS) + 5 * (st.usos[id] - d.depressao + 1), 0, 100))
@@ -237,7 +238,7 @@ local function tick(p)
     local u = ult[n]; if not u then u = { sang = {} }; ult[n] = u end
     u.ts = getTimestampMs()
 
-    local fomeM, fadM, dor = 1, 1, 0
+    local fomeM, fadM, sedeM, dor = 1, 1, 1, 0
     local folego, sangra = false, 0
     for id, e in pairs(st.ef) do
         local d = BF.DROGAS[id]
@@ -245,6 +246,7 @@ local function tick(p)
             local m2, d2 = BF.mult(e, t)
             if d.fome then fomeM = fomeM + d.fome * (d.fome < 0 and m2 or d2) end
             if d.fadiga then fadM = fadM + d.fadiga * (d.fadiga < 0 and m2 or d2) end
+            if d.sede then sedeM = sedeM + d.sede * d2 end
             if d.dor then dor = dor + d.dor * m2 end
             if d.folego then folego = true end
             if d.sangramento then sangra = math.max(sangra, d.sangramento * d2) end
@@ -270,6 +272,12 @@ local function tick(p)
         fome = clamp(u.fome + (fome - u.fome) * fomeM, 0, 1); setStat(p, CharacterStat.HUNGER, fome)
     end
     u.fome = fome
+
+    local sede = stat(p, CharacterStat.THIRST)
+    if u.sede and sede > u.sede and sedeM ~= 1 then
+        sede = clamp(u.sede + (sede - u.sede) * sedeM, 0, 1); setStat(p, CharacterStat.THIRST, sede)
+    end
+    u.sede = sede
 
     local fad = stat(p, CharacterStat.FATIGUE)
     if u.fad then
