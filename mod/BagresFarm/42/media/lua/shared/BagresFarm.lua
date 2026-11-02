@@ -194,9 +194,9 @@ end
 
 -- fogo aceso por perto (fogao, lareira, churrasqueira, fogueira) a ate 3 quadros
 local function objetoAceso(o)
-    local ok, v = pcall(function() return o:isLit() end); if ok and v then return true end
-    ok, v = pcall(function() return o:isActivated() end); if ok and v and instanceof(o, "IsoStove") then return true end
     if instanceof(o, "IsoFire") then return true end
+    if instanceof(o, "IsoFireplace") or instanceof(o, "IsoBarbecue") then return o:isLit() end
+    if instanceof(o, "IsoStove") then return o:Activated() end
     return false
 end
 function BF.pertoDoFogo(item, character)
