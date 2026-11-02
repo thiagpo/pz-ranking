@@ -1,10 +1,10 @@
 {
     "UI_prof_Farmaceutico": "Farmacêutico",
-    "UI_prof_FarmaceuticoDesc": "Trabalhava no balcão da farmácia do bairro e sabe o que cada comprimido faz. <br> +3 Farmácia (XP +125%), +2 Primeiros Socorros (XP +75%), XP +100% em Lâminas Curtas. <br> Já sabe preparar Ozempic, Trembolona, Dipirona, Rebite, Benegripe, analgésicos, vitaminas, whey e creatina.",
+    "UI_prof_FarmaceuticoDesc": "Trabalhava no balcão da farmácia do bairro e sabe o que cada comprimido faz. <br> +3 Farmácia (XP +125%%), +2 Primeiros Socorros (XP +75%%), XP +100%% em Lâminas Curtas. <br> Já sabe preparar Ozempic, Trembolona, Dipirona, Rebite, Benegripe, analgésicos, vitaminas, whey e creatina.",
     "UI_trait_ConhecimentosFarmaco": "Conhecimentos Fármaco",
-    "UI_trait_ConhecimentosFarmacoDesc": "Leu bula a vida inteira. <br> +1 Farmácia e +75% de XP em Farmácia. <br> Já sabe fazer vitaminas e Dipirona.",
+    "UI_trait_ConhecimentosFarmacoDesc": "Leu bula a vida inteira. <br> +1 Farmácia e +75%% de XP em Farmácia. <br> Já sabe fazer vitaminas e Dipirona.",
     "UI_trait_Desnutrido": "Desnutrido",
-    "UI_trait_DesnutridoDesc": "Abusou de Ozempic e Monjaro. <br> Fome 30% mais rápida para sempre.",
+    "UI_trait_DesnutridoDesc": "Abusou de Ozempic e Monjaro. <br> Fome 30%% mais rápida para sempre.",
     "UI_trait_CoracaoCansado": "Coração Cansado",
-    "UI_trait_CoracaoCansadoDesc": "Abusou de anabolizantes. <br> Fôlego recupera 30% mais devagar para sempre."
+    "UI_trait_CoracaoCansadoDesc": "Abusou de anabolizantes. <br> Fôlego recupera 30%% mais devagar para sempre."
 }

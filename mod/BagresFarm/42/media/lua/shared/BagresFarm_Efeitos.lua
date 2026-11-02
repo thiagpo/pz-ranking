@@ -5,9 +5,9 @@ local VOZES = { "MaleZombieVoiceA", "MaleZombieVoiceB", "FemaleZombieVoiceA", "M
 local PARTES_SERINGA = BF.PARTES_SERINGA
 local ult = {}
 local Halo = {
-    addGoodText = function(p, t) if not isServer() and HaloTextHelper then Halo.addGoodText(p, t) end end,
-    addBadText = function(p, t) if not isServer() and HaloTextHelper then Halo.addBadText(p, t) end end,
-    addText = function(p, t) if not isServer() and HaloTextHelper then Halo.addText(p, t) end end,
+    addGoodText = function(p, t) if not isServer() and HaloTextHelper then HaloTextHelper.addGoodText(p, t) end end,
+    addBadText = function(p, t) if not isServer() and HaloTextHelper then HaloTextHelper.addBadText(p, t) end end,
+    addText = function(p, t) if not isServer() and HaloTextHelper then HaloTextHelper.addText(p, t) end end,
 }
 function BF.chave(p) if isServer() then return p:getUsername() end return p:getPlayerNum() end
 function BF.jogadores()
@@ -89,13 +89,12 @@ local function tracoTemp(p, st, trait, flag, ligar)
     end)
 end
 
--- visao noturna: quem nao tem Olhos de Gato ganha o traco temporario; quem ja tem ganha o efeito dos oculos de visao noturna
+-- visao noturna: quem nao tem Olhos de Gato ganha o traco temporario
 local function visao(p, st, ligar)
     pcall(function()
         local t = CharacterTrait.NIGHT_VISION
         if ligar then
-            if not p:hasTrait(t) then p:getCharacterTraits():add(t); st.visaoTemp = true
-            else p:setWearingNightVisionGoggles(true); st.visaoNV = true end
+            if not p:hasTrait(t) then p:getCharacterTraits():add(t); st.visaoTemp = true end
         else
             if st.visaoTemp then p:getCharacterTraits():remove(t); st.visaoTemp = nil end
             if st.visaoNV then p:setWearingNightVisionGoggles(false); st.visaoNV = nil end
@@ -151,7 +150,7 @@ local function registrar(p, st, id, t)
     local novo = {}
     for _, h in ipairs(st.hist) do if t - h.t <= BF.HIST_H then table.insert(novo, h) end end
     st.hist = novo
-    pcall(function() p:transmitModData() end)
+    if not isServer() then pcall(function() p:transmitModData() end) end
     if isClient() then sendClientCommand(p, "BagresFarm", "uso", { id = id }) end
 end
 
@@ -168,7 +167,7 @@ function BF.usar(p, id, pot, suja)
         setStat(p, CharacterStat.UNHAPPINESS, clamp(stat(p, CharacterStat.UNHAPPINESS) - 5, 0, 100))
         setStat(p, CharacterStat.SICKNESS, clamp(stat(p, CharacterStat.SICKNESS) + 15 * fator, 0, 100))
         setStat(p, CharacterStat.INTOXICATION, clamp(stat(p, CharacterStat.INTOXICATION) + 25 * fator, 0, 100))
-        BF.visual[p:getPlayerNum()] = BF.visual[p:getPlayerNum()] or {}; BF.visual[p:getPlayerNum()].loloAte = getTimestampMs() + 90000
+        if not isServer() then BF.visual[p:getPlayerNum()] = BF.visual[p:getPlayerNum()] or {}; BF.visual[p:getPlayerNum()].loloAte = getTimestampMs() + 90000 end
         if d.dur > 0 then st.ef[id] = { ini = t, fim = t + d.dur, m = 1, d = fator } end
         st.ultDose[id] = t
         Halo.addGoodText(p, nome(id))
@@ -210,7 +209,7 @@ function BF.usar(p, id, pot, suja)
     end
     Halo.addGoodText(p, nome(id))
     registrar(p, st, id, t)
-    if overdose and BF.sb("Overdose", true) then desmaiar(p) end
+    if overdose and BF.sb("Overdose", true) and BF.desmaiar then BF.desmaiar(p) end
 end
 
 -- pouca pratica em Primeiros Socorros: chance de se machucar com a agulha
@@ -225,17 +224,18 @@ function BF.acidenteSeringa(p)
     else bp:generateDeepWound(); Halo.addBadText(p, getText("IGUI_BF_Laceracao")) end
 end
 
--- efeitos continuos (so no jogador local)
+-- efeitos continuos (cliente: jogador local; servidor: todos)
 local function tick(p)
-    if not p or p:isDead() or not p:isLocalPlayer() then return end
+    if not p or p:isDead() or (not isServer() and not p:isLocalPlayer()) then return end
     local md = p:getModData().BF
-    local n0 = p:getPlayerNum()
+    local n0 = BF.chave(p)
     local vis = BF.visual[n0]
     local trDes = vis and vis.trDes; local trCor = vis and vis.trCor
     if not md or (vazio(md.ef) and vazio(md.pos) and not md.abst and not trDes and not trCor) then return end
     local st = estado(p); local t = agora()
-    local n = p:getPlayerNum()
+    local n = n0
     local u = ult[n]; if not u then u = { sang = {} }; ult[n] = u end
+    u.ts = getTimestampMs()
 
     local fomeM, fadM, dor = 1, 1, 0
     local folego, sangra = false, 0
@@ -330,9 +330,10 @@ local function abstinencia(p, st, t)
 end
 
 local function minuto()
-    for i = 0, getNumActivePlayers() - 1 do
-        local p = getSpecificPlayer(i)
+    for _, p in ipairs(BF.jogadores()) do
+        local i = BF.chave(p)
         if p and not p:isDead() then
+            if isServer() and getTimestampMs() - ((ult[i] and ult[i].ts) or 0) > 5000 then tick(p) end
             local st = estado(p); local t = agora()
             for id, e in pairs(st.ef) do
                 if t >= e.fim then terminar(p, st, id) end
@@ -354,13 +355,15 @@ local function minuto()
                             bd:setColdStrength(cs)
                         end
                     end
-                    if d.tosse and ZombRandFloat(0, 1) < 0.3 then pcall(function() p:playerVoiceSound("Cough") end) end
+                    if d.tosse and not isServer() and ZombRandFloat(0, 1) < 0.3 then pcall(function() p:playerVoiceSound("Cough") end) end
                     if d.grito then
                         if not e.proxGrito then e.proxGrito = t + 1 + ZombRandFloat(0, 2) end
                         if t >= e.proxGrito then
                             e.proxGrito = t + 3
-                            pcall(function() p:Callout(false) end)
-                            pcall(function() processShoutMessage(getText("IGUI_BF_Grito")) end)
+                            if not isServer() then
+                                pcall(function() p:Callout(false) end)
+                                pcall(function() processShoutMessage(getText("IGUI_BF_Grito")) end)
+                            end
                         end
                     end
                     if d.rigidez then rig = rig + d.rigidez * m2 end
@@ -389,9 +392,11 @@ local function minuto()
                 if w > 50 then nut:setWeight(w - peso / 1440) end
             end
             if paranoia > 0 and ZombRandFloat(0, 1) < paranoia then
-                local voz = VOZES[ZombRand(1, #VOZES + 1)]
-                local ok = pcall(function() getSoundManager():PlaySound(voz, false, 1) end)
-                if not ok then pcall(function() p:getEmitter():playSound(voz) end) end
+                if not isServer() then
+                    local voz = VOZES[ZombRand(1, #VOZES + 1)]
+                    local ok = pcall(function() getSoundManager():PlaySound(voz, false, 1) end)
+                    if not ok then pcall(function() p:getEmitter():playSound(voz) end) end
+                end
                 setStat(p, CharacterStat.PANIC, 100)
                 setStat(p, CharacterStat.STRESS, clamp(stat(p, CharacterStat.STRESS) + 0.15, 0, 1))
                 BF.visual[i] = BF.visual[i] or {}; BF.visual[i].flash = getTimestampMs()
@@ -414,7 +419,7 @@ end
 Events.EveryOneMinute.Add(minuto)
 
 Events.OnPlayerUpdate.Add(function(p)
-    if not p or not p:isLocalPlayer() then return end
+    if not p or isServer() or not p:isLocalPlayer() then return end
     local v = BF.visual[p:getPlayerNum()]
     if v and v.tremorAte and getTimestampMs() >= v.tremorAte then v.tremorAte = nil; p:clearVariable("BF_Pose") end
 end)
@@ -425,8 +430,7 @@ local function ehInjetavel(it)
     return id ~= nil and BF.DROGAS[id].inj == true
 end
 Events.EveryHours.Add(function()
-    for i = 0, getNumActivePlayers() - 1 do
-        local p = getSpecificPlayer(i)
+    for _, p in ipairs(BF.jogadores()) do
         if p and not p:isDead() then
             local itens = p:getInventory():getAllEvalRecurse(ehInjetavel)
             for j = 0, itens:size() - 1 do
