@@ -16,7 +16,8 @@ R_PLAYERS = f".cache/Saves/Multiplayer/{SRV}/players.db"
 R_USERS = f".cache/db/{SRV}.db"
 R_SANDBOX = f".cache/Server/{SRV}_SandboxVars.lua"
 R_INI = f".cache/Server/{SRV}.ini"
-IGNORAR = [tuple(x) for x in CFG.get("ignorar", [])]
+IGNORAR = [tuple(x) for x in [["2026-10-24 16:20:00", "2026-10-24 18:10:00"], ["2026-10-25 03:44:00", "2026-10-25 03:55:00"]] + CFG.get("ignorar", [])]
+def ignorada(ts): return any(a <= ts <= b for a, b in IGNORAR)
 INI_PUBLICO = ["PVP", "PauseEmpty", "GlobalChat", "Open", "SafetySystem", "Map", "Public", "PublicName", "MaxPlayers",
                "SafehousePreventsLootRespawn", "DropOffWhiteListAfterDeath", "NoFire", "AnnounceDeath", "SaveWorldEveryMinutes",
                "PlayerSafehouse", "AdminSafehouse", "SafehouseAllowTrepass", "SafehouseAllowFire", "SafehouseAllowLoot",
@@ -431,7 +432,7 @@ def montar():
             if ev == "Died":
                 novo.add(user)
                 h = int(hs.group(1)) if hs else 0
-                if h > 0 and not any(a <= ts <= b for a, b in IGNORAR):
+                if h > 0 and not ignorada(ts):
                     deaths[user].append({"ts": ts, "hours": h}); morreu[user] = True
             elif ev == "Login" and hs:
                 if ts >= login_ts.get(user, ""):
@@ -492,7 +493,8 @@ def montar():
         k = int(float(kv.get("lastSeenKills", 0) or 0))
         dead = kv.get("isDead") == "true"
         hours = float(kv.get("gameTimeSeconds", 0) or 0) / 3600
-        if dead and k == 0 and hours < 0.1:
+        dts = int(float(kv.get("deathRealTimestamp", 0) or 0)) if dead else 0
+        if dead and (k == 0 and hours < 0.1 or ignorada(datetime.datetime.fromtimestamp(dts, datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%S"))):
             continue
         p["kills"] += k
         p["distance"] += float(kv.get("distance", 0) or 0); p["gametime"] += float(kv.get("gameTimeSeconds", 0) or 0)
@@ -502,7 +504,7 @@ def montar():
         ls = int(float(kv.get("lastSeenRealTimestamp", 0) or 0))
         nome = (kv.get("forename", "") + " " + kv.get("surname", "")).replace("Unknown", "").strip()
         p["chars"].append({"name": nome, "kills": k, "dead": dead, "last": ls,
-                           "deathTs": int(float(kv.get("deathRealTimestamp", 0) or 0)) if dead else 0,
+                           "deathTs": dts,
                            "km": round(float(kv.get("distance", 0) or 0) / 1000, 1), "hours": round(hours, 1),
                            "daily": int(float(kv.get("dailyRecord", 0) or 0)),
                            "broken": int(float(kv.get("brokenWeaponsTotal", 0) or 0)),
