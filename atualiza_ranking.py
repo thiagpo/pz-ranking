@@ -28,7 +28,7 @@ INI_PUBLICO = ["PVP", "PauseEmpty", "GlobalChat", "Open", "SafetySystem", "Map",
                "BackupsCount", "ServerWelcomeMessage", "AllowCoop", "PVPMeleeDamageModifier", "PVPFirearmDamageModifier"]
 TIPOS = ("_PerkLog.txt", "_admin.txt", "_user.txt", "_cmd.txt", "_chat.txt", "_ClientActionLog.txt")
 ROLES_PT = {"admin": "Admin", "moderator": "Moderador", "gm": "Game Master", "observer": "Observador", "priority": "Prioridade", "user": "Jogador", "banned": "Banido"}
-ADM_OCULTAR = {k.lower(): v for k, v in {"thigas o sabio": [["2026-11-06 18:00:00", "2026-11-06 22:20:00"], ["2026-11-12 21:33:17", "2026-11-12 22:03:40"]], **CFG.get("admOcultar", {})}.items()}
+ADM_OCULTAR = {k.lower(): v for k, v in {"thigas o sabio": [["2026-11-06 18:00:00", "2026-11-06 22:20:00"], ["2026-11-12 21:33:17", "2026-11-12 22:03:40"], ["2026-11-22 18:40:00", "2026-11-22 19:44:00", ["god", "carry", "instant"]]], **CFG.get("admOcultar", {})}.items()}
 
 
 def baixar():
@@ -196,7 +196,7 @@ def ler_poderes():
         else:
             t0 = ligado.pop((user, flag), None)
             texto = f"desligou {nome}" + (f" depois de {max(1, (ts - t0) // 60)} min" if t0 else "")
-        out.append({"ts": sts, "actor": user, "type": "poder", "text": texto, "target": ""})
+        out.append({"ts": sts, "actor": user, "type": "poder", "text": texto, "target": "", "flag": flag})
     return out
 
 
@@ -551,7 +551,7 @@ def montar():
         tz = datetime.timezone(datetime.timedelta(hours=-3))
     sandbox, sandbox_meta = ler_sandbox()
     ini, ws = ler_ini()
-    adm = ler_adm(); adm["actions"] = sorted([a for a in adm["actions"] + ler_poderes() if not any(i <= a["ts"] < f for i, f in ADM_OCULTAR.get(a["actor"].lower(), []))], key=lambda a: a["ts"], reverse=True)
+    adm = ler_adm(); adm["actions"] = sorted([a for a in adm["actions"] + ler_poderes() if not any(w[0] <= a["ts"] < w[1] and (len(w) < 3 or a.get("flag") in w[2]) for w in ADM_OCULTAR.get(a["actor"].lower(), []))], key=lambda a: a["ts"], reverse=True)
     data = {"sandbox": sandbox, "sandboxMeta": sandbox_meta, "ini": ini, "mods": ler_mods(ws), "adm": adm,
             "generated": datetime.datetime.now(tz).strftime("%d/%m/%Y %H:%M"),
             "generatedIso": datetime.datetime.now(datetime.timezone.utc).isoformat(),
