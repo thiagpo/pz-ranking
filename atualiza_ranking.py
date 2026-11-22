@@ -28,7 +28,7 @@ INI_PUBLICO = ["PVP", "PauseEmpty", "GlobalChat", "Open", "SafetySystem", "Map",
                "BackupsCount", "ServerWelcomeMessage", "AllowCoop", "PVPMeleeDamageModifier", "PVPFirearmDamageModifier"]
 TIPOS = ("_PerkLog.txt", "_admin.txt", "_user.txt", "_cmd.txt", "_chat.txt", "_ClientActionLog.txt")
 ROLES_PT = {"admin": "Admin", "moderator": "Moderador", "gm": "Game Master", "observer": "Observador", "priority": "Prioridade", "user": "Jogador", "banned": "Banido"}
-ADM_OCULTAR = {k.lower(): v for k, v in {"thigas o sabio": [["2026-11-06 18:00:00", "2026-11-06 22:20:00"], ["2026-11-12 21:33:17", "2026-11-12 22:03:40"], ["2026-11-22 18:40:00", "2026-11-22 19:44:00", ["god", "carry", "instant"]]], **CFG.get("admOcultar", {})}.items()}
+ADM_OCULTAR = {k.lower(): v for k, v in {"thigas o sabio": [["2026-11-06 18:00:00", "2026-11-06 22:20:00"], ["2026-11-12 21:33:17", "2026-11-12 22:03:40"], ["2026-11-22 18:40:00", "9", ["god", "carry", "instant"]]], **CFG.get("admOcultar", {})}.items()}
 
 
 def baixar():
